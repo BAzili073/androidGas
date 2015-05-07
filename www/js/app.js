@@ -105,7 +105,8 @@ angular.module('starter', ['ionic', 'starter.controllers'])
     url: "/nn",
     views: {
       'optionContent': {
-        templateUrl: "templates/options/nn.html"
+        templateUrl: "templates/options/nn.html",
+        controller: "numbersController"
       }
     }
   })
@@ -118,7 +119,7 @@ angular.module('starter', ['ionic', 'starter.controllers'])
       }
     }
   })
-  
+
   .state('app.option.vs', {
     url: "/vs",
     views: {

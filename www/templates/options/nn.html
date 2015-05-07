@@ -1,30 +1,22 @@
-
-      <ion-view title="Настройка сатурна">
-
-        <ion-content class="padding">
-          <form  method="post" name="options_number">
-            <div class="list">
-              <label class="item item-input item-select">
-                <div class="input-label">
-                      Телефонный номер:
-                </div>
-                <select>
-                  <option selected>Хозяин</option>
-                  <option>Дополнительный 1</option>
-                  <option>Дополнительный 2</option>
-                  <option>Дополнительный 3</option>
-                  <option>Дополнительный 4</option>
-                </select>
-              </label>
-
-              <label class="item item-input">
-                <input type="text" placeholder="Телефонный номер формата +79001234567">
-              </label>
-            </div>
-       </form>
-
-          <div class="button-bar">
-            <a class="button">Задать настройку</a>
+<ion-view title="Настройка номера">
+  <ion-content has-header="true">
+    <form  method="post" name="options_number">
+      <div class="list">
+        <label class="item item-input item-select">
+          <div class="input-label">
+            Телефонный номер:
           </div>
-        </ion-content>
-      </ion-view>
+          <select ng-change="resetForm()" ng-model="$parent.selected" ng-options="phone.label for phone in phonesOptions track by phone.id"></select>
+        </label>
+
+        <label class="item item-input">
+          <input type="text" ng-model="$parent.phoneNumber" placeholder="Телефонный номер формата +79001234567">
+        </label>
+      </div>
+    </form>
+
+    <div class="button-bar">
+      <a class="button" ng-click="setPhone()" > Задать настройку </a>
+    </div>
+  </ion-content>
+</ion-view>
