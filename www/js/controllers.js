@@ -31,7 +31,6 @@ angular.module('starter.controllers', [])
       $scope.lastSMS = JSON.stringify(sms);
   }
 
-
   $scope.initSMS = function() {
 
     if(!$scope.sms.init) {
@@ -69,6 +68,10 @@ angular.module('starter.controllers', [])
 
 })
 
-.controller('GreetingController', function($scope) {
-  $scope.greeting = 'Hola!';
+.controller('gasController', function($scope, $state) {
+
+    $scope.potId = function() {
+      return $state.params.potId;
+    }
+
 });

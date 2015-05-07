@@ -1,20 +1,12 @@
-// Ionic Starter App
 
-// angular.module is a global place for creating, registering and retrieving Angular modules
-// 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
-// the 2nd parameter is an array of 'requires'
-// 'starter.controllers' is found in controllers.js
 angular.module('starter', ['ionic', 'starter.controllers'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
-    // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
-    // for form inputs)
     if (window.cordova && window.cordova.plugins.Keyboard) {
       cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
     }
     if (window.StatusBar) {
-      // org.apache.cordova.statusbar required
       StatusBar.styleDefault();
     }
   });
@@ -23,15 +15,12 @@ angular.module('starter', ['ionic', 'starter.controllers'])
 .config(function($stateProvider, $urlRouterProvider) {
   $stateProvider
 
-
   .state('app', {
     url: "/app",
     abstract: true,
     templateUrl: "templates/menu.html",
     controller: 'AppCtrl'
   })
-
-
 
   .state('app.guard', {
     url: "/guard",
@@ -49,13 +38,14 @@ angular.module('starter', ['ionic', 'starter.controllers'])
     abstract: true,
     views: {
       'menuContent': {
-        templateUrl: "templates/gas.html"
+        templateUrl: "templates/gas.html",
+        controller: "gasController"
       }
     }
   })
 
-  .state('app.gas.pot', {
-    url: "/pot",
+  .state('app.gas.pots', {
+    url: "/pots",
     views: {
       'tabContent': {
         templateUrl: "templates/tabs/tab-pot.html"
@@ -64,29 +54,12 @@ angular.module('starter', ['ionic', 'starter.controllers'])
     }
   })
 
-  .state('app.gas.pot1', {
-    url: "/pot1",
+  .state('app.gas.pot', {
+    url: "/pots/:potId",
+    cache: false,
     views: {
       'tabContent': {
         templateUrl: "templates/tabs/tab-pot1.html"
-      }
-    }
-  })
-
-  .state('app.gas.pot2', {
-    url: "/pot2",
-    views: {
-      'tabContent': {
-        templateUrl: "templates/tabs/tab-pot2.html"
-      }
-    }
-  })
-
-  .state('app.gas.pot3', {
-    url: "/pot3",
-    views: {
-      'tabContent': {
-        templateUrl: "templates/tabs/tab-pot3.html"
       }
     }
   })
@@ -145,6 +118,7 @@ angular.module('starter', ['ionic', 'starter.controllers'])
       }
     }
   })
+  
   .state('app.option.vs', {
     url: "/vs",
     views: {
