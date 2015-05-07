@@ -5,25 +5,22 @@ var COMMANDS = {
 }
 var READ_INTERVAL = 1000;
 
-angular.module('starter.controllers', [])
+angular.module('starter.controllers', ['starter.services'])
 
-.controller('AppCtrl', function($scope, $interval) {
-
+.controller('AppCtrl', function($scope, $interval, $localstorage, $ionicModal, $timeout, $ionicPopup) {
 
   $scope.sms = {
-    init: true,
-    request: false,
-    error: false
+    init: true
   };
 
-  $scope.phones = {
+  $scope.phones = $localstorage.getObject('phones', {
     pot: NUMBER,
     master: "",
     ext1: "",
     ext2: "",
     ext3: "",
     ext4: ""
-  };
+  });
 
   $scope.pot = {
     on: false,
@@ -34,17 +31,57 @@ angular.module('starter.controllers', [])
     pot2: 8,
     pot3: 8
   };
+
   $scope.lastSMS = '';
+
+  $scope.startModal = function(timeout, label, error) {
+
+    $scope.modal = $ionicPopup.show({
+      templateUrl: 'templates/modal.html',
+      title: label || 'Обработка.',
+      scope: $scope,
+    });
+
+    $scope.modal.status = 'loading';
+
+    if(timeout)
+      $timeout(function(){
+        if($scope.modal.status == 'loading') $scope.finishModal();
+      }, timeout)
+  }
+
+  $scope.finishModal = function() {
+    if(!$scope.modal) return;
+
+    $scope.modal.close();
+    $scope.modal = null;
+  }
+
+  $scope.completeModal = function() {
+    if(!$scope.modal) return;
+
+    $scope.modal.status = 'complete';
+  }
+
+  $scope.errorModal = function() {
+    if(!$scope.modal) return;
+
+    $scope.modal.status = 'error';
+  }
+
+  $scope.saveData = function(key) {
+    $localstorage.setObject(key, $scope[key]);
+  }
 
   $scope.setPotNumber = function(value){
     $scope.phones.pot = value;
+    $scope.saveData('phones');
   }
 
   $scope.updateNumber = function(id, phone){
-    $scope.sms.request = true;
+    $scope.startModal(5000);
 
-    SMS.sendSMS($scope.phones.pot, COMMANDS.SET_PHONE(id, phone), function(){
-      $scope.sms.request = false;
+    if(window.SMS) SMS.sendSMS($scope.phones.pot, COMMANDS.SET_PHONE(id, phone), function(){
 
       switch(id){
         case 0: $scope.phones.master = phone;break;
@@ -54,9 +91,9 @@ angular.module('starter.controllers', [])
         case 4: $scope.phones.ext4 = phone;break;
       }
 
-    }, function() {
-      $scope.sms.error = true;
-    });
+      $scope.completeModal();
+
+    }, $scope.errorModal);
 
   }
 
@@ -67,13 +104,9 @@ angular.module('starter.controllers', [])
   $scope.initSMS = function() {
 
     if(!$scope.sms.init) {
-      SMS.sendSMS($scope.phones.pot, COMMANDS.RAPORT, function(){
-        $scope.sms.request = true;
-      }, function() {
-        $scope.sms.error = true;
-      });
+      $scope.startModal(30000, "Загрузка данных");
+      SMS.sendSMS($scope.phones.pot, COMMANDS.RAPORT, $scope.finishModal, $scope.errorModal);
     }
-
 
     $interval (function(){
 
@@ -83,19 +116,16 @@ angular.module('starter.controllers', [])
             address : $scope.phones.pot,
         };
 
-        if(SMS) SMS.listSMS(filter, function(data){
+        if(window.SMS) SMS.listSMS(filter, function(data){
             if(Array.isArray(data)) {
                 for(var i in data) {
                     if (data[i].address == $scope.phones.pot)
                     $scope.receiveSMS(data[i]);
                 }
             }
-        }, function(err){
-            updateStatus('error list sms: ' + err);
-        });
+        }, function(err) { $scope.startModal(null, "Не могу прочитать SMS", true) });
 
-    },READ_INTERVAL
-    )
+    }, READ_INTERVAL)
   };
 
   document.addEventListener('deviceready', $scope.initSMS, false);

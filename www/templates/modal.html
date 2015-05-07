@@ -1,0 +1,14 @@
+
+<div class="text-center" ng-if="modal.status=='loading'">
+    <ion-spinner icon="android"></ion-spinner>
+</div>
+
+<div class="text-center assertive" ng-if="modal.status=='error'">
+      <p>Произошла ошибка.</p>
+      <a ng-click="finishModal()" class="button button-block button-stable">OK</a>
+</div>
+
+<div class="text-center balanced" ng-if="modal.status=='complete'">
+      <p>Завершено.</p>
+      <a ng-click="finishModal()" class="button button-block button-stable">OK</a>
+</div>
