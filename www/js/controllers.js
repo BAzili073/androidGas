@@ -1,8 +1,13 @@
 var NUMBER = "+79021201364";
+var TEMP = "";
 var COMMANDS = {
   RAPORT: "р",
-  SET_PHONE: function(id, phone){ return 'нн ' + id + ' ' + phone;}
+  SET_PHONE: function(id, phone){ return 'нн ' + id + ' ' + phone;},
+  SET_NSOPTIONS: function( startS,rGuard,rapCommands,blockOutput,useInput,smsAlarm,autoGuard,errorSms,timeAlarm,timeWaitGuard){
+ return 'нc ' + [startS, rGuard, rapCommands, blockOutput, useInput, smsAlarm,
+     autoGuard, errorSms].map(function(i){return i ? 1 : 0;}).join('') + timeAlarm + timeWaitGuard} 
 }
+
 var READ_INTERVAL = 1000;
 
 angular.module('starter.controllers', ['starter.services'])
@@ -15,11 +20,25 @@ angular.module('starter.controllers', ['starter.services'])
 
   $scope.phones = $localstorage.getObject('phones', {
     pot: NUMBER,
+    balance: "",
     master: "",
     ext1: "",
     ext2: "",
     ext3: "",
     ext4: ""
+  });
+
+  $scope.nsOptions = $localstorage.getObject('nsOptions', {
+       timeAlarm: 3,
+       timeWaitGuard: 0,
+       startS : false,
+       rGuard : false,
+       rapCommands : false,
+       blockOutput : false,
+       useInput : false,
+       smsAlarm : false,
+       autoGuard : false,
+       errorSms : false
   });
 
   $scope.pot = {
@@ -54,7 +73,7 @@ angular.module('starter.controllers', ['starter.services'])
     if(!$scope.modal) return;
 
     $scope.modal.close();
-    $scope.modal = null;
+  //  $scope.modal = null;
   }
 
   $scope.completeModal = function() {
@@ -74,8 +93,16 @@ angular.module('starter.controllers', ['starter.services'])
   }
 
   $scope.setPotNumber = function(value){
+    $scope.startModal(1000);
     $scope.phones.pot = value;
     $scope.saveData('phones');
+    $scope.completeModal();
+  }
+  $scope.setBalanceNumber = function(value){
+    $scope.startModal(1000);
+    $scope.phones.balance = value;
+    $scope.saveData('phones');
+    $scope.completeModal();
   }
 
   $scope.updateNumber = function(id, phone){
@@ -142,6 +169,7 @@ angular.module('starter.controllers', ['starter.services'])
 
 .controller('numbersController', function($scope, $timeout){
     $scope.phonesOptions = [
+      { id: -2, label: 'Баланс'},
       { id: -1, label: 'Прибор'},
       { id: 0,  label: 'Хозяин'},
       { id: 1,  label: 'Дополнительный 1' },
@@ -154,6 +182,7 @@ angular.module('starter.controllers', ['starter.services'])
 
     $scope.resetForm = function() {
        switch($scope.selected.id){
+         case -2: $scope.phoneNumber = $scope.phones.balance;break;
          case -1: $scope.phoneNumber = $scope.phones.pot;break;
          case 0: $scope.phoneNumber = $scope.phones.master;break;
          case 1: $scope.phoneNumber = $scope.phones.ext1;break;
@@ -164,11 +193,78 @@ angular.module('starter.controllers', ['starter.services'])
     }
 
     $scope.setPhone = function(){
-     if ($scope.selected.id < 0 )
-      $scope.setPotNumber($scope.phoneNumber);
-     else
+     if ($scope.selected.id < 0 ){
+      if ($scope.selected.id == -1 ) $scope.setPotNumber($scope.phoneNumber);
+      if ($scope.selected.id == -2 ) $scope.setBalanceNumber($scope.phoneNumber);
+  }else
       $scope.updateNumber($scope.selected.id, $scope.phoneNumber);
     }
 
     $scope.resetForm();
+})
+
+
+.controller('saturnOptionsController', function($scope){
+  $scope.timeAlarmOptions = [
+    { id: 0, label: '0'},
+    { id: 1, label: '20'},
+    { id: 2, label: '40'},
+    { id: 3, label: '60'},
+    { id: 4, label: '80'},
+    { id: 5, label: '100'},
+    { id: 6, label: '120'},
+    { id: 7, label: '140'},
+    { id: 8, label: '160'},
+    { id: 9, label: '180'}
+  ];
+
+  $scope.timeWaitGuardOptions = [
+    { id: 0, label: '0'},
+    { id: 1, label: '35'},
+    { id: 2, label: '70'},
+    { id: 3, label: '105'},
+    { id: 4, label: '140'},
+    { id: 5, label: '175'},
+    { id: 6, label: '210'},
+    { id: 7, label: '245'},
+    { id: 8, label: '280'},
+    { id: 9, label: '315'}
+  ];
+
+  $scope.timeAlarmselected = $scope.timeAlarmOptions[$scope.nsOptions.timeAlarm];
+  $scope.timeWaitGuardselected = $scope.timeAlarmOptions[$scope.nsOptions.timeWaitGuard];
+
+  $scope.nsCheckbox = {
+       startS : $scope.nsOptions.startS,
+       rGuard : $scope.nsOptions.rGuard,
+       rapCommands : $scope.nsOptions.rapCommands,
+       blockOutput : $scope.nsOptions.blockOutput,
+       useInput : $scope.nsOptions.useInput,
+       smsAlarm : $scope.nsOptions.smsAlarm,
+       autoGuard : $scope.nsOptions.autoGuard,
+       errorSms : $scope.nsOptions.errorSms
+     };
+
+     $scope.setNsOptions = function(){
+       $scope.startModal(5000);
+       if(window.SMS) SMS.sendSMS($scope.phones.pot, COMMANDS.SET_NSOPTIONS($scope.nsOptions.startS, $scope.nsOptions.rGuard,$scope.nsOptions.rapCommands,
+         $scope.nsOptions.blockOutput,$scope.nsOptions.useInput,$scope.nsOptions.smsAlarm,$scope.nsOptions.autoGuard,
+         $scope.nsOptions.errorSms,$scope.nsOptions.timeAlarm,$scope.nsOptions.timeWaitGuard), function(){
+
+         $scope.nsOptions.startS = $scope.nsCheckbox.startS;
+         $scope.nsOptions.rGuard = $scope.nsCheckbox.rGuard;
+         $scope.nsOptions.rapCommands = $scope.nsCheckbox.rapCommands;
+         $scope.nsOptions.blockOutput = $scope.nsCheckbox.blockOutput;
+         $scope.nsOptions.useInput = $scope.nsCheckbox.useInput;
+         $scope.nsOptions.smsAlarm = $scope.nsCheckbox.smsAlarm;
+         $scope.nsOptions.autoGuard = $scope.nsCheckbox.autoGuard;
+         $scope.nsOptions.errorSms = $scope.nsCheckbox.errorSms;
+         $scope.nsOptions.timeAlarm = $scope.timeAlarmselected.id;
+         $scope.nsOptions.timeWaitGuard = $scope.timeWaitGuardselected.id;
+         $scope.saveData('nsOptions');
+         $scope.completeModal();
+
+       }, $scope.errorModal);
+
+     }
 })

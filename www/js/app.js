@@ -87,7 +87,8 @@ angular.module('starter', ['ionic', 'starter.controllers'])
     url: "/ns",
     views: {
       'optionContent': {
-        templateUrl: "templates/options/ns.html"
+        templateUrl: "templates/options/ns.html",
+        controller: "saturnOptionsController"
       }
     }
   })
