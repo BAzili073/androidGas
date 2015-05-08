@@ -5,7 +5,7 @@ var COMMANDS = {
   SET_PHONE: function(id, phone){ return 'нн ' + id + ' ' + phone;},
   SET_NSOPTIONS: function( startS,rGuard,rapCommands,blockOutput,useInput,smsAlarm,autoGuard,errorSms,timeAlarm,timeWaitGuard){
  return 'нc ' + [startS, rGuard, rapCommands, blockOutput, useInput, smsAlarm,
-     autoGuard, errorSms].map(function(i){return i ? 1 : 0;}).join('') + timeAlarm + timeWaitGuard} 
+     autoGuard, errorSms].map(function(i){return i ? 1 : 0;}).join('') + timeAlarm + timeWaitGuard}
 }
 
 var READ_INTERVAL = 1000;
@@ -247,9 +247,9 @@ angular.module('starter.controllers', ['starter.services'])
 
      $scope.setNsOptions = function(){
        $scope.startModal(5000);
-       if(window.SMS) SMS.sendSMS($scope.phones.pot, COMMANDS.SET_NSOPTIONS($scope.nsOptions.startS, $scope.nsOptions.rGuard,$scope.nsOptions.rapCommands,
-         $scope.nsOptions.blockOutput,$scope.nsOptions.useInput,$scope.nsOptions.smsAlarm,$scope.nsOptions.autoGuard,
-         $scope.nsOptions.errorSms,$scope.nsOptions.timeAlarm,$scope.nsOptions.timeWaitGuard), function(){
+       if(window.SMS) SMS.sendSMS($scope.phones.pot, COMMANDS.SET_NSOPTIONS($scope.nsCheckbox.startS, $scope.nsCheckbox.rGuard,$scope.nsCheckbox.rapCommands,
+         $scope.nsCheckbox.blockOutput,$scope.nsCheckbox.useInput,$scope.nsCheckbox.smsAlarm,$scope.nsCheckbox.autoGuard,
+         $scope.nsCheckbox.errorSms,$scope.timeAlarmselected.id,$scope.timeWaitGuardselected.id), function(){
 
          $scope.nsOptions.startS = $scope.nsCheckbox.startS;
          $scope.nsOptions.rGuard = $scope.nsCheckbox.rGuard;
