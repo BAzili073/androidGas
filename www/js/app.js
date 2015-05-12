@@ -59,7 +59,8 @@ angular.module('starter', ['ionic', 'starter.controllers'])
     cache: false,
     views: {
       'tabContent': {
-        templateUrl: "templates/tabs/tab-pot1.html"
+        templateUrl: "templates/tabs/tab-pot1.html",
+        controller: "gaspotController"
       }
     }
   })

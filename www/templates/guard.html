@@ -4,61 +4,45 @@
       <ion-toggle>
         Охрана
       </ion-toggle>
-  <a class="item item-icon-right">
+  <div class="item item-icon-right">
     Питание <i class="icon ion-battery-half">
       <span class="badge badge-assertive">Аккумулятор</span>
 
     </i>
-  </a>
+  </div>
 
-  <a class="item item-icon-right">
+  <div class="item item-icon-right">
     Питание <i class="icon ion-ios-bolt">
       <span class="badge item-note">220 В</span>
     </i>
-  </a>
-  <a class="item row">
-    <div class="">
-        <div class="">Входа:</div>
-        <!-- <div class="col"> -->
-              <div class="quadratic_green">5</div>
-              <div class="quadratic_green">4</div>
-              <div class="quadratic_red">3</div>
-              <div class="quadratic_red">2</div>
-              <div class="quadratic_green">1</div>
-      <!-- </div> -->
-    </div>
-  </a>
+  </div>
+  <div class="item" >Входа:
+        <span class = "badge mybadge">
+            <button class="button button-small button-balanced oval" >1</button>
+            <button class="button button-small button-assertive oval">2</button>
+            <button class="button button-small button-balanced oval" >3</button>
+            <button class="button button-small button-balanced oval">4</button>
+            <button class="button button-small button-balanced oval">5</button>
+        </span>
+  </div>
 
-  <a class="item row">
-    <div class="row">
-        <div class="col col-90">Выхода:</div>
-        <div class="col">
-              <div class="quadratic_green">4</div>
-              <div class="quadratic_green">3</div>
-              <div class="quadratic_red">2</div>
-              <div class="quadratic_red">1</div>
-      </div>
-    </div>
-  </a>
-  <a class="item ">
+  <div class="item">Выхода:
+        <span class = "badge mybadge">
+            <button class="button button-small button-balanced oval">1</button>
+            <button class="button button-small button-balanced oval">2</button>
+            <button class="button button-small button-balanced oval">3</button>
+            <button class="button button-small button-balanced oval">4</button>
+        </span>
+  </div>
+
+  <div class="item ">
         <div class="">Термодатчики:</div>
-  <button class="oval positive">
-    +2
-  </button>
-  <button class="oval">
-  +45
-</button>
-<button class="oval">
-  -255
-</button>
-<button class=" oval">
-  +46
-</button>
-<button class="oval">
-  +87
-</button>
-
-  </a>
+        <button class="button button-small button-balanced term">+2</button>
+        <button class="button button-small button-balanced term">+45</button>
+        <button class="button button-small button-assertive term">-255</button>
+        <button class="button button-small button-assertive term">+46</button>
+        <button class="button button-small button-balanced term">+87</button>
+  </div>
 
 </div>
   </ion-content>

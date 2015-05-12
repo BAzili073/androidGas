@@ -1,4 +1,10 @@
 var NUMBER = "+79021201364";
+var POTSTATES=[
+  {text : "Ожидание ответа", color: "calm"},
+  {text: "Запущен", color:"balanced"},
+  {text : "Остановлен", color: "assertive"},
+  {text: "Ошибка" , color: "assertive"}
+]
 var TEMP = "";
 var COMMANDS = {
   RAPORT: "р",
@@ -10,6 +16,8 @@ var COMMANDS = {
 
 var READ_INTERVAL = 1000;
 
+var DATA_VERSION = "0.0.1"
+
 angular.module('starter.controllers', ['starter.services'])
 
 .controller('AppCtrl', function($scope, $interval, $localstorage, $ionicModal, $timeout, $ionicPopup) {
@@ -17,6 +25,8 @@ angular.module('starter.controllers', ['starter.services'])
   $scope.sms = {
     init: true
   };
+
+  $localstorage.checkVersion(DATA_VERSION);
 
   $scope.phones = $localstorage.getObject('phones', {
     pot: NUMBER,
@@ -39,6 +49,12 @@ angular.module('starter.controllers', ['starter.services'])
        smsAlarm : false,
        autoGuard : false,
        errorSms : false
+  });
+
+  $scope.potContent = $localstorage.getObject('potContent', {
+      statToggle: [false,true,false],
+      torchToggle: [true,true,true],
+      potState: [1,0,1]
   });
 
   $scope.pot = {
@@ -165,6 +181,34 @@ angular.module('starter.controllers', ['starter.services'])
       return $state.params.potId;
     }
 
+})
+
+.controller('gaspotController', function($scope, $state) {
+
+   $scope.statToggle = {
+     checked: $scope.potContent.statToggle[$state.params.potId-1]
+   }
+   $scope.torchToggle = {
+     checked: $scope.potContent.torchToggle[$state.params.potId-1]
+   }
+    $scope.statToggleChange = function(){
+      $scope.potContent.statToggle[$state.params.potId-1] = $scope.statToggle.checked;
+      $scope.saveData('potContent');
+      $scope.potContent.potState[$state.params.potId-1] = 0
+
+    }
+    $scope.torchToggleChange = function(){
+      $scope.potContent.torchToggle[$state.params.potId-1] = $scope.torchToggle.checked;
+      $scope.saveData('potContent');
+    }
+
+    $scope.getPotState = function(){
+      return POTSTATES[$scope.potContent.potState[$state.params.potId-1]].text;
+    }
+
+    $scope.getPotColor = function(){
+      return POTSTATES[$scope.potContent.potState[$state.params.potId-1]].color;
+      }
 })
 
 .controller('numbersController', function($scope, $timeout){

@@ -8,7 +8,6 @@
     border-radius: 100px;
    /*background-color: #228B22;*/
    text-align:center;
-    float:right;
 }
 .quadratic_red {
 
@@ -22,11 +21,15 @@
    float: right ;
 }
 .oval {
-    -moz-border-radius: 30px;
-    -webkit-border-radius: 30px;
-    border-radius: 100px;
-
+    margin-right: 5px;
+    -webkit-border-radius: 50px;
+    font-size: 24pt;
 }
-.green {
-    
+
+.mybadge {
+  margin-top: -8px;
+}
+
+.term {
+  font-size: 20pt;
 }

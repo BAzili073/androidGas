@@ -1,8 +1,29 @@
 
 <ion-view view-title="Котел {{potId()}}">
   <ion-content has-header="true">
-      {{lastSMS}}
-      <br/>
-      pot - {{potId()}}
+    <a class="item item-icon-right">
+      Котел <i>
+        <span class="badge badge-{{getPotColor()}}">{{getPotState()}}</span>
+      </i>
+    </a>
+    <ion-toggle ng-model="statToggle.checked" ng-change="statToggleChange()">
+   Состояние котла:
+ </ion-toggle>
+ <ion-toggle ng-model="torchToggle.checked" toggle-class="toggle-energized" ng-change="torchToggleChange()">
+Горелка:
+</ion-toggle>
+          <div class="item range">
+            <i class="icon ion-volume-low"></i>
+            <input type="range" name="volume">
+            <i class="icon ion-volume-high"></i>
+          </div>
+
+          <div class="list">
+            <div class="item range range-positive">
+              <i class="icon ion-ios-sunny-outline"></i>
+              <input type="range" name="volume" min="0" max="100" value="33">
+              <i class="icon ion-ios-sunny"></i>
+            </div>
+          </div>
   </ion-content>
 </ion-view>
