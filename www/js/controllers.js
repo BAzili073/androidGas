@@ -1,8 +1,9 @@
 var NUMBER = "+79021201364";
-var POTSTATES=[
+
+var GUARD_STATES=[
   {text : "Ожидание ответа", color: "calm"},
-  {text: "Запущен", color:"balanced"},
-  {text : "Остановлен", color: "assertive"},
+  {text: "На охране", color:"balanced"},
+  {text : "Снят с охраны", color: "stable"},
   {text: "Ошибка" , color: "assertive"}
 ]
 var TEMP = "";
@@ -14,11 +15,15 @@ var COMMANDS = {
      autoGuard, errorSms].map(function(i){return i ? 1 : 0;}).join('') + timeAlarm + timeWaitGuard}
 }
 
+var SMS_REGEX = {
+    REPORT_GUARD: /вх:([+,-]*) вых:([0,1]*) (сеть 220В|акк!)/
+}
+
 var READ_INTERVAL = 1000;
 
-var DATA_VERSION = "0.0.1"
+var DATA_VERSION = "0.0.3";
 
-angular.module('starter.controllers', ['starter.services'])
+angular.module('starter.controllers', ['starter.services', 'starter.constants'])
 
 .controller('AppCtrl', function($scope, $interval, $localstorage, $ionicModal, $timeout, $ionicPopup) {
 
@@ -52,22 +57,29 @@ angular.module('starter.controllers', ['starter.services'])
   });
 
   $scope.potContent = $localstorage.getObject('potContent', {
-      statToggle: [false,true,false],
+      statToggle: [false,false,false],
       torchToggle: [true,true,true],
-      potState: [1,0,1]
+      potState: [2,2,2],
+      inputs: [true,true,true,true,true,true,true,true],
+      outputs: [true,true],
   });
 
-  $scope.pot = {
-    on: false,
-    inputs: [0,0,0,0,0,0,0,0],
-    outputs: [0,0],
+  $scope.guardContent = $localstorage.getObject('guardContent', {
+      stateGuard: true,//true = on false = off
+      statusGuard: 1, //0 - off, 1 - on, 2> - alarm
+      power: true, //220
+      inputs: [true, true, true, true, true], // true - ok, false - alarm
+      outputs: [true, true, true, true],// true - on, false - off
+      guardState: 0
+  });
 
-    pot1: 8,
-    pot2: 8,
-    pot3: 8
-  };
 
   $scope.lastSMS = '';
+
+  $scope.setColors = function(data){
+    if (data == true) return "balanced";
+     else return "assertive";
+  }
 
   $scope.startModal = function(timeout, label, error) {
 
@@ -140,8 +152,22 @@ angular.module('starter.controllers', ['starter.services'])
 
   }
 
+  $scope.reportGuard = function(body) {
+    var data = body.exec(SMS_REGEX.REPORT_GUARD);
+    $scope.guardContent.inputs = data[1].split("").map(function(i){ return i === "-" });
+    $scope.guardContent.outputs = data[2].split("").map(function(i){ return i === "1" });
+    $scope.guardContent.power = data[3].indexOf("220") >= 0;
+  }
+
   $scope.receiveSMS = function(sms){
       $scope.lastSMS = JSON.stringify(sms);
+
+      var body = sms.body;
+
+      switch(true){
+        case SMS_REGEX.REPORT_GUARD.test(body): $scope.reportGuard(body);break;
+        default: console.warn("Undefined sms received: ", body);
+      }
   }
 
   $scope.initSMS = function() {
@@ -175,40 +201,26 @@ angular.module('starter.controllers', ['starter.services'])
 
 })
 
-.controller('gasController', function($scope, $state) {
+.controller('gaspotsController', function($scope, POT_STATES) {
 
-    $scope.potId = function() {
-      return $state.params.potId;
+  $scope.getPotState = function(id){
+    return POT_STATES[$scope.potContent.potState[id]];
+  }
+
+  $scope.getPotStateText = function(id){
+    return $scope.getPotState(id).text;
+  }
+
+  $scope.getPotColor = function(id){
+    return $scope.getPotState(id).color;
     }
 
-})
-
-.controller('gaspotController', function($scope, $state) {
-
-   $scope.statToggle = {
-     checked: $scope.potContent.statToggle[$state.params.potId-1]
-   }
-   $scope.torchToggle = {
-     checked: $scope.potContent.torchToggle[$state.params.potId-1]
-   }
-    $scope.statToggleChange = function(){
-      $scope.potContent.statToggle[$state.params.potId-1] = $scope.statToggle.checked;
-      $scope.saveData('potContent');
-      $scope.potContent.potState[$state.params.potId-1] = 0
-
+    $scope.getInputColor = function(number){
+      return $scope.setColors($scope.potContent.inputs[number])
     }
-    $scope.torchToggleChange = function(){
-      $scope.potContent.torchToggle[$state.params.potId-1] = $scope.torchToggle.checked;
-      $scope.saveData('potContent');
+    $scope.getOutputColor = function(number){
+       return $scope.setColors($scope.potContent.outputs[number])
     }
-
-    $scope.getPotState = function(){
-      return POTSTATES[$scope.potContent.potState[$state.params.potId-1]].text;
-    }
-
-    $scope.getPotColor = function(){
-      return POTSTATES[$scope.potContent.potState[$state.params.potId-1]].color;
-      }
 })
 
 .controller('numbersController', function($scope, $timeout){

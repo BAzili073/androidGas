@@ -3,7 +3,7 @@
   <ion-content has-header="true">
     <a class="item item-icon-right">
       Котел <i>
-        <span class="badge badge-{{getPotColor()}}">{{getPotState()}}</span>
+        <span class="badge badge-{{getPotColor()}}">{{getPotStateText()}}</span>
       </i>
     </a>
     <ion-toggle ng-model="statToggle.checked" ng-change="statToggleChange()">

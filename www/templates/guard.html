@@ -1,37 +1,41 @@
 <ion-view view-title="Охрана">
   <ion-content>
-    <div class="list">
-      <ion-toggle>
-        Охрана
-      </ion-toggle>
-  <div class="item item-icon-right">
+    <a class="item item-icon-right">
+      Котел <i>
+        <span class="badge badge-{{getGuardColor()}}">{{getGuardStateText()}}</span>
+      </i>
+    </a>
+    <ion-toggle ng-model="statToggle.checked" ng-change="statToggleChange()">
+   Состояние котла:
+ </ion-toggle>
+  <div class="item item-icon-right" ng-if="getGuardPower() == false">
     Питание <i class="icon ion-battery-half">
       <span class="badge badge-assertive">Аккумулятор</span>
 
     </i>
   </div>
 
-  <div class="item item-icon-right">
+  <div class="item item-icon-right" ng-if="getGuardPower() == true">
     Питание <i class="icon ion-ios-bolt">
       <span class="badge item-note">220 В</span>
     </i>
   </div>
-  <div class="item" >Входа:
+  <div class="item" >Входы:
         <span class = "badge mybadge">
-            <button class="button button-small button-balanced oval" >1</button>
-            <button class="button button-small button-assertive oval">2</button>
-            <button class="button button-small button-balanced oval" >3</button>
-            <button class="button button-small button-balanced oval">4</button>
-            <button class="button button-small button-balanced oval">5</button>
+            <button class="button button-small button-{{getInputColor(0)}} oval" >1</button>
+            <button class="button button-small button-{{getInputColor(1)}} oval">2</button>
+            <button class="button button-small button-{{getInputColor(2)}} oval" >3</button>
+            <button class="button button-small button-{{getInputColor(3)}} oval">4</button>
+            <button class="button button-small button-{{getInputColor(4)}} oval">5</button>
         </span>
   </div>
 
-  <div class="item">Выхода:
+  <div class="item">Выходы:
         <span class = "badge mybadge">
-            <button class="button button-small button-balanced oval">1</button>
-            <button class="button button-small button-balanced oval">2</button>
-            <button class="button button-small button-balanced oval">3</button>
-            <button class="button button-small button-balanced oval">4</button>
+            <button class="button button-small button-{{getOutputColor(0)}} oval">1</button>
+            <button class="button button-small button-{{getOutputColor(1)}} oval">2</button>
+            <button class="button button-small button-{{getOutputColor(2)}} oval">3</button>
+            <button class="button button-small button-{{getOutputColor(3)}} oval">4</button>
         </span>
   </div>
 

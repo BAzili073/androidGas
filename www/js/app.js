@@ -26,7 +26,8 @@ angular.module('starter', ['ionic', 'starter.controllers'])
     url: "/guard",
     views: {
       'menuContent': {
-        templateUrl: "templates/guard.html"
+        templateUrl: "templates/guard.html",
+        controller: 'guardController'
       }
 
     }
@@ -38,18 +39,7 @@ angular.module('starter', ['ionic', 'starter.controllers'])
     abstract: true,
     views: {
       'menuContent': {
-        templateUrl: "templates/gas.html",
-        controller: "gasController"
-      }
-    }
-  })
-
-  .state('app.gas.pots', {
-    url: "/pots",
-    views: {
-      'tabContent': {
-        templateUrl: "templates/tabs/tab-pot.html"
-        // controller: 'MainController'
+        templateUrl: "templates/gas.html"
       }
     }
   })
@@ -64,6 +54,18 @@ angular.module('starter', ['ionic', 'starter.controllers'])
       }
     }
   })
+
+  .state('app.gas.pots', {
+    url: "/pots",
+    views: {
+      'tabContent': {
+        templateUrl: "templates/tabs/tab-pot.html",
+        controller: 'gaspotsController'
+      }
+    }
+  })
+
+
 
   .state('app.option', {
     url: "/option",
