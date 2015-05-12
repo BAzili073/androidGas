@@ -191,6 +191,11 @@ angular.module('starter.controllers')
   $scope.outInputselected = $scope.outInput[$scope.vsOptions.outInput[$scope.numberInputselected.id]];
 
   $scope.setVsOptions = function(){
+    $scope.startModal(5000);
+
+    if(window.SMS) SMS.sendSMS($scope.phones.pot, COMMANDS.SET_VSOPTION($scope.numberInputselected.id,$scope.minVoltageselected.id,
+      $scope.maxVoltageselected.id,$scope.minTimeselected.id,$scope.inactiveTimeselected.id,$scope.waitTimeselected.id,
+      $scope.modeInputselected.id,$scope.outInputselected.id), function(){
       $scope.vsOptions.minVoltage[$scope.numberInputselected.id] = $scope.minVoltageselected.id-1;
       $scope.vsOptions.maxVoltage[$scope.numberInputselected.id] = $scope.maxVoltageselected.id-1;
       $scope.vsOptions.minTime[$scope.numberInputselected.id] = $scope.minTimeselected.id-1;
@@ -199,6 +204,10 @@ angular.module('starter.controllers')
       $scope.vsOptions.modeInput[$scope.numberInputselected.id] = $scope.modeInputselected.id;
       $scope.vsOptions.outInput[$scope.numberInputselected.id] = $scope.outInputselected.id;
       $scope.saveData('vsOptions');
+      $scope.completeModal();
+
+    }, $scope.errorModal);
+
   }
     $scope.resetForm = function() {
       $scope.minVoltageselected = $scope.minVoltage[$scope.vsOptions.minVoltage[$scope.numberInputselected.id]];
@@ -227,13 +236,14 @@ angular.module('starter.controllers')
 
   $scope.setNrOptions = function(){
     $scope.startModal(5000);
-    if(window.SMS) SMS.sendSMS($scope.phones.pot, COMMANDS.SET_NROPTION($scope.nrOptions.modeOutput[0],$scope.nrOptions.modeOutput[1],
-      $scope.nrOptions.modeOutput[2],$scope.nrOptions.modeOutput[3]), function(){
+    if(window.SMS) SMS.sendSMS($scope.phones.pot, COMMANDS.SET_NROPTION($scope.output1Selected.id,$scope.output2Selected.id,
+      $scope.output3Selected.id,$scope.output4Selected.id), function(){
           $scope.nrOptions.modeOutput[0] = $scope.output1Selected.id;
           $scope.nrOptions.modeOutput[1] = $scope.output2Selected.id;
           $scope.nrOptions.modeOutput[2] = $scope.output3Selected.id;
           $scope.nrOptions.modeOutput[3] = $scope.output4Selected.id;
           $scope.saveData('nrOptions');
+          $scope.completeModal();
            }, $scope.errorModal);
   }
 })
@@ -269,9 +279,11 @@ angular.module('starter.controllers')
   }
 
   $scope.setText = function(){
-   if ($scope.selected.id < 10 )
+   if ($scope.selected.id < 10 ){
+
      $scope.updateText($scope.selected.id-1,$scope.textInput);
-   else
+
+   }else
      $scope.updateText($scope.selected.id-6,$scope.textInput);
   }
   $scope.resetForm();

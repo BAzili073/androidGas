@@ -14,6 +14,14 @@ var COMMANDS = {
  return 'нc ' + [startS, rGuard, rapCommands, blockOutput, useInput, smsAlarm,
      autoGuard, errorSms].map(function(i){return i ? 1 : 0;}).join('') + timeAlarm + timeWaitGuard},
   SET_NROPTION: function(mode1,mode2,mode3,mode4){ return 'нр ' + mode1 + mode2 + mode3 + mode4;},
+  SET_VSOPTION: function(number,minV,maxV,minT,inactiveT,waitT,mode,output){ return 'вс' + number + ' ' + minV + maxV + minT + inactiveT +
+   waitT + mode + output;},
+  SET_TEXT: function(id,text){
+      if (id < 6)
+        {return 'сс' + id + ' ' + text;}
+      else
+        {return 'см' + (id-5) + ' ' + text;}
+      },
 }
 
 var SMS_REGEX = {
@@ -173,10 +181,12 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants'])
   }
 
   $scope.updateText = function(id,text){
-    $scope.startModal(1000);
-    $scope.ssOptions.text[id] = text;
-    $scope.saveData('ssOptions');
-    $scope.completeModal();
+    $scope.startModal(5000);
+    if(window.SMS) SMS.sendSMS($scope.phones.pot, COMMANDS.SET_TEXT(id, text), function(){
+          $scope.ssOptions.text[id] = text;
+          $scope.saveData('ssOptions');
+          $scope.completeModal();
+    }, $scope.errorModal);
   }
 
   $scope.reportGuard = function(body) {
