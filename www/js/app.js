@@ -100,7 +100,8 @@ angular.module('starter', ['ionic', 'starter.controllers'])
     url: "/ss",
     views: {
       'optionContent': {
-        templateUrl: "templates/options/ss.html"
+        templateUrl: "templates/options/ss.html",
+        controller: "messagesController"
       }
     }
   })

@@ -226,10 +226,53 @@ angular.module('starter.controllers')
   $scope.output4Selected = $scope.modeOutput[$scope.nrOptions.modeOutput[3]];
 
   $scope.setNrOptions = function(){
-    $scope.nrOptions.modeOutput[0] = $scope.output1Selected.id;
-    $scope.nrOptions.modeOutput[1] = $scope.output2Selected.id;
-    $scope.nrOptions.modeOutput[2] = $scope.output3Selected.id;
-    $scope.nrOptions.modeOutput[3] = $scope.output4Selected.id;
-    $scope.saveData('nrOptions');
+    $scope.startModal(5000);
+    if(window.SMS) SMS.sendSMS($scope.phones.pot, COMMANDS.SET_NROPTION($scope.nrOptions.modeOutput[0],$scope.nrOptions.modeOutput[1],
+      $scope.nrOptions.modeOutput[2],$scope.nrOptions.modeOutput[3]), function(){
+          $scope.nrOptions.modeOutput[0] = $scope.output1Selected.id;
+          $scope.nrOptions.modeOutput[1] = $scope.output2Selected.id;
+          $scope.nrOptions.modeOutput[2] = $scope.output3Selected.id;
+          $scope.nrOptions.modeOutput[3] = $scope.output4Selected.id;
+          $scope.saveData('nrOptions');
+           }, $scope.errorModal);
   }
+})
+
+.controller('messagesController', function($scope){
+  $scope.textInputsOptions = [
+    { id: 1, label: 'Сатурн 1'},
+    { id: 2, label: 'Сатурн 2'},
+    { id: 3,  label: 'Сатурн 3'},
+    { id: 4,  label: 'Сатурн 4' },
+    { id: 5,  label: 'Сатурн 5' },
+    { id: 11,  label: 'Модуль 1' },
+    { id: 12,  label: 'Модуль 2' },
+    { id: 13,  label: 'Модуль 3' },
+    { id: 14,  label: 'Модуль 4' },
+    { id: 15,  label: 'Модуль 5' },
+    { id: 16,  label: 'Модуль 6' },
+    { id: 17,  label: 'Модуль 7' },
+    { id: 18,  label: 'Модуль 8' },
+  ];
+
+  $scope.selected = $scope.textInputsOptions[0];
+
+  $scope.getTextLong = function() {
+      if ($scope.selected.id > 10) return 40
+      else return 15
+  }
+  $scope.resetForm = function() {
+     if ($scope.selected.id < 10){
+       $scope.textInput = $scope.ssOptions.text[$scope.selected.id-1];
+     }else
+     $scope.textInput = $scope.ssOptions.text[$scope.selected.id-6];
+  }
+
+  $scope.setText = function(){
+   if ($scope.selected.id < 10 )
+     $scope.updateText($scope.selected.id-1,$scope.textInput);
+   else
+     $scope.updateText($scope.selected.id-6,$scope.textInput);
+  }
+  $scope.resetForm();
 })

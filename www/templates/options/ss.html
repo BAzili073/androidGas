@@ -1,28 +1,23 @@
 
       <ion-view title="Настройка текста сообщений">
         <ion-content has-header="true">
-          <form  method="post" name="options_sms"> 
+          <form  method="post" name="options_number">
             <div class="list">
               <label class="item item-input item-select">
                 <div class="input-label">
-                  Вход номер:
+                  Текст входа:
                 </div>
-                <select>
-                  <option selected>1</option>
-                  <option>2</option>
-                  <option>3</option>
-                  <option>4</option>
-                  <option>5</option>
-                </select>
+                <select ng-change="resetForm()" ng-model="$parent.selected" ng-options="text.label for text in textInputsOptions track by text.id"></select>
               </label>
 
               <label class="item item-input">
-                <input type="text" placeholder="Ваш текст не более 15 символов">
+                <input type="text" ng-model="$parent.textInput" placeholder="Ваш текст не более {{getTextLong()}} символов">
               </label>
             </div>
-       </form>
+          </form>
+
           <div class="button-bar">
-            <a class="button">Задать настройку</a>
+            <a class="button" ng-click="setText()" > Задать настройку </a>
           </div>
         </ion-content>
       </ion-view>

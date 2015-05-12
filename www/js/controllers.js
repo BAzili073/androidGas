@@ -12,7 +12,8 @@ var COMMANDS = {
   SET_PHONE: function(id, phone){ return 'нн ' + id + ' ' + phone;},
   SET_NSOPTIONS: function( startS,rGuard,rapCommands,blockOutput,useInput,smsAlarm,autoGuard,errorSms,timeAlarm,timeWaitGuard){
  return 'нc ' + [startS, rGuard, rapCommands, blockOutput, useInput, smsAlarm,
-     autoGuard, errorSms].map(function(i){return i ? 1 : 0;}).join('') + timeAlarm + timeWaitGuard}
+     autoGuard, errorSms].map(function(i){return i ? 1 : 0;}).join('') + timeAlarm + timeWaitGuard},
+  SET_NROPTION: function(mode1,mode2,mode3,mode4){ return 'нр ' + mode1 + mode2 + mode3 + mode4;},
 }
 
 var SMS_REGEX = {
@@ -42,6 +43,11 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants'])
     ext3: "",
     ext4: ""
   });
+
+  $scope.ssOptions = $localstorage.getObject('ssOptions', {
+  text: ["вход 1","вход 2","вход 3","вход 4","вход 5","доп.вход 1","доп.вход 2","доп.вход 3","доп.вход 4","доп.вход 5","доп.вход 6","доп.вход 7","доп.вход 8"],
+
+});
 
   $scope.nsOptions = $localstorage.getObject('nsOptions', {
        timeAlarm: 3,
@@ -164,6 +170,13 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants'])
 
     }, $scope.errorModal);
 
+  }
+
+  $scope.updateText = function(id,text){
+    $scope.startModal(1000);
+    $scope.ssOptions.text[id] = text;
+    $scope.saveData('ssOptions');
+    $scope.completeModal();
   }
 
   $scope.reportGuard = function(body) {
