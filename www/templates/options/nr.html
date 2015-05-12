@@ -1,61 +1,37 @@
 
       <ion-view title="Настройка выходов сатурна">
         <ion-content has-header="true">
-         <ion-item>
           <form  method="post" name="regim_outputs">
             <div class="list">
               <label class="item item-input item-select">
-                <div class="input-label">
-                    Режим работы 1-го выхода:
-                  </div>
-                    <select name="r_output_1" size="1">
-                    <option selected="selected" value="0">Ручное управление</option>
-                    <option value="1">"Сирена"</option>
-                    <option value="2">"Маяк"</option>
-                    <option value="3">Автоматика</option>
-                  </select>
-                </label>
-
-                <label class="item item-input item-select">
                   <div class="input-label">
-                   Режим работы 2-го выхода:
-                 </div>
-                   <select name="r_output_2" size="1">
-                   <option selected="selected" value="0">Ручное управление</option>
-                   <option value="1">"Сирена"</option>
-                   <option value="2">"Маяк"</option>
-                   <option value="3">Автоматика</option>
-                 </select>
-               </label>
-
-                 <label class="item item-input item-select">
-                   <div class="input-label">
-                  Режим работы 3-го выхода:
-                </div>
-                  <select name="r_output_3" size="1">
-                  <option selected="selected" value="0">Ручное управление</option>
-                  <option value="1">"Сирена"</option>
-                  <option value="2">"Маяк"</option>
-                  <option value="3">Автоматика</option>
-                </select>
+                    Привезать выход
+                  </div>
+                  <select  ng-model="$parent.output1Selected" ng-options="mode.label for mode in modeOutput track by mode.id"></select>
               </label>
-
               <label class="item item-input item-select">
-                <div class="input-label">
-                 Режим работы 4-го выхода:
-               </div>
-                 <select name="r_output_4" size="1">
-                 <option selected="selected" value="0">Ручное управление</option>
-                 <option value="1">"Сирена"</option>
-                 <option value="2">"Маяк"</option>
-                 <option value="3">Автоматика</option>
-               </select>
-             </label>
-           </div>
+                  <div class="input-label">
+                    Привезать выход
+                  </div>
+                  <select  ng-model="$parent.output2Selected" ng-options="mode.label for mode in modeOutput track by mode.id"></select>
+              </label>
+              <label class="item item-input item-select">
+                  <div class="input-label">
+                    Привезать выход
+                  </div>
+                  <select  ng-model="$parent.output3Selected" ng-options="mode.label for mode in modeOutput track by mode.id"></select>
+              </label>
+              <label class="item item-input item-select">
+                  <div class="input-label">
+                    Привезать выход
+                  </div>
+                  <select  ng-model="$parent.output4Selected" ng-options="mode.label for mode in modeOutput track by mode.id"></select>
+              </label>
+            </div>
                </form>
 
-          <div class="button-bar">
-            <a class="button">Задать настройку</a>
-          </div>
+           <div class="button-bar">
+             <a class="button" ng-click="setNrOptions()">Задать настройку</a>
+           </div>
         </ion-content>
       </ion-view>

@@ -3,136 +3,60 @@
         <ion-content has-header="true">
 
            <form  method="post" name="options_input">
-             <label class="item item-input item-select">
-               <div class="input-label">
-                 Вход номер:
-               </div>
-             <select name="input" size="1">
-               <option selected="selected" value="1">1</option>
-               <option value="2">2</option>
-               <option value="3">3</option>
-               <option value="4">4</option>
-               <option value="5">5</option>
-            </select>
-          </label>
-
-
-          <label class="item item-input item-select">
-            <div class="input-label">
-            Минимальное напряжение  [Вольт]
-            </div>
-              <select name="min_v" size="1">
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option selected="selected" value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-                <option value="6">6</option>
-                <option value="7">7</option>
-                <option value="8">8</option>
-                <option value="9">9</option>
-             </select>
-           </label>
-
-           <label class="item item-input item-select">
-             <div class="input-label">
-               Максимальное напряжение  [Вольт]
-             </div>
-                <select name="max_v" size="1">
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                  <option value="6">6</option>
-                  <option value="7">7</option>
-                  <option selected="selected" value="8">8</option>
-                  <option value="9">9</option>
-               </select>
-             </label>
-
-
-             <label class="item item-input item-select">
-               <div class="input-label">
-                 Минимальное длительность импульса  [Секунд]
-               </div>
-                  <select name="min_t" size="1">
-                    <option selected="selected" value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                    <option value="9">9</option>
-                 </select>
-               </label>
-
-               <label class="item item-input item-select">
-                 <div class="input-label">
-                   Неактивность входа [Секунд]
-                 </div>
-                    <select name="input_n" size="1">
-                      <option value="0">0</option>
-                      <option selected="selected" value="1">10</option>
-                      <option value="2">20</option>
-                      <option value="3">30</option>
-                      <option value="4">40</option>
-                      <option value="5">50</option>
-                      <option value="6">60</option>
-                      <option value="7">70</option>
-                      <option value="8">80</option>
-                      <option value="9">90</option>
-                   </select>
-                 </label>
-
-                 <label class="item item-input item-select">
-                   <div class="input-label">
-                     Пауза до включения тревог [Секунд]
-                   </div>
-                      <select name="input_w" size="1">
-                        <option selected="selected" value="0">0</option>
-                        <option value="1">15</option>
-                        <option value="2">30</option>
-                        <option value="3">45</option>
-                        <option value="4">60</option>
-                        <option value="5">75</option>
-                        <option value="6">90</option>
-                        <option value="7">105</option>
-                        <option value="8">120</option>
-                        <option value="9">135</option>
-                     </select>
-                   </label>
-
-                   <label class="item item-input item-select">
-                     <div class="input-label">
-                       Режим работы входа
-                     </div>
-                        <select name="input_r" size="1">
-                          <option selected="selected" value="0">Контроль только на охране</option>
-                          <option value="1">Постоянный контроль</option>
-                          <option value="2">Контроль на охране, инверсный вход</option>
-                          <option value="3">Постоянный контроль, инверсный вход</option>
-                          <option value="4">"Тихая тревога"</option>
-                       </select>
+               <div class="list">
+                    <label class="item item-input item-select">
+                       <div class="input-label">
+                         Вход номер:
+                         </div>
+                         <select ng-change="resetForm()" ng-model="$parent.numberInputselected" ng-options="number.label for number in numberInput track by number.id"></select>
                      </label>
 
                      <label class="item item-input item-select">
+                         <div class="input-label">
+                           Минимальное напряжение,В
+                         </div>
+                         <select  ng-model="$parent.minVoltageselected" ng-options="minV.label for minV in minVoltage track by minV.id"></select>
+                    </label>
+                    <label class="item item-input item-select">
+                         <div class="input-label">
+                           Максимальное напряжение,В
+                         </div>
+                         <select  ng-model="$parent.maxVoltageselected" ng-options="maxV.label for maxV in maxVoltage track by maxV.id"></select>
+                     </label>
+                    <label class="item item-input item-select">
+                         <div class="input-label">
+                           Мин.импульс,с
+                         </div>
+                         <select  ng-model="$parent.minTimeselected" ng-options="minT.label for minT in minTime track by minT .id"></select>
+                    </label>
+                    <label class="item item-input item-select">
                        <div class="input-label">
-                         Привезать выход №:
+                         Неактивность после сработки,с
                        </div>
-                          <select name="input_output" size="1">
-                            <option selected="selected" value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                         </select>
-                       </label>
-
+                       <select  ng-model="$parent.inactiveTimeselected" ng-options="inactive.label for inactive in inactiveTime track by inactive.id"></select>
+                    </label>
+                    <label class="item item-input item-select">
+                        <div class="input-label">
+                          Пауза до тревоги,с
+                        </div>
+                        <select  ng-model="$parent.waitTimeselected" ng-options="wait.label for wait in waitTime track by wait.id"></select>
+                    </label>
+                    <label class="item item-input item-select">
+                         <div class="input-label">
+                           Режим работы
+                         </div>
+                         <select  ng-model="$parent.modeInputselected" ng-options="mode.label for mode in modeInput track by mode.id"></select>
+                    </label>
+                    <label class="item item-input item-select">
+                        <div class="input-label">
+                          Привезать выход
+                        </div>
+                        <select  ng-model="$parent.outInputselected" ng-options="out.label for out in outInput track by out.id"></select>
+                    </label>
+              </div>
            </form>
            <div class="button-bar">
-             <a class="button">Задать настройку</a>
+             <a class="button" ng-click="setVsOptions()">Задать настройку</a>
            </div>
         </ion-content>
       </ion-view>
