@@ -1,37 +1,37 @@
 
-      <ion-view title="Выходы">
+      <ion-view title="Доступ">
         <ion-content has-header="true">
           <form  method="post" name="regim_outputs">
             <div class="list">
               <label class="item item-input item-select">
                   <div class="input-label">
-                    Выход 1
+                    Номер 1
                   </div>
-                  <select  ng-model="$parent.output1Selected" ng-options="mode.label for mode in modeOutput track by mode.id"></select>
+                  <select  ng-model="$parent.access1Selected" ng-options="access.label for access in numberAccess track by access.id"></select>
               </label>
               <label class="item item-input item-select">
                   <div class="input-label">
-                    Выход 2
+                    Номер 2
                   </div>
-                  <select  ng-model="$parent.output2Selected" ng-options="mode.label for mode in modeOutput track by mode.id"></select>
+                  <select  ng-model="$parent.access2Selected" ng-options="access.label for access in numberAccess track by access.id"></select>
               </label>
               <label class="item item-input item-select">
                   <div class="input-label">
-                    Выход 3
+                    Номер 3
                   </div>
-                  <select  ng-model="$parent.output3Selected" ng-options="mode.label for mode in modeOutput track by mode.id"></select>
+                  <select  ng-model="$parent.access3Selected" ng-options="access.label for access in numberAccess track by access.id"></select>
               </label>
               <label class="item item-input item-select">
                   <div class="input-label">
-                    Выход 4
+                    Номер 4
                   </div>
-                  <select  ng-model="$parent.output4Selected" ng-options="mode.label for mode in modeOutput track by mode.id"></select>
+                  <select  ng-model="$parent.access4Selected" ng-options="access.label for access in numberAccess track by access.id"></select>
               </label>
             </div>
                </form>
 
            <div class="button-bar">
-             <a class="button" ng-click="setNrOptions()">Задать настройку</a>
+             <a class="button" ng-click="setNdOptions()">Задать настройку</a>
            </div>
         </ion-content>
       </ion-view>

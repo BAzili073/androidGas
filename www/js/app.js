@@ -135,6 +135,35 @@ angular.module('starter', ['ionic', 'starter.controllers'])
       }
     }
   })
+  .state('app.option.nt', {
+    url: "/nt",
+    views: {
+      'optionContent': {
+        templateUrl: "templates/options/nt.html",
+       controller: "termoController"
+      }
+    }
+  })
+
+  .state('app.option.nd', {
+    url: "/nd",
+    views: {
+      'optionContent': {
+        templateUrl: "templates/options/nd.html",
+       controller: "accessController"
+      }
+    }
+  })
+
+  .state('app.option.dop', {
+    url: "/dop",
+    views: {
+      'optionContent': {
+        templateUrl: "templates/options/dop.html",
+      //  controller: "inputsController"
+      }
+    }
+  })
 
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/app/guard');

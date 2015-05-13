@@ -1,0 +1,35 @@
+<ion-view title="Термодатчики">
+  <ion-content has-header="true">
+    <form  method="post" name="options_number">
+      <div class="list">
+        <label class="item item-input item-select">
+          <div class="input-label">
+            Датчик
+          </div>
+          <select ng-change="resetForm()" ng-model="$parent.numberSelected" ng-options="num.label for num in termNumberOptions track by num.id"></select>
+        </label>
+        <label class="item item-input item-select">
+          <div class="input-label">
+            Настроить
+          </div>
+          <select ng-change="resetForm2()" ng-model="$parent.selected" ng-options="term.label for term in termoOptions track by term.id"></select>
+        </label>
+        <label class="item item-input">
+          <input type="text" ng-model="$parent.comments" placeholder="Ваш комментарий">
+        </label>
+      </div>
+    </form>
+      <div class="item">
+        <button class="button button-clear button-large button-dark icon ion-chevron-left" ng-click="minusMinTemp()"></button>
+        <button ng-click = "clickMin()" class="button mysize">{{getMinTemp()}}</button>
+        <button class="button button-clear button-large button-dark icon ion-chevron-right" ng-click="plusMinTemp()"></button></br>
+        <button class="button button-clear button-large button-dark icon ion-chevron-left" ng-click="minusMaxTemp()"></button>
+        <button ng-click = "clickMax()" class="button mysize">{{getMaxTemp()}}</button>
+        <button class="button button-clear button-large button-dark icon ion-chevron-right" ng-click="plusMaxTemp()"></i> </button>
+  </div>
+
+    <div class="button-bar">
+      <a class="button" ng-click="setTemperature()" > Задать настройку </a>
+    </div>
+  </ion-content>
+</ion-view>

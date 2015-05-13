@@ -1,0 +1,9 @@
+
+<div class="item range">
+  <i class="icon ion-thermometer"></i>
+  <input min="-99" max="99" type="range" name="Temp" ng-model="$parent.rangeTemp">
+  <button class="button mysize">{{getTemp()}}</button>
+</div>
+<div>
+<a ng-click="$parent.{{getWhatTemp()}}Temp=finishTempModal()" class="button button-block button-stable">OK</a>
+</div>

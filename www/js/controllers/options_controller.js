@@ -288,3 +288,151 @@ angular.module('starter.controllers')
   }
   $scope.resetForm();
 })
+
+.controller('termoController', function($scope, $ionicPopup){
+  $scope.termoOptions = [
+    { id: 0, label: 'Сообщение'},
+    { id: 1, label: 'Выход 1'},
+    { id: 2, label: 'Выход 2'},
+    { id: 3,  label: 'Выход 3'},
+    { id: 4,  label: 'Выход 4' },
+    { id: 5,  label: 'Горелка 1' },
+    { id: 6,  label: 'Горелка 2' },
+    { id: 7,  label: 'Горелка 3' },
+    { id: 8, label: 'доп.Выход 1'},
+    { id: 9, label: 'доп.Выход 2'},
+  ];
+  $scope.termNumberOptions = [
+    { id: 1, label: '1'},
+    { id: 2, label: '2'},
+    { id: 3,  label: '3'},
+    { id: 4,  label: '4' },
+    { id: 5,  label: '5' },
+  ];
+
+  $scope.numberSelected = $scope.termNumberOptions[0];
+  $scope.minTemp = $scope.temperature.minOut[$scope.numberSelected.id-1];
+  $scope.maxTemp = $scope.temperature.maxOut[$scope.numberSelected.id-1];
+  $scope.selected = $scope.termoOptions[$scope.temperature.optionNow[$scope.numberSelected.id-1]];
+  $scope.comments = $scope.temperature.comment[$scope.numberSelected.id-1];
+
+  // $scope.getOptionNow = function(){
+  //   return $scope.termoOptions[1].label
+  // }
+  $scope.resetForm = function() {
+    $scope.minTemp = $scope.temperature.minOut[$scope.numberSelected.id-1];
+    $scope.maxTemp = $scope.temperature.maxOut[$scope.numberSelected.id-1];
+    $scope.selected = $scope.termoOptions[$scope.temperature.optionNow[$scope.numberSelected.id-1]];
+    $scope.comments = $scope.temperature.comment[$scope.numberSelected.id-1];
+  }
+
+  $scope.resetForm2 = function() {
+     if (($scope.selected.id) == 0){
+      $scope.minTemp = $scope.temperature.minText[$scope.numberSelected.id-1];
+      $scope.maxTemp = $scope.temperature.maxText[$scope.numberSelected.id-1];
+    }else{
+      $scope.minTemp = $scope.temperature.minOut[$scope.numberSelected.id-1];
+      $scope.maxTemp = $scope.temperature.maxOut[$scope.numberSelected.id-1];
+    }
+  }
+
+  $scope.getMinTemp = function(){
+    return $scope.minTemp;
+  }
+  $scope.getMaxTemp = function(){
+    return $scope.maxTemp;
+  }
+
+  $scope.minusMinTemp = function(){
+    $scope.minTemp = $scope.minTemp - 1;
+  }
+  $scope.plusMinTemp = function(){
+    $scope.minTemp = $scope.minTemp + 1;
+  }
+  $scope.minusMaxTemp = function(){
+    $scope.maxTemp = $scope.maxTemp - 1;
+  }
+  $scope.plusMaxTemp = function(){
+    $scope.maxTemp = $scope.maxTemp + 1;
+  }
+  $scope.clickMin = function(){
+    $scope.rangeTemp = $scope.minTemp;
+    $scope.whatTemp = "min";
+    $scope.startTempModal("Минимальная");
+  }
+  $scope.clickMax = function(){
+    $scope.rangeTemp = $scope.maxTemp;
+    $scope.whatTemp = "max";
+    $scope.startTempModal("Максимальная");
+  }
+
+  $scope.startTempModal = function(label) {
+
+    $scope.modal = $ionicPopup.show({
+      templateUrl: 'templates/options/modalTemp.html',
+      title: label,
+      scope: $scope,
+    });
+  }
+
+  $scope.finishTempModal = function(label) {
+    if(!$scope.modal) return;
+    $scope.modal.close();
+    return parseInt($scope.rangeTemp);
+  }
+
+  $scope.getTemp = function(){
+    return $scope.rangeTemp;
+  }
+
+  $scope.getWhatTemp = function(){
+    return $scope.whatTemp;
+  }
+  $scope.setTemperature = function(){
+    if ($scope.selected.id == 0){
+      $scope.temperature.minText[$scope.numberSelected.id-1] = $scope.minTemp;
+      $scope.temperature.maxText[$scope.numberSelected.id-1] = $scope.maxTemp;
+    }else{
+        $scope.temperature.minOut[$scope.numberSelected.id-1] = $scope.minTemp;
+        $scope.temperature.maxOut[$scope.numberSelected.id-1] = $scope.maxTemp;
+        $scope.temperature.optionNow[$scope.numberSelected.id-1] = $scope.selected.id;
+        $scope.temperature.comment[$scope.numberSelected.id-1] = $scope.comments;
+    }
+    $scope.saveData('temperature');}
+
+})
+
+
+
+.controller('accessController', function($scope){
+  $scope.numberAccess = [
+    { id: 0, label: 'Отключить'},
+    { id: 1, label: 'Оповещение: по 1 входу'},
+    { id: 2, label: 'по 2 входу'},
+    { id: 3, label: 'по 3 входу'},
+    { id: 4, label: 'по 4 входу'},
+    { id: 5, label: 'по 5 входу'},
+    { id: 6, label: 'о режиме охраны'},
+    { id: 7, label: 'о тревогах'},
+    { id: 8, label: 'дублирование всех смс'},
+    { id: 9, label: 'Хозяин'},
+  ];
+
+  $scope.access1Selected = $scope.numberAccess[$scope.ndOptions.numberAccess[0]];
+  $scope.access2Selected = $scope.numberAccess[$scope.ndOptions.numberAccess[1]];
+  $scope.access3Selected = $scope.numberAccess[$scope.ndOptions.numberAccess[2]];
+  $scope.access4Selected = $scope.numberAccess[$scope.ndOptions.numberAccess[3]];
+
+  $scope.setNdOptions = function(){
+    $scope.startModal(5000);
+    if(window.SMS) SMS.sendSMS($scope.phones.pot, COMMANDS.SET_NDOPTION($scope.access1Selected.id,$scope.access2Selected.id,
+      $scope.access3Selected.id,$scope.access4Selected.id), function(){
+          $scope.ndOptions.numberAccess[0] = $scope.access1Selected.id;
+          $scope.ndOptions.numberAccess[1] = $scope.access2Selected.id;
+          $scope.ndOptions.numberAccess[2] = $scope.access3Selected.id;
+          $scope.ndOptions.numberAccess[3] = $scope.access4Selected.id;
+          $scope.saveData('ndOptions');
+          $scope.completeModal();
+           }, $scope.errorModal);
+  }
+})

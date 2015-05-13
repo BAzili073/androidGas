@@ -14,6 +14,7 @@ var COMMANDS = {
  return 'нc ' + [startS, rGuard, rapCommands, blockOutput, useInput, smsAlarm,
      autoGuard, errorSms].map(function(i){return i ? 1 : 0;}).join('') + timeAlarm + timeWaitGuard},
   SET_NROPTION: function(mode1,mode2,mode3,mode4){ return 'нр ' + mode1 + mode2 + mode3 + mode4;},
+  SET_NDOPTION: function(acccess1,acccess2,acccess3,acccess4){ return 'нд ' + acccess1 + acccess2 +  acccess3 + acccess4;},
   SET_VSOPTION: function(number,minV,maxV,minT,inactiveT,waitT,mode,output){ return 'вс' + number + ' ' + minV + maxV + minT + inactiveT +
    waitT + mode + output;},
   SET_TEXT: function(id,text){
@@ -30,7 +31,7 @@ var SMS_REGEX = {
 
 var READ_INTERVAL = 1000;
 
-var DATA_VERSION = "0.0.1";
+var DATA_VERSION = "0.0.6";
 
 angular.module('starter.controllers', ['starter.services', 'starter.constants'])
 
@@ -83,6 +84,19 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants'])
   $scope.nrOptions = $localstorage.getObject('nrOptions', {
     modeOutput: [0,0,0,0]
   });
+
+  $scope.ndOptions = $localstorage.getObject('ndOptions', {
+    numberAccess: [0,0,0,0]
+  });
+  $scope.temperature = $localstorage.getObject('temperature', {
+    minText: [0,0,0,0,0],
+    maxText: [0,0,0,0,0],
+    minOut: [0,0,0,0,0],
+    maxOut: [0,0,0,0,0],
+    comment:["тем 1","тем 2","тем 3","тем 4","тем 5",],
+    optionNow:[0,0,0,0,0]
+  });
+
 
   $scope.potContent = $localstorage.getObject('potContent', {
       statToggle: [false,false,false],
