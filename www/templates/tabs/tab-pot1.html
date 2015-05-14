@@ -1,16 +1,21 @@
 
 <ion-view view-title="Котел {{potId()}}">
   <ion-content has-header="true">
-    <a class="item item-icon-right">
-      Котел <i>
-        <span class="badge badge-{{getPotColor()}}">{{getPotStateText()}}</span>
-      </i>
-    </a>
-    <ion-toggle ng-model="statToggle.checked" ng-change="statToggleChange()">
-   Состояние котла:
- </ion-toggle>
- <ion-toggle ng-model="torchToggle.checked" toggle-class="toggle-energized" ng-change="torchToggleChange()">
-Горелка:
-</ion-toggle>
+        <a class="item item-icon-right">
+          Котел <i>
+            <span class="badge badge-{{getPotColor()}}">{{getPotStateText()}}</span>
+          </i>
+        </a>
+        <ion-toggle ng-model="statToggle.checked" ng-change="statToggleChange()">
+           Состояние котла:
+        </ion-toggle>
+        <ion-toggle ng-model="torchToggle.checked" toggle-class="toggle-energized" ng-change="torchToggleChange()">
+            Горелка:
+        </ion-toggle>
+        <div ng-show = "torchTemp({{potId()}})" class="item">Термодатчики:
+          <button  ng-click="seeTempComment({{torchTemp(potId())}})" class="button button-small button-{{getTempColor(torchTemp(potId()))}} term">
+              {{getNowTempStr(potId())}}
+          </button>
+      </div>
   </ion-content>
 </ion-view>

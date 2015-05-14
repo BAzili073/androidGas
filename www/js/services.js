@@ -27,4 +27,24 @@ angular.module('starter.services', [])
     }
 
   }
-});
+})
+
+.factory('$viewTerm', function($window) {
+  return{
+  getNowTemp : function(id){
+    return parseInt($window.temperature.nowTemp[id-1]);
+  },
+
+  getTempColor : function(id){
+    if (($window.getNowTemp(id)>$window.temperature.maxOut[id-1]) || ($window.getNowTemp(id)<$window.temperature.minOut[id-1])){
+      return "assertive";
+    }else{
+          if (($window.getNowTemp(id)>$window.temperature.maxText[id-1]) || ($window.getNowTemp(id)<$window.temperature.minText[id-1])){
+            return "calm";
+          }else{
+            return "balanced";
+          }
+    }
+  },
+ }
+})

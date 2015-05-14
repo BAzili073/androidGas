@@ -41,11 +41,11 @@
 
   <div class="item ">
         <div class="">Термодатчики:</div>
-        <button ng-if = "getNowTemp(1)" ng-click="seeTempComment(1)" class="button button-small button-{{getTempColor(1)}} term">{{getNowTempStr(1)}}</button>
-        <button ng-if = "getNowTemp(2)" ng-click="seeTempComment(2)" class="button button-small button-{{getTempColor(2)}} term">{{getNowTempStr(2)}}</button>
-        <button ng-if = "getNowTemp(3)" ng-click="seeTempComment(3)" class="button button-small button-{{getTempColor(3)}} term">{{getNowTempStr(3)}}</button>
-        <button ng-if = "getNowTemp(4)" ng-click="seeTempComment(4)" class="button button-small button-{{getTempColor(4)}} term">{{getNowTempStr(4)}}</button>
-        <button ng-if = "getNowTemp(5)" ng-click="seeTempComment(5)" class="button button-small button-{{getTempColor(5)}} term">{{getNowTempStr(5)}}</button>
+        <button ng-show = "getNowTemp(1)" ng-click="seeTempComment(1)" class="button button-small button-{{getTempColor(1)}} term">{{getNowTempStr(1)}}</button>
+        <button ng-show = "getNowTemp(2)" ng-click="seeTempComment(2)" class="button button-small button-{{getTempColor(2)}} term">{{getNowTempStr(2)}}</button>
+        <button ng-show = "getNowTemp(3)" ng-click="seeTempComment(3)" class="button button-small button-{{getTempColor(3)}} term">{{getNowTempStr(3)}}</button>
+        <button ng-show = "getNowTemp(4)" ng-click="seeTempComment(4)" class="button button-small button-{{getTempColor(4)}} term">{{getNowTempStr(4)}}</button>
+        <button ng-show = "getNowTemp(5)" ng-click="seeTempComment(5)" class="button button-small button-{{getTempColor(5)}} term">{{getNowTempStr(5)}}</button>
   </div>
 
 </div>

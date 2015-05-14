@@ -36,7 +36,27 @@ angular.module('starter.controllers')
 
     $scope.getPotColor = function(){
       return $scope.getPotState().color;
-      }
+    }
+    $scope.getNowTempStr = function(id){
+      return $scope.temperature.nowTemp[id-1];
+    }
 
+    $scope.torchTemp = function(id){
+        return (parseInt($scope.temperature.optionNow.indexOf(id))+1);
+    }
+    $scope.getNowTemp = function(id){
+      return parseInt($scope.temperature.nowTemp[id-1]);
+    }
+    $scope.getTempColor = function(id){
+      if (($scope.getNowTemp(id)>$scope.temperature.maxOut[id-1]) || ($scope.getNowTemp(id)<$scope.temperature.minOut[id-1])){
+        return "assertive";
+      }else{
+            if (($scope.getNowTemp(id)>$scope.temperature.maxText[id-1]) || ($scope.getNowTemp(id)<$scope.temperature.minText[id-1])){
+              return "calm";
+            }else{
+              return "balanced";
+            }
+      }
+    }
 
 })

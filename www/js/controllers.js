@@ -103,8 +103,8 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants'])
     maxText: [99,99,99,99,99],
     minOut: [-99,-99,-99,-99,-99],
     maxOut: [99,99,99,99,99],
-    comment:["тем 1","тем 2","тем 3","тем 4","тем 5",],
-    optionNow:[0,0,0,0,0],
+    comment:["Датчик 1","Датчик 2","Датчик 3","Датчик 4","Датчик 5",],
+    optionNow:[2,2,3,4,5],
     lastUse: 0,
   });
 
@@ -128,7 +128,7 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants'])
 
 
   $scope.lastSMS = '';
-  
+
   $scope.changeLastUse = function(id){
     $scope.temperature.lastUse = id;
   }
