@@ -22,10 +22,12 @@
       <div class="item">
         <button class="button button-clear button-large button-dark icon ion-chevron-left" ng-click="minusMinTemp()"></button>
         <button ng-click = "clickMin()" class="button mysize">{{getMinTemp()}}</button>
-        <button class="button button-clear button-large button-dark icon ion-chevron-right" ng-click="plusMinTemp()"></button></br>
+        <button class="button button-clear button-large button-dark icon ion-chevron-right" ng-click="plusMinTemp()"></button><span class="badge badge-stable mybadge2">Т(мин)</span></br>
+      </div>
+      <div class="item">
         <button class="button button-clear button-large button-dark icon ion-chevron-left" ng-click="minusMaxTemp()"></button>
         <button ng-click = "clickMax()" class="button mysize">{{getMaxTemp()}}</button>
-        <button class="button button-clear button-large button-dark icon ion-chevron-right" ng-click="plusMaxTemp()"></i> </button>
+        <button class="button button-clear button-large button-dark icon ion-chevron-right" ng-click="plusMaxTemp()"></button><span class="badge badge-stable mybadge2">Т(макс)</span>
   </div>
 
     <div class="button-bar">

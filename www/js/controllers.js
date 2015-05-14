@@ -23,6 +23,13 @@ var COMMANDS = {
       else
         {return 'см' + (id-5) + ' ' + text;}
       },
+  DEL_TMTERM: function(what){ return 'с' + what;},
+  RESET_DEVICE: function(){ return 'ресет';},
+  CHECK_BALANCE: function(number){ return 'б ' + number;},
+  SET_GUARD: function(state){ return 'o'+state;},
+  SET_OUTPUT: function(number,state){ return 'o'+number + ' ' + state;},
+  SET_TEMPTEXT: function(number,min,max){ return 'т'+number + 'с' +' '+ min + max;},
+  SET_TEMPOUT: function(number,output,min,max){ return 'т'+ number + 'в' + output +' '+ min + max;},
 }
 
 var SMS_REGEX = {
@@ -31,12 +38,12 @@ var SMS_REGEX = {
 
 var READ_INTERVAL = 1000;
 
-var DATA_VERSION = "0.0.6";
+var DATA_VERSION = "0.1.7";
 
 angular.module('starter.controllers', ['starter.services', 'starter.constants'])
 
 .controller('AppCtrl', function($scope, $interval, $localstorage, $ionicModal, $timeout, $ionicPopup) {
-
+  $scope.post = {url: 'http://', title: ''};
   $scope.sms = {
     init: true
   };
@@ -54,8 +61,9 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants'])
   });
 
   $scope.ssOptions = $localstorage.getObject('ssOptions', {
-  text: ["вход 1","вход 2","вход 3","вход 4","вход 5","доп.вход 1","доп.вход 2","доп.вход 3","доп.вход 4","доп.вход 5","доп.вход 6","доп.вход 7","доп.вход 8"],
-
+      text: ["вход 1","вход 2","вход 3","вход 4","вход 5","доп.вход 1","доп.вход 2","доп.вход 3","доп.вход 4","доп.вход 5","доп.вход 6","доп.вход 7","доп.вход 8"],
+      guardOutput: ["1","2","3","4"],
+      moduleOutput: ["1","2","3","4"],
 });
 
   $scope.nsOptions = $localstorage.getObject('nsOptions', {
@@ -88,13 +96,16 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants'])
   $scope.ndOptions = $localstorage.getObject('ndOptions', {
     numberAccess: [0,0,0,0]
   });
+
   $scope.temperature = $localstorage.getObject('temperature', {
-    minText: [0,0,0,0,0],
-    maxText: [0,0,0,0,0],
-    minOut: [0,0,0,0,0],
-    maxOut: [0,0,0,0,0],
+    nowTemp: ["+40","-50","-30","+1","+10"],
+    minText: [-99,-99,-99,-99,-99],
+    maxText: [99,99,99,99,99],
+    minOut: [-99,-99,-99,-99,-99],
+    maxOut: [99,99,99,99,99],
     comment:["тем 1","тем 2","тем 3","тем 4","тем 5",],
-    optionNow:[0,0,0,0,0]
+    optionNow:[0,0,0,0,0],
+    lastUse: 0,
   });
 
 
@@ -102,25 +113,37 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants'])
       statToggle: [false,false,false],
       torchToggle: [true,true,true],
       potState: [2,2,2],
-      inputs: [true,true,true,true,true,true,true,true],
-      outputs: [true,true],
+      inputs: [false,false,false,false,false,false,false,false],
+      outputs: [false,false],
   });
 
   $scope.guardContent = $localstorage.getObject('guardContent', {
       stateGuard: true,//true = on false = off
       statusGuard: 1, //0 - off, 1 - on, 2> - alarm
       power: true, //220
-      inputs: [true, true, true, true, true], // true - ok, false - alarm
-      outputs: [true, true, true, true],// true - on, false - off
-      guardState: 0
+      inputs: [false, false, false, false, false], // true - alarm, false - ok
+      outputs: [false, false, false, false],// true - on, false - off
+      guardState: 0,
   });
 
 
   $scope.lastSMS = '';
+  
+  $scope.changeLastUse = function(id){
+    $scope.temperature.lastUse = id;
+  }
+  $scope.saveOutputComment = function(text,id){
+    $scope.guardContent.outputsComm[id] = text;
+  }
 
   $scope.setColors = function(data){
-    if (data == true) return "balanced";
-     else return "assertive";
+    if (data == true) return "assertive";
+     else return "balanced";
+  }
+
+  $scope.setOutputColors = function(data){
+    if (data == true) return "calm";
+     else return "stable";
   }
 
   $scope.startModal = function(timeout, label, error) {
@@ -154,7 +177,6 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants'])
 
   $scope.errorModal = function() {
     if(!$scope.modal) return;
-
     $scope.modal.status = 'error';
   }
 
@@ -250,26 +272,4 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants'])
 
   document.addEventListener('deviceready', $scope.initSMS, false);
 
-})
-
-.controller('gaspotsController', function($scope, POT_STATES) {
-
-  $scope.getPotState = function(id){
-    return POT_STATES[$scope.potContent.potState[id]];
-  }
-
-  $scope.getPotStateText = function(id){
-    return $scope.getPotState(id).text;
-  }
-
-  $scope.getPotColor = function(id){
-    return $scope.getPotState(id).color;
-    }
-
-    $scope.getInputColor = function(number){
-      return $scope.setColors($scope.potContent.inputs[number])
-    }
-    $scope.getOutputColor = function(number){
-       return $scope.setColors($scope.potContent.outputs[number])
-      }
 })

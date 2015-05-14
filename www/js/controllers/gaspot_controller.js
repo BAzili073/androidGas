@@ -1,6 +1,6 @@
 angular.module('starter.controllers')
 
-.controller('gaspotController', function($scope, $state, POT_STATES) {
+.controller('gaspotController', function($scope, $state, POT_STATES, $ionicPopup) {
 
    $scope.statToggle = {
      checked: $scope.potContent.statToggle[$state.params.potId-1]
@@ -10,8 +10,8 @@ angular.module('starter.controllers')
      checked: $scope.potContent.torchToggle[$state.params.potId-1]
    }
 
-       $scope.potId = function() {
-         return $state.params.potId;
+  $scope.potId = function() {
+    return $state.params.potId;
    }
 
     $scope.statToggleChange = function(){
@@ -37,4 +37,6 @@ angular.module('starter.controllers')
     $scope.getPotColor = function(){
       return $scope.getPotState().color;
       }
+
+
 })

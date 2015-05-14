@@ -150,17 +150,17 @@ angular.module('starter', ['ionic', 'starter.controllers'])
     views: {
       'optionContent': {
         templateUrl: "templates/options/nd.html",
-       controller: "accessController"
+        controller: "accessController"
       }
     }
   })
 
-  .state('app.option.dop', {
-    url: "/dop",
+  .state('app.option.hand', {
+    url: "/hand",
     views: {
       'optionContent': {
-        templateUrl: "templates/options/dop.html",
-      //  controller: "inputsController"
+        templateUrl: "templates/options/hand.html",
+        controller: "handController"
       }
     }
   })

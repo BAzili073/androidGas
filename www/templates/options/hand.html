@@ -1,0 +1,30 @@
+<ion-view title="Ручное управление">
+  <ion-content has-header="true">
+    <form  method="post" name="options_number">
+      <ion-toggle ng-model="statOutput[0].checked" ng-change="statToggleChange(0)">
+          Выход 1:
+      </ion-toggle>
+      <ion-toggle ng-model="statOutput[1].checked" ng-change="statToggleChange(1)">
+          Выход 2:
+      </ion-toggle>
+      <ion-toggle ng-model="statOutput[2].checked" ng-change="statToggleChange(2)">
+          Выход 3:
+      </ion-toggle>
+      <ion-toggle ng-model="statOutput[3].checked" ng-change="statToggleChange(3)">
+          Выход 4:
+      </ion-toggle>
+      <button  ng-click = "handDel('к')" class="button button-full button-stable">
+        Удалить TM ключи
+      </button>
+      <button ng-click = "handDel('т')" class="button button-full button-stable">
+        Удалить термодатчики
+      </button>
+      <button ng-click = "checkBalance()" class="button button-full button-stable">
+        Проверка баланса
+      </button>
+      <button ng-click = "resetDevice()" class="button button-full button-stable">
+        Перезапуск устройства
+      </button>
+    </form>
+  </ion-content>
+</ion-view>

@@ -29,14 +29,23 @@
 .mybadge {
   margin-top: -8px;
 }
+.mybadge2 {
+  margin-top: 16px;
+  font-size: 15pt;
+}
 
 .term {
   font-size: 20pt;
 }
 
-.input_norm{
-
+.margin-right {
+  margin-right: 20px;
 }
+
+.margin-top {
+  font-size: 20pt;
+}
+
 .mysize {
   font-size: 20pt;
 }

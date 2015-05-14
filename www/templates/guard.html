@@ -1,12 +1,12 @@
 <ion-view view-title="Охрана">
   <ion-content>
     <a class="item item-icon-right">
-      Котел <i>
+      Состояние <i>
         <span class="badge badge-{{getGuardColor()}}">{{getGuardStateText()}}</span>
       </i>
     </a>
     <ion-toggle ng-model="statToggle.checked" ng-change="statToggleChange()">
-   Состояние котла:
+   Охрана:
  </ion-toggle>
   <div class="item item-icon-right" ng-if="getGuardPower() == false">
     Питание <i class="icon ion-battery-half">
@@ -22,30 +22,30 @@
   </div>
   <div class="item" >Входы:
         <span class = "badge mybadge">
-            <button class="button button-small button-{{getInputColor(0)}} oval" >1</button>
-            <button class="button button-small button-{{getInputColor(1)}} oval">2</button>
-            <button class="button button-small button-{{getInputColor(2)}} oval" >3</button>
-            <button class="button button-small button-{{getInputColor(3)}} oval">4</button>
-            <button class="button button-small button-{{getInputColor(4)}} oval">5</button>
+            <button ng-click="seeInputComment(1)" class="button button-small button-{{getInputColor(0)}} oval" >1</button>
+            <button ng-click="seeInputComment(2)" class="button button-small button-{{getInputColor(1)}} oval">2</button>
+            <button ng-click="seeInputComment(3)" class="button button-small button-{{getInputColor(2)}} oval" >3</button>
+            <button ng-click="seeInputComment(4)" class="button button-small button-{{getInputColor(3)}} oval">4</button>
+            <button ng-click="seeInputComment(5)" class="button button-small button-{{getInputColor(4)}} oval">5</button>
         </span>
   </div>
 
   <div class="item">Выходы:
         <span class = "badge mybadge">
-            <button class="button button-small button-{{getOutputColor(0)}} oval">1</button>
-            <button class="button button-small button-{{getOutputColor(1)}} oval">2</button>
-            <button class="button button-small button-{{getOutputColor(2)}} oval">3</button>
-            <button class="button button-small button-{{getOutputColor(3)}} oval">4</button>
+            <button ng-click="seeOutputComment(1)" class="button button-small button-{{getOutputColor(0)}} oval">1</button>
+            <button ng-click="seeOutputComment(2)" class="button button-small button-{{getOutputColor(1)}} oval">2</button>
+            <button ng-click="seeOutputComment(3)" class="button button-small button-{{getOutputColor(2)}} oval">3</button>
+            <button ng-click="seeOutputComment(4)" class="button button-small button-{{getOutputColor(3)}} oval">4</button>
         </span>
   </div>
 
   <div class="item ">
         <div class="">Термодатчики:</div>
-        <button class="button button-small button-balanced term">+2</button>
-        <button class="button button-small button-balanced term">+45</button>
-        <button class="button button-small button-assertive term">-255</button>
-        <button class="button button-small button-assertive term">+46</button>
-        <button class="button button-small button-balanced term">+87</button>
+        <button ng-if = "getNowTemp(1)" ng-click="seeTempComment(1)" class="button button-small button-{{getTempColor(1)}} term">{{getNowTempStr(1)}}</button>
+        <button ng-if = "getNowTemp(2)" ng-click="seeTempComment(2)" class="button button-small button-{{getTempColor(2)}} term">{{getNowTempStr(2)}}</button>
+        <button ng-if = "getNowTemp(3)" ng-click="seeTempComment(3)" class="button button-small button-{{getTempColor(3)}} term">{{getNowTempStr(3)}}</button>
+        <button ng-if = "getNowTemp(4)" ng-click="seeTempComment(4)" class="button button-small button-{{getTempColor(4)}} term">{{getNowTempStr(4)}}</button>
+        <button ng-if = "getNowTemp(5)" ng-click="seeTempComment(5)" class="button button-small button-{{getTempColor(5)}} term">{{getNowTempStr(5)}}</button>
   </div>
 
 </div>

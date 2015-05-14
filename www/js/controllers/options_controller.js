@@ -101,7 +101,6 @@ angular.module('starter.controllers')
     $scope.resetForm();
 })
 
-
 .controller('inputsController', function($scope){
   $scope.numberInput = [
     { id: 1, label: '1'},
@@ -310,7 +309,7 @@ angular.module('starter.controllers')
     { id: 5,  label: '5' },
   ];
 
-  $scope.numberSelected = $scope.termNumberOptions[0];
+  $scope.numberSelected = $scope.termNumberOptions[$scope.temperature.lastUse];
   $scope.minTemp = $scope.temperature.minOut[$scope.numberSelected.id-1];
   $scope.maxTemp = $scope.temperature.maxOut[$scope.numberSelected.id-1];
   $scope.selected = $scope.termoOptions[$scope.temperature.optionNow[$scope.numberSelected.id-1]];
@@ -337,23 +336,25 @@ angular.module('starter.controllers')
   }
 
   $scope.getMinTemp = function(){
-    return $scope.minTemp;
+    if ($scope.minTemp>0) return '+' + $scope.minTemp;
+    else return  $scope.minTemp;
   }
   $scope.getMaxTemp = function(){
-    return $scope.maxTemp;
+    if ($scope.maxTemp>0) return '+' + $scope.maxTemp;
+    else return $scope.maxTemp;
   }
 
   $scope.minusMinTemp = function(){
-    $scope.minTemp = $scope.minTemp - 1;
+    if ($scope.minTemp>-99) $scope.minTemp = $scope.minTemp - 1;
   }
   $scope.plusMinTemp = function(){
-    $scope.minTemp = $scope.minTemp + 1;
+    if ($scope.minTemp<99) $scope.minTemp = $scope.minTemp + 1;
   }
   $scope.minusMaxTemp = function(){
-    $scope.maxTemp = $scope.maxTemp - 1;
+    if ($scope.maxTemp>-99) $scope.maxTemp = $scope.maxTemp - 1;
   }
   $scope.plusMaxTemp = function(){
-    $scope.maxTemp = $scope.maxTemp + 1;
+    if ($scope.maxTemp<99) $scope.maxTemp = $scope.maxTemp + 1;
   }
   $scope.clickMin = function(){
     $scope.rangeTemp = $scope.minTemp;
@@ -382,27 +383,39 @@ angular.module('starter.controllers')
   }
 
   $scope.getTemp = function(){
+    if ($scope.rangeTemp>0) return '+' + $scope.rangeTemp;
     return $scope.rangeTemp;
   }
 
   $scope.getWhatTemp = function(){
     return $scope.whatTemp;
   }
+
   $scope.setTemperature = function(){
     if ($scope.selected.id == 0){
-      $scope.temperature.minText[$scope.numberSelected.id-1] = $scope.minTemp;
-      $scope.temperature.maxText[$scope.numberSelected.id-1] = $scope.maxTemp;
+      $scope.startModal(5000);
+      if(window.SMS) SMS.sendSMS($scope.phones.pot, COMMANDS.SET_TEMPTEXT($scope.numberSelected.id-1,
+      $scope.getMinTemp(),$scope.getMaxTemp()), function(){
+            $scope.temperature.minText[$scope.numberSelected.id-1] = $scope.minTemp;
+            $scope.temperature.maxText[$scope.numberSelected.id-1] = $scope.maxTemp;
+            $scope.saveData('temperature');
+            $scope.completeModal();
+      }, $scope.errorModal);
     }else{
-        $scope.temperature.minOut[$scope.numberSelected.id-1] = $scope.minTemp;
-        $scope.temperature.maxOut[$scope.numberSelected.id-1] = $scope.maxTemp;
-        $scope.temperature.optionNow[$scope.numberSelected.id-1] = $scope.selected.id;
-        $scope.temperature.comment[$scope.numberSelected.id-1] = $scope.comments;
+      $scope.startModal(5000);
+      if(window.SMS) SMS.sendSMS($scope.phones.pot, COMMANDS.SET_TEMPOUT($scope.numberSelected.id-1,$scope.selected.id,
+      $scope.getMinTemp(),$scope.getMaxTemp()), function(){
+            $scope.temperature.minOut[$scope.numberSelected.id-1] = $scope.minTemp;
+            $scope.temperature.maxOut[$scope.numberSelected.id-1] = $scope.maxTemp;
+            $scope.temperature.optionNow[$scope.numberSelected.id-1] = $scope.selected.id;
+            $scope.temperature.comment[$scope.numberSelected.id-1] = $scope.comments;
+            $scope.saveData('temperature');
+            $scope.completeModal();
+      }, $scope.errorModal);
+
     }
-    $scope.saveData('temperature');}
-
+  }
 })
-
-
 
 .controller('accessController', function($scope){
   $scope.numberAccess = [
@@ -435,4 +448,42 @@ angular.module('starter.controllers')
           $scope.completeModal();
            }, $scope.errorModal);
   }
+})
+
+.controller('handController', function($scope, $localstorage){
+
+  $scope.statOutput = [
+    {checked: $scope.guardContent.outputs[0]},
+    {checked: $scope.guardContent.outputs[1]},
+    {checked: $scope.guardContent.outputs[2]},
+    {checked: $scope.guardContent.outputs[3]},
+  ];
+
+  $scope.statToggleChange = function(number){
+    $scope.guardContent.outputs[number] = $scope.statOutput[number].checked;
+    $scope.saveData('guardContent');
+  }
+
+  $scope.handDel = function(what){
+    $scope.startModal(5000);
+    if(window.SMS) SMS.sendSMS($scope.phones.pot,COMMANDS.DEL_TMTERM(what), function(){
+          $scope.completeModal();
+    }, $scope.errorModal);
+  }
+
+  $scope.checkBalance = function(){
+    $scope.startModal(5000);
+    if(window.SMS) SMS.sendSMS($scope.phones.pot,COMMANDS.CHECK_BALANCE($scope.phones.balance), function(){
+          $scope.completeModal();
+    }, $scope.errorModal);
+  }
+
+  $scope.resetDevice = function(){
+    $scope.startModal(5000);
+    if(window.SMS) SMS.sendSMS($scope.phones.pot,COMMANDS.RESET_DEVICE(), function(){
+          $scope.completeModal();
+    }, $scope.errorModal);
+  }
+
+
 })
