@@ -6,15 +6,15 @@
             <span class="badge badge-{{getPotColor()}}">{{getPotStateText()}}</span>
           </i>
         </a>
-        <ion-toggle ng-model="statToggle.checked" ng-change="statToggleChange()">
+        <ion-toggle ion-toggle-text ng-model="statToggle.checked" ng-change="statToggleChange()">
            Состояние котла:
         </ion-toggle>
-        <ion-toggle ng-model="torchToggle.checked" toggle-class="toggle-energized" ng-change="torchToggleChange()">
+        <ion-toggle ion-toggle-text ng-model="torchToggle.checked" toggle-class="toggle-energized" ng-change="torchToggleChange()">
             Горелка:
         </ion-toggle>
         <div ng-show = "torchTemp({{potId()}})" class="item">Термодатчики:
           <button  ng-click="seeTempComment({{torchTemp(potId())}})" class="button button-small button-{{getTempColor(torchTemp(potId()))}} term">
-              {{getNowTempStr(potId())}}
+              {{getNowTempStr(torchTemp(potId()))}}
           </button>
       </div>
   </ion-content>

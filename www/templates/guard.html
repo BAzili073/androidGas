@@ -5,7 +5,7 @@
         <span class="badge badge-{{getGuardColor()}}">{{getGuardStateText()}}</span>
       </i>
     </a>
-    <ion-toggle ng-model="statToggle.checked" ng-change="statToggleChange()">
+    <ion-toggle ion-toggle-text ng-model="statToggle.checked" ng-change="statToggleChange()">
    Охрана:
  </ion-toggle>
   <div class="item item-icon-right" ng-if="getGuardPower() == false">

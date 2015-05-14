@@ -39,7 +39,8 @@ angular.module('starter', ['ionic', 'starter.controllers'])
     abstract: true,
     views: {
       'menuContent': {
-        templateUrl: "templates/gas.html"
+        templateUrl: "templates/gas.html",
+        controller: 'guardController'
       }
     }
   })

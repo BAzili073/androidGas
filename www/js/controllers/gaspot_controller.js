@@ -11,7 +11,7 @@ angular.module('starter.controllers')
    }
 
   $scope.potId = function() {
-    return $state.params.potId;
+    return parseInt($state.params.potId);
    }
 
     $scope.statToggleChange = function(){
@@ -44,19 +44,20 @@ angular.module('starter.controllers')
     $scope.torchTemp = function(id){
         return (parseInt($scope.temperature.optionNow.indexOf(id))+1);
     }
+
     $scope.getNowTemp = function(id){
       return parseInt($scope.temperature.nowTemp[id-1]);
     }
-    $scope.getTempColor = function(id){
-      if (($scope.getNowTemp(id)>$scope.temperature.maxOut[id-1]) || ($scope.getNowTemp(id)<$scope.temperature.minOut[id-1])){
-        return "assertive";
-      }else{
-            if (($scope.getNowTemp(id)>$scope.temperature.maxText[id-1]) || ($scope.getNowTemp(id)<$scope.temperature.minText[id-1])){
-              return "calm";
-            }else{
-              return "balanced";
-            }
-      }
-    }
+    // $scope.getTempColor = function(id){
+    //   if (($scope.getNowTemp(id)>$scope.temperature.maxOut[id-1]) || ($scope.getNowTemp(id)<$scope.temperature.minOut[id-1])){
+    //     return "assertive";
+    //   }else{
+    //         if (($scope.getNowTemp(id)>$scope.temperature.maxText[id-1]) || ($scope.getNowTemp(id)<$scope.temperature.minText[id-1])){
+    //           return "calm";
+    //         }else{
+    //           return "balanced";
+    //         }
+    //   }
+    // }
 
 })
