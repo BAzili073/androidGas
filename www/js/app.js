@@ -33,6 +33,17 @@ angular.module('starter', ['ionic', 'starter.controllers'])
     }
   })
 
+  .state('app.testSms', {
+    url: "/sms",
+    views: {
+      'menuContent': {
+        templateUrl: "templates/testsms.html",
+        // controller: 'guardController'
+      }
+
+    }
+  })
+
 
   .state('app.gas', {
     url: "/gas",

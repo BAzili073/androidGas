@@ -2,8 +2,11 @@
   <ion-content>
     <ion-list>
       <ion-item ng-repeat="playlist in playlists" href="#/app/playlists/{{playlist.id}}">
-        {{playlist.body}}
+        {{sms.body}}
       </ion-item>
+      <div class="item">
+        <button ng-click="testSms()" class="button button-block button-stable"><i></i>тестСмс</button>
+      </div>
     </ion-list>
   </ion-content>
 </ion-view>

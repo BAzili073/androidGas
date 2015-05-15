@@ -10,49 +10,83 @@
                          </div>
                          <select ng-change="resetForm()" ng-model="$parent.numberInputselected" ng-options="number.label for number in numberInput track by number.id"></select>
                      </label>
-
-                     <label class="item item-input item-select">
-                         <div class="input-label">
-                           Минимальное напряжение,В
-                         </div>
-                         <select  ng-model="$parent.minVoltageselected" ng-options="minV.label for minV in minVoltage track by minV.id"></select>
-                    </label>
-                    <label class="item item-input item-select">
-                         <div class="input-label">
-                           Максимальное напряжение,В
-                         </div>
-                         <select  ng-model="$parent.maxVoltageselected" ng-options="maxV.label for maxV in maxVoltage track by maxV.id"></select>
-                     </label>
-                    <label class="item item-input item-select">
-                         <div class="input-label">
-                           Мин.импульс,с
-                         </div>
-                         <select  ng-model="$parent.minTimeselected" ng-options="minT.label for minT in minTime track by minT .id"></select>
-                    </label>
-                    <label class="item item-input item-select">
-                       <div class="input-label">
-                         Неактивность после сработки,с
-                       </div>
-                       <select  ng-model="$parent.inactiveTimeselected" ng-options="inactive.label for inactive in inactiveTime track by inactive.id"></select>
-                    </label>
-                    <label class="item item-input item-select">
+                     <span ng-show="getNowInput()<10" class="list">
+                         <label  class="item item-input item-select">
+                             <div class="input-label">
+                               Минимальное напряжение,В
+                             </div>
+                             <select  ng-model="$parent.minVoltageselected" ng-options="minV.label for minV in minVoltage track by minV.id"></select>
+                        </label>
+                        <label class="item item-input item-select">
+                             <div class="input-label">
+                               Максимальное напряжение,В
+                             </div>
+                             <select ng-model="$parent.maxVoltageselected" ng-options="maxV.label for maxV in maxVoltage track by maxV.id"></select>
+                         </label>
+                        <label  class="item item-input item-select">
+                             <div class="input-label">
+                               Мин.импульс,с
+                             </div>
+                             <select  ng-model="$parent.minTimeselected" ng-options="minT.label for minT in minTime track by minT .id"></select>
+                        </label>
+                        <label  class="item item-input item-select">
+                           <div class="input-label">
+                             Неактивность после сработки,с
+                           </div>
+                           <select  ng-model="$parent.inactiveTimeselected" ng-options="inactive.label for inactive in inactiveTime track by inactive.id"></select>
+                        </label>
+                        <label  class="item item-input item-select">
+                            <div class="input-label">
+                              Пауза до тревоги,с
+                            </div>
+                            <select ng-model="$parent.waitTimeselected" ng-options="wait.label for wait in waitTime track by wait.id"></select>
+                        </label>
+                        <label  class="item item-input item-select">
+                             <div class="input-label">
+                               Режим работы
+                             </div>
+                             <select  ng-model="$parent.modeInputselected" ng-options="mode.label for mode in modeInput track by mode.id"></select>
+                        </label>
+                        <label  class="item item-input item-select">
+                            <div class="input-label">
+                              Привезать выход
+                            </div>
+                            <select  ng-model="$parent.outInputselected" ng-options="out.label for out in outInput track by out.id"></select>
+                        </label>
+                  </span >
+                  <span ng-show="getNowInput()>10" class="list">
+                    <label  class="item item-input item-select">
                         <div class="input-label">
                           Пауза до тревоги,с
                         </div>
-                        <select  ng-model="$parent.waitTimeselected" ng-options="wait.label for wait in waitTime track by wait.id"></select>
+                        <select ng-model="$parent.waitTimeModuleselected" ng-options="wait.label for wait in waitTimeModule track by wait.id"></select>
                     </label>
-                    <label class="item item-input item-select">
+                    <label  class="item item-input item-select">
                          <div class="input-label">
-                           Режим работы
+                           Мин.импульс,с
                          </div>
-                         <select  ng-model="$parent.modeInputselected" ng-options="mode.label for mode in modeInput track by mode.id"></select>
+                         <select  ng-model="$parent.minTimeModuleselected" ng-options="minT.label for minT in minTimeModule track by minT .id"></select>
                     </label>
-                    <label class="item item-input item-select">
+                    <label  class="item item-input item-select">
+                       <div class="input-label">
+                         Неактивность после сработки,с
+                       </div>
+                       <select  ng-model="$parent.inactiveTimeModuleselected" ng-options="inactive.label for inactive in inactiveTimeModule track by inactive.id"></select>
+                    </label>
+                    <label  class="item item-input item-select">
                         <div class="input-label">
-                          Привезать выход
+                          Включить выход
                         </div>
-                        <select  ng-model="$parent.outInputselected" ng-options="out.label for out in outInput track by out.id"></select>
+                        <select  ng-model="$parent.outInputOnModuleselected" ng-options="out.label for out in outInputModule track by out.id"></select>
                     </label>
+                    <label  class="item item-input item-select">
+                        <div class="input-label">
+                          Выключить выход
+                        </div>
+                        <select  ng-model="$parent.outInputOffModuleselected" ng-options="out.label for out in outInputModule track by out.id"></select>
+                    </label>
+                  </span>
+
               </div>
            </form>
            <div class="button-bar">

@@ -15,8 +15,10 @@ var COMMANDS = {
      autoGuard, errorSms].map(function(i){return i ? 1 : 0;}).join('') + timeAlarm + timeWaitGuard},
   SET_NROPTION: function(mode1,mode2,mode3,mode4){ return 'нр ' + mode1 + mode2 + mode3 + mode4;},
   SET_NDOPTION: function(acccess1,acccess2,acccess3,acccess4){ return 'нд ' + acccess1 + acccess2 +  acccess3 + acccess4;},
-  SET_VSOPTION: function(number,minV,maxV,minT,inactiveT,waitT,mode,output){ return 'вс' + number + ' ' + minV + maxV + minT + inactiveT +
+  SET_VSOPTION: function(number,minV,maxV,minT,inactiveT,waitT,mode,output){ return 'вс ' + number + minV + maxV + minT + inactiveT +
    waitT + mode + output;},
+  SET_VMOPTION: function(number,minT,inactiveT,waitT,outOn,outOff){ return 'вм ' + (number-10) + waitT + minT + inactiveT +
+    outOn + outOff;},
   SET_TEXT: function(id,text){
       if (id < 6)
         {return 'сс' + id + ' ' + text;}
@@ -38,7 +40,7 @@ var SMS_REGEX = {
 
 var READ_INTERVAL = 1000;
 
-var DATA_VERSION = "0.1.8";
+var DATA_VERSION = "0.2.3";
 
 angular.module('starter.controllers', ['starter.services', 'starter.constants'])
 
@@ -86,7 +88,12 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants'])
     inactiveTime:[0,0,0,0,0],
     waitTime:[0,0,0,0,0],
     modeInput:[0,0,0,0,0],
-    outInput:[0,0,0,0,0]
+    outInput:[0,0,0,0,0],
+    minTimeModule: [0,0,0,0,0,0,0,0],
+    inactiveTimeModule:[0,0,0,0,0,0,0,0],
+    waitTimeModule:[0,0,0,0,0,0,0,0],
+    outInputOnModule: [0,0,0,0,0,0,0,0],
+    outInputOffModule: [0,0,0,0,0,0,0,0],
   });
 
   $scope.nrOptions = $localstorage.getObject('nrOptions', {
@@ -212,7 +219,7 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants'])
 
       $scope.completeModal();
 
-    }, $scope.errorModal);
+    }, $scope.errorModal());
 
   }
 
@@ -222,11 +229,11 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants'])
           $scope.ssOptions.text[id] = text;
           $scope.saveData('ssOptions');
           $scope.completeModal();
-    }, $scope.errorModal);
+    }, $scope.errorModal());
   }
 
   $scope.reportGuard = function(body) {
-    var data = body.exec(SMS_REGEX.REPORT_GUARD);
+    var data = SMS_REGEX.REPORT_GUARD.exec(body);
     $scope.guardContent.inputs = data[1].split("").map(function(i){ return i === "-" });
     $scope.guardContent.outputs = data[2].split("").map(function(i){ return i === "1" });
     $scope.guardContent.power = data[3].indexOf("220") >= 0;
@@ -236,18 +243,26 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants'])
       $scope.lastSMS = JSON.stringify(sms);
 
       var body = sms.body;
-
       switch(true){
         case SMS_REGEX.REPORT_GUARD.test(body): $scope.reportGuard(body);break;
         default: console.warn("Undefined sms received: ", body);
       }
   }
 
+
+  $scope.data1 = [
+    {body : "вх:+--+- вых:0001 акк!"},
+  ]
+
+  $scope.testSms = function(){
+    $scope.receiveSMS($scope.data1[0]);
+  }
+
   $scope.initSMS = function() {
 
     if(!$scope.sms.init) {
       $scope.startModal(30000, "Загрузка данных");
-      SMS.sendSMS($scope.phones.pot, COMMANDS.RAPORT, $scope.finishModal, $scope.errorModal);
+      SMS.sendSMS($scope.phones.pot, COMMANDS.RAPORT, $scope.finishModal, $scope.errorModal());
     }
 
     $interval (function(){
@@ -346,4 +361,4 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants'])
     }
   };
 
-});
+})
