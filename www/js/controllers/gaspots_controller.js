@@ -38,7 +38,7 @@ angular.module('starter.controllers')
              type: 'button-positive',
              onTap: function(e) {
                if (!$scope.data.comment) {
-                 //don't allow the user to close unless he enters wifi password
+                 //don't allow the user to close unцless he enters wifi password
                  e.preventDefault();
                } else {
                  return $scope.data;

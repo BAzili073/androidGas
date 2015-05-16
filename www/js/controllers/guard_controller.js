@@ -175,5 +175,26 @@ angular.module('starter.controllers')
       }
     }
 
+    $scope.smsRequest = function() {
+            $ionicPopup.show({
+           template: '',
+           title: 'Запрос',
+           scope: $scope,
+           buttons: [
+             {text: 'Баланса',
+             type: 'button-stable',
+             onTap: function() {
+               $scope.smsRequestBalance();
+             }},
+             {
+               text: '<b>Отчета</b>',
+               type: 'button-positive',
+               onTap: function() {
+                 $scope.smsRequestBalance();
+               }
+             }
+           ]
+         });
+      }
 
 })

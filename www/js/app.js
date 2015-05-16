@@ -1,6 +1,11 @@
 
 angular.module('starter', ['ionic', 'starter.controllers'])
 
+.config(function($ionicConfigProvider){
+// iOS style is called large, android style is called small
+  $ionicConfigProvider.form.toggle('large');
+})
+
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
     if (window.cordova && window.cordova.plugins.Keyboard) {

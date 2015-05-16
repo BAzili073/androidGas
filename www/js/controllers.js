@@ -8,7 +8,7 @@ var GUARD_STATES=[
 ]
 var TEMP = "";
 var COMMANDS = {
-  RAPORT: "р",
+  REPORT: "р",
   SET_PHONE: function(id, phone){ return 'нн ' + id + ' ' + phone;},
   SET_NSOPTIONS: function( startS,rGuard,rapCommands,blockOutput,useInput,smsAlarm,autoGuard,errorSms,timeAlarm,timeWaitGuard){
  return 'нc ' + [startS, rGuard, rapCommands, blockOutput, useInput, smsAlarm,
@@ -40,7 +40,7 @@ var SMS_REGEX = {
 
 var READ_INTERVAL = 1000;
 
-var DATA_VERSION = "0.2.3";
+var DATA_VERSION = "0.2.4";
 
 angular.module('starter.controllers', ['starter.services', 'starter.constants'])
 
@@ -232,6 +232,18 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants'])
     }, $scope.errorModal());
   }
 
+  $scope.smsRequestBalance = function(){
+    $scope.startModal(5000);
+    if(window.SMS) SMS.sendSMS($scope.phones.pot, COMMANDS.CHECK_BALANCE($scope.phones.balance), function(){
+          $scope.completeModal();
+    }, $scope.errorModal());
+  }
+
+  $scope.smsRequestReport = function(){
+    $scope.startModal(5000);
+    SMS.sendSMS($scope.phones.pot, COMMANDS.REPORT, $scope.finishModal, $scope.errorModal());
+  }
+
   $scope.reportGuard = function(body) {
     var data = SMS_REGEX.REPORT_GUARD.exec(body);
     $scope.guardContent.inputs = data[1].split("").map(function(i){ return i === "-" });
@@ -262,7 +274,7 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants'])
 
     if(!$scope.sms.init) {
       $scope.startModal(30000, "Загрузка данных");
-      SMS.sendSMS($scope.phones.pot, COMMANDS.RAPORT, $scope.finishModal, $scope.errorModal());
+      SMS.sendSMS($scope.phones.pot, COMMANDS.REPORT, $scope.finishModal, $scope.errorModal());
     }
 
     $interval (function(){

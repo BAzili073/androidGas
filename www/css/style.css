@@ -26,6 +26,14 @@
     font-size: 24pt;
 }
 
+.oval_small {
+    margin-right: 5px;
+    -webkit-border-radius: 50px;
+    font-size: 10pt;
+    margin-left: 20px;
+    margin-top: -7px;
+}
+
 .mybadge {
   margin-top: -8px;
 }
@@ -49,11 +57,17 @@
 .mysize {
   font-size: 20pt;
 }
+
+.texthidden{
+  overflow : hidden;
+}
 /* Empty. Add your own CSS if you like */
 
 /* Styles go here */
 
-
+.toggle-text{
+  overflow : hidden;
+}
 .toggle-text > .track {
 
   width: auto;
@@ -68,7 +82,7 @@
 
 .toggle-text .handle-text {
   font-size: 24px;
-  color: white;
+  color: black;
 
   position: absolute;
   top: -4px;
@@ -77,6 +91,7 @@
 
 .toggle-text .handle-text-false {
   left: 36px;
+
 }
 
 .toggle-text input:checked + .track .handle {

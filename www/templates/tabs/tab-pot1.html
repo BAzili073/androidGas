@@ -1,13 +1,20 @@
 
-<ion-view view-title="Котел {{potId()}}">
+<ion-view view-title="Управление">
   <ion-content has-header="true">
-        <a class="item item-icon-right">
-          Котел <i>
-            <span class="badge badge-{{getPotColor()}}">{{getPotStateText()}}</span>
-          </i>
-        </a>
-        <ion-toggle ion-toggle-text ng-model="statToggle.checked" ng-change="statToggleChange()">
-           Состояние котла:
+        <ion-toggle ion-toggle-text ng-model="statToggle1.checked" ng-change="statToggleChange(1)">
+          Котел 1<button class="button button-small button-{{getPotColor()}} oval_small">
+             {{getPotStateText()}}
+           </button>
+        </ion-toggle>
+        <ion-toggle ion-toggle-text ng-model="statToggle2.checked" ng-change="statToggleChange(2)">
+          Котел 1<button class="button button-small button-{{getPotColor()}} oval_small">
+             {{getPotStateText()}}
+           </button>
+        </ion-toggle>
+        <ion-toggle ion-toggle-text ng-model="statToggle3.checked" ng-change="statToggleChange(3)">
+          Котел 1<button class="button button-small button-{{getPotColor()}} oval_small">
+             {{getPotStateText()}}
+           </button>
         </ion-toggle>
         <ion-toggle ion-toggle-text ng-model="torchToggle.checked" toggle-class="toggle-energized" ng-change="torchToggleChange()">
             Горелка:
