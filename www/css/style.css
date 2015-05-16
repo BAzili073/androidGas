@@ -61,6 +61,21 @@
 .texthidden{
   overflow : hidden;
 }
+
+.stateOk {
+  text-align: center;
+  background-color: #00FF7F;
+  font-size: 20px;
+}
+
+.stateWait{
+  text-align: center;
+  background-color: #40E0D0;
+  font-size: 20px;
+}
+.button.noMargin {
+  margin: 0px;
+}
 /* Empty. Add your own CSS if you like */
 
 /* Styles go here */

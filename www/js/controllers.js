@@ -5,7 +5,8 @@ var GUARD_STATES=[
   {text: "На охране", color:"balanced"},
   {text : "Снят с охраны", color: "stable"},
   {text: "Ошибка" , color: "assertive"}
-]
+];
+
 var TEMP = "";
 var COMMANDS = {
   REPORT: "р",
@@ -42,17 +43,9 @@ var READ_INTERVAL = 1000;
 
 var DATA_VERSION = "0.2.4";
 
-angular.module('starter.controllers', ['starter.services', 'starter.constants'])
+var DEFAULT_DATA = {
 
-.controller('AppCtrl', function($scope, $interval, $localstorage, $ionicModal, $timeout, $ionicPopup) {
-  $scope.post = {url: 'http://', title: ''};
-  $scope.sms = {
-    init: true
-  };
-
-  $localstorage.checkVersion(DATA_VERSION);
-
-  $scope.phones = $localstorage.getObject('phones', {
+  phones: {
     pot: NUMBER,
     balance: "",
     master: "",
@@ -60,28 +53,28 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants'])
     ext2: "",
     ext3: "",
     ext4: ""
-  });
+  },
 
-  $scope.ssOptions = $localstorage.getObject('ssOptions', {
-      text: ["вход 1","вход 2","вход 3","вход 4","вход 5","доп.вход 1","доп.вход 2","доп.вход 3","доп.вход 4","доп.вход 5","доп.вход 6","доп.вход 7","доп.вход 8"],
-      guardOutput: ["1","2","3","4"],
-      moduleOutput: ["1","2","3","4"],
-});
+  ssOptions:{
+    text: ["вход 1","вход 2","вход 3","вход 4","вход 5","доп.вход 1","доп.вход 2","доп.вход 3","доп.вход 4","доп.вход 5","доп.вход 6","доп.вход 7","доп.вход 8"],
+    guardOutput: ["1","2","3","4"],
+    moduleOutput: ["1","2","3","4"],
+  },
 
-  $scope.nsOptions = $localstorage.getObject('nsOptions', {
-       timeAlarm: 3,
-       timeWaitGuard: 0,
-       startS : false,
-       rGuard : false,
-       rapCommands : false,
-       blockOutput : false,
-       useInput : false,
-       smsAlarm : false,
-       autoGuard : false,
-       errorSms : false
-  });
+  nsOptions:{
+    timeAlarm: 3,
+    timeWaitGuard: 0,
+    startS : false,
+    rGuard : false,
+    rapCommands : false,
+    blockOutput : false,
+    useInput : false,
+    smsAlarm : false,
+    autoGuard : false,
+    errorSms : false
+  },
 
-  $scope.vsOptions = $localstorage.getObject('vsOptions', {
+  vsOptions:{
     minVoltage: [2,2,2,2,2],
     maxVoltage:[7,7,7,7,7],
     minTime: [0,0,0,0,0],
@@ -94,17 +87,17 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants'])
     waitTimeModule:[0,0,0,0,0,0,0,0],
     outInputOnModule: [0,0,0,0,0,0,0,0],
     outInputOffModule: [0,0,0,0,0,0,0,0],
-  });
+  },
 
-  $scope.nrOptions = $localstorage.getObject('nrOptions', {
+  nrOptions:{
     modeOutput: [0,0,0,0]
-  });
+  },
 
-  $scope.ndOptions = $localstorage.getObject('ndOptions', {
+  ndOptions:{
     numberAccess: [0,0,0,0]
-  });
+  },
 
-  $scope.temperature = $localstorage.getObject('temperature', {
+  temperature:{
     nowTemp: ["+40","-50","-30","+1","+10"],
     minText: [-99,-99,-99,-99,-99],
     maxText: [99,99,99,99,99],
@@ -113,25 +106,41 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants'])
     comment:["Датчик 1","Датчик 2","Датчик 3","Датчик 4","Датчик 5",],
     optionNow:[0,0,0,0,0],
     lastUse: 0,
-  });
+  },
+
+  potContent:{
+    statToggle: [false,false,false],
+    torchToggle: [true,true,true],
+    potState: [2,2,2],
+    inputs: [false,false,false,false,false,false,false,false],
+    outputs: [false,false],
+  },
+
+  guardContent:{
+    stateGuard: true,//true = on false = off
+    statusGuard: 1, //0 - off, 1 - on, 2> - alarm
+    power: true, //220
+    inputs: [false, false, false, false, false], // true - alarm, false - ok
+    outputs: [false, false, false, false],// true - on, false - off
+    guardState: 0,
+  }
 
 
-  $scope.potContent = $localstorage.getObject('potContent', {
-      statToggle: [false,false,false],
-      torchToggle: [true,true,true],
-      potState: [2,2,2],
-      inputs: [false,false,false,false,false,false,false,false],
-      outputs: [false,false],
-  });
 
-  $scope.guardContent = $localstorage.getObject('guardContent', {
-      stateGuard: true,//true = on false = off
-      statusGuard: 1, //0 - off, 1 - on, 2> - alarm
-      power: true, //220
-      inputs: [false, false, false, false, false], // true - alarm, false - ok
-      outputs: [false, false, false, false],// true - on, false - off
-      guardState: 0,
-  });
+};
+
+var DATA_KEYS = ['phones', 'ssOptions', 'nsOptions', 'vsOptions', 'nrOptions', 'ndOptions', 'temperature', 'potContent', 'guardContent'];
+
+angular.module('starter.controllers', ['starter.services', 'starter.constants'])
+
+.controller('AppCtrl', function($scope, $interval, $localstorage, $ionicModal, $timeout, $ionicPopup) {
+  $scope.post = {url: 'http://', title: ''};
+  $scope.sms = {
+    init: true
+  };
+
+  $localstorage.checkVersion(DATA_VERSION);
+
 
 
   $scope.lastSMS = '';
@@ -188,7 +197,23 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants'])
   }
 
   $scope.saveData = function(key) {
-    $localstorage.setObject(key, $scope[key]);
+    $localstorage.setObject(key + "_" + $scope.potNumber, $scope[key]);
+  }
+
+  $scope.loadData = function(key) {
+    $scope[key] = $localstorage.getObject(key, DEFAULT_DATA[key]);
+  }
+
+  $scope.loadAllData = function() {
+    DATA_KEYS.forEach(function(key){
+      $scope.loadData(key);
+    });
+  }
+
+  $scope.saveAllData = function() {
+    DATA_KEYS.forEach(function(key){
+      $scope.saveData(key);
+    });
   }
 
   $scope.setPotNumber = function(value){
@@ -296,6 +321,8 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants'])
 
     }, READ_INTERVAL)
   };
+
+  $scope.loadAllData();
 
   document.addEventListener('deviceready', $scope.initSMS, false);
 

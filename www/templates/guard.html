@@ -1,11 +1,9 @@
 
 <ion-view view-title="Охрана">
   <ion-content>
-    <a class="item item-icon-right">
-      Состояние <i>
-        <span class="badge badge-{{getGuardColor()}}">{{getGuardStateText()}}</span>
-      </i>
-    </a>
+    <button class=" button button-full button-{{getGuardColor()}} noMargin">
+      {{getGuardStateText()}}
+    </button>
     <ion-toggle ion-toggle-text  ng-model="statToggle.checked" ng-change="statToggleChange()">
    Охрана:
  </ion-toggle>
@@ -21,7 +19,7 @@
       <span class="badge item-note">220 В</span>
     </i>
   </div>
-  <div class="item" >Входы:
+  <div class="item">Входы:
         <span class = "badge mybadge">
             <button ng-click="seeInputComment(1)" class="button button-small button-{{getInputColor(0)}} oval" >1</button>
             <button ng-click="seeInputComment(2)" class="button button-small button-{{getInputColor(1)}} oval">2</button>
@@ -53,12 +51,4 @@
 
 
   </ion-content>
-
-
-      <ion-footer-bar align-title="left" class="bar-stable">
-        <h1 class="title"></h1>
-        <div class="buttons" ng-click="smsRequest()">
-          <button class="button">Запрос</button>
-        </div>
-      </ion-footer-bar>
 </ion-view>
