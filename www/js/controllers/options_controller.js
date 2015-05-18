@@ -530,19 +530,7 @@ angular.module('starter.controllers')
   }
 })
 
-.controller('handController', function($scope, $localstorage){
-
-  $scope.statOutput = [
-    {checked: $scope.guardContent.outputs[0]},
-    {checked: $scope.guardContent.outputs[1]},
-    {checked: $scope.guardContent.outputs[2]},
-    {checked: $scope.guardContent.outputs[3]},
-  ];
-
-  $scope.statToggleChange = function(number){
-    $scope.guardContent.outputs[number] = $scope.statOutput[number].checked;
-    $scope.saveData('guardContent');
-  }
+.controller('addController', function($scope, $localstorage){
 
   $scope.handDel = function(what){
     $scope.startModal(5000);

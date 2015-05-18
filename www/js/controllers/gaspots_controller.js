@@ -86,4 +86,7 @@ angular.module('starter.controllers')
              // console.log('Tapped!', data.comment);
            });
       };
+      $scope.getTempComment = function(id){
+        return $scope.temperature.comment[id];
+      }
 })

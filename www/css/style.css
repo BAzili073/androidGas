@@ -50,12 +50,12 @@
   margin-right: 20px;
 }
 
-.margin-top {
-  font-size: 20pt;
+.fontsize {
+  font-size: 20px;
 }
 
 .mysize {
-  font-size: 20pt;
+  font-size: 20px;
 }
 
 .texthidden{
@@ -75,6 +75,10 @@
 }
 .button.noMargin {
   margin: 0px;
+}
+
+.tab-item.max_width{
+  max-width: none;
 }
 /* Empty. Add your own CSS if you like */
 

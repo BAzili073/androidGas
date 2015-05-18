@@ -29,6 +29,7 @@ angular.module('starter', ['ionic', 'starter.controllers'])
 
   .state('app.guard', {
     url: "/guard",
+    cache: false,
     views: {
       'menuContent': {
         templateUrl: "templates/guard.html",
@@ -62,7 +63,7 @@ angular.module('starter', ['ionic', 'starter.controllers'])
   })
 
   .state('app.gas.pot', {
-    url: "/pots/:potId",
+    url: "/pot/",
     cache: false,
     views: {
       'tabContent': {
@@ -74,6 +75,7 @@ angular.module('starter', ['ionic', 'starter.controllers'])
 
   .state('app.gas.pots', {
     url: "/pots",
+    cache: false,
     views: {
       'tabContent': {
         templateUrl: "templates/tabs/tab-pot.html",
@@ -154,6 +156,7 @@ angular.module('starter', ['ionic', 'starter.controllers'])
   })
   .state('app.option.nt', {
     url: "/nt",
+    cache: false,
     views: {
       'optionContent': {
         templateUrl: "templates/options/nt.html",
@@ -172,12 +175,33 @@ angular.module('starter', ['ionic', 'starter.controllers'])
     }
   })
 
-  .state('app.option.hand', {
-    url: "/hand",
+  .state('app.option.add', {
+    url: "/add",
     views: {
       'optionContent': {
-        templateUrl: "templates/options/hand.html",
+        templateUrl: "templates/options/add.html",
+        controller: "addController"
+      }
+    }
+  })
+
+  .state('app.hand', {
+    url: "/hand",
+    cache: false,
+    views: {
+      'menuContent': {
+        templateUrl: "templates/hand.html",
         controller: "handController"
+      }
+    }
+  })
+
+  .state('app.objectEditor', {
+    url: "/objectEditor",
+    views: {
+      'menuContent': {
+        templateUrl: "templates/objectEditor.html",
+        controller: "editorController"
       }
     }
   })

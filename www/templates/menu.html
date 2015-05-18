@@ -14,18 +14,26 @@
 
   <ion-side-menu side="left">
     <ion-header-bar class="bar-stable">
-      <h1 class="title">Меню</h1>
+      <h1 class="title">{{$parent.objects.name[($parent.potNumber)]}}</h1>
     </ion-header-bar>
+
+    <ion-footer-bar>
+      <lable nav-clear menu-close ng-click ="showObjects()" style=""class="title button-full button-positive">Объекты </lable>
+    </ion-footer-bar>
+
     <ion-content>
       <ion-list>
         <ion-item nav-clear menu-close ui-sref="app.guard">
           Охрана
         </ion-item>
         <ion-item nav-clear menu-close ui-sref="app.gas.pots">
-          Газ
+            Котельная
         </ion-item>
         <ion-item nav-clear menu-close ui-sref="app.option.index">
           Настройка
+        </ion-item>
+        <ion-item nav-clear menu-close ui-sref="app.hand">
+          Ручное управление
         </ion-item>
         <ion-item nav-clear menu-close ui-sref="app.testSms">
           ТестСМС

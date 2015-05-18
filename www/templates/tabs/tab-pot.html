@@ -1,44 +1,117 @@
 
-<ion-view view-title="Котельня">
-  <ion-content has-header="true">
-    <a class="item item-icon-right">
-      Котел 1<i>
-        <span class="badge badge-{{getPotColor(0)}}">{{getPotStateText(0)}}</span>
-      </i>
-    </a>
-    <a class="item item-icon-right">
-      Котел 2<i>
-        <span class="badge badge-{{getPotColor(1)}}">{{getPotStateText(1)}}</span>
-      </i>
-    </a>
-    <a class="item item-icon-right">
-      Котел 3<i>
-        <span class="badge badge-{{getPotColor(2)}}">{{getPotStateText(2)}}</span>
-      </i>
-    </a>
-    <div class="item" >Входы:
-          <span class = "badge mybadge">
-              <button ng-click="seeInputComment(1)" class="button button-small button-{{getInputColor(0)}} oval" >1</button>
-              <button ng-click="seeInputComment(2)" class="button button-small button-{{getInputColor(1)}} oval">2</button>
-              <button ng-click="seeInputComment(3)" class="button button-small button-{{getInputColor(2)}} oval" >3</button>
-              <button ng-click="seeInputComment(4)" class="button button-small button-{{getInputColor(3)}} oval">4</button>
-          </span>
-    </div>
-    <div class="item" ></br>
-          <span class = "badge mybadge">
-              <button ng-click="seeInputComment(5)" class="button button-small button-{{getInputColor(4)}} oval">5</button>
-              <button ng-click="seeInputComment(6)" class="button button-small button-{{getInputColor(5)}} oval">6</button>
-              <button ng-click="seeInputComment(7)" class="button button-small button-{{getInputColor(6)}} oval">7</button>
-              <button ng-click="seeInputComment(8)" class="button button-small button-{{getInputColor(7)}} oval">8</button>
-          </span>
-    </div>
+  <ion-view view-title="Котельня">
+    <ion-content has-header="true">
+      <div ng-click="" class="item item-icon-right">
+        Последнее обновление <i class="icon ion-loop">
+        </i></br>
+        lastUpdate
+      </div>
 
-    <div class="item">Выходы:
-          <span class = "badge mybadge">
-              <button ng-click="seeOutputComment(1)" class="button button-small button-{{getOutputColor(0)}} oval">1</button>
-              <button ng-click="seeOutputComment(2)" class="button button-small button-{{getOutputColor(1)}} oval">2</button>
+      <a class="item item-icon-right">
+        Котел 1<i>
+          <span class="badge badge-{{getPotColor(0)}}">{{getPotStateText(0)}}</span>
+        </i>
+      </a>
+      <a class="item item-icon-right">
+        Котел 2<i>
+          <span class="badge badge-{{getPotColor(1)}}">{{getPotStateText(1)}}</span>
+        </i>
+      </a>
+      <a class="item item-icon-right">
+        Котел 3<i>
+          <span class="badge badge-{{getPotColor(2)}}">{{getPotStateText(2)}}</span>
+        </i>
+      </a>
+      <div class="item" >Входы:
+            <span class = "badge mybadge">
+                <button ng-click="seeInputComment(1)" class="button button-small button-{{getInputColor(0)}} oval" >1</button>
+                <button ng-click="seeInputComment(2)" class="button button-small button-{{getInputColor(1)}} oval">2</button>
+                <button ng-click="seeInputComment(3)" class="button button-small button-{{getInputColor(2)}} oval" >3</button>
+                <button ng-click="seeInputComment(4)" class="button button-small button-{{getInputColor(3)}} oval">4</button>
+            </span>
+      </div>
+      <div class="item" ></br>
+            <span class = "badge mybadge">
+                <button ng-click="seeInputComment(5)" class="button button-small button-{{getInputColor(4)}} oval">5</button>
+                <button ng-click="seeInputComment(6)" class="button button-small button-{{getInputColor(5)}} oval">6</button>
+                <button ng-click="seeInputComment(7)" class="button button-small button-{{getInputColor(6)}} oval">7</button>
+                <button ng-click="seeInputComment(8)" class="button button-small button-{{getInputColor(7)}} oval">8</button>
+            </span>
+      </div>
+      <div ng-show = "getNowTemp(1)" class="row">
+        <div class="col col">
+          <button ng-click="seeTempComment(1)" class="button button-small button-{{getTempColor(1)}} term">
+            {{getNowTempStr(1)}}
+          </button>
+        </div>
+            <label class="item-input col-80 mysize">
+                {{$parent.temperature.comment[0]}}
+            </label>
+      </div>
 
-          </span>
-    </div>
-</ion-content>
-</ion-view>
+
+      <div ng-show = "getNowTemp(2)" class="row">
+        <div class="col col">
+          <button ng-click="seeTempComment(2)" class="button button-small button-{{getTempColor(2)}} term">
+            {{getNowTempStr(2)}}
+          </button>
+        </div>
+            <label class="item-input col-80 mysize">
+                {{$parent.temperature.comment[1]}}
+            </label>
+      </div>
+
+      <div ng-show = "getNowTemp(3)" class="row">
+        <div class="col col">
+          <button ng-click="seeTempComment(3)" class="button button-small button-{{getTempColor(3)}} term">
+            {{getNowTempStr(3)}}
+          </button>
+        </div>
+            <label class="item-input col-80 mysize">
+                {{$parent.temperature.comment[2]}}
+            </label>
+      </div>
+
+      <div ng-show = "getNowTemp(4)" class="row">
+        <div class="col col">
+          <button ng-click="seeTempComment(4)" class="button button-small button-{{getTempColor(4)}} term">
+            {{getNowTempStr(4)}}
+          </button>
+        </div>
+            <label class="item-input col-80 mysize">
+                {{$parent.temperature.comment[3]}}
+            </label>
+      </div>
+
+      <div ng-show = "getNowTemp(5)" class="row">
+        <div class="col col">
+          <button ng-click="seeTempComment(5)" class="button button-small button-{{getTempColor(5)}} term">
+            {{getNowTempStr(5)}}
+          </button>
+        </div>
+            <label class="item-input col-80 mysize">
+                {{$parent.temperature.comment[4]}}
+            </label>
+      </div>
+
+<!--
+
+
+      <div class="item ">
+            <div class="">Термодатчики:</div>
+            <button ng-show = "getNowTemp(1)" ng-click="seeTempComment(1)" class="button button-small button-{{getTempColor(1)}} term">{{getNowTempStr(1)}}</button>
+            <button ng-show = "getNowTemp(2)" ng-click="seeTempComment(2)" class="button button-small button-{{getTempColor(2)}} term">{{getNowTempStr(2)}}</button>
+            <button ng-show = "getNowTemp(3)" ng-click="seeTempComment(3)" class="button button-small button-{{getTempColor(3)}} term">{{getNowTempStr(3)}}</button>
+            <button ng-show = "getNowTemp(4)" ng-click="seeTempComment(4)" class="button button-small button-{{getTempColor(4)}} term">{{getNowTempStr(4)}}</button>
+            <button ng-show = "getNowTemp(5)" ng-click="seeTempComment(5)" class="button button-small button-{{getTempColor(5)}} term">{{getNowTempStr(5)}}</button>
+      </div> -->
+
+      <!-- <div class="item">Выходы:
+            <span class = "badge mybadge">
+                <button ng-click="seeOutputComment(1)" class="button button-small button-{{getOutputColor(0)}} oval">1</button>
+                <button ng-click="seeOutputComment(2)" class="button button-small button-{{getOutputColor(1)}} oval">2</button>
+
+            </span>
+      </div> -->
+  </ion-content>
+  </ion-view>

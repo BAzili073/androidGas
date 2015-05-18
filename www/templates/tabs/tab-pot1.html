@@ -1,28 +1,100 @@
 
 <ion-view view-title="Управление">
   <ion-content has-header="true">
-        <ion-toggle ion-toggle-text ng-model="statToggle1.checked" ng-change="statToggleChange(1)">
-          Котел 1<button class="button button-small button-{{getPotColor()}} oval_small">
-             {{getPotStateText()}}
-           </button>
+        <ion-toggle ion-toggle-text ng-model="statToggle.checked[0]" ng-change="statToggleChange(1)">
+          Котел 1<lable class="button button-small button-{{getPotColor(1)}} oval_small">
+             {{getPotStateText(1)}}
+           </lable>
         </ion-toggle>
-        <ion-toggle ion-toggle-text ng-model="statToggle2.checked" ng-change="statToggleChange(2)">
-          Котел 1<button class="button button-small button-{{getPotColor()}} oval_small">
-             {{getPotStateText()}}
-           </button>
-        </ion-toggle>
-        <ion-toggle ion-toggle-text ng-model="statToggle3.checked" ng-change="statToggleChange(3)">
-          Котел 1<button class="button button-small button-{{getPotColor()}} oval_small">
-             {{getPotStateText()}}
-           </button>
-        </ion-toggle>
-        <ion-toggle ion-toggle-text ng-model="torchToggle.checked" toggle-class="toggle-energized" ng-change="torchToggleChange()">
-            Горелка:
-        </ion-toggle>
-        <div ng-show = "torchTemp({{potId()}})" class="item">Термодатчики:
+<div  ng-show = "torchTemp(1)" class=" row">
+    <div class="col">
+    Мин </br>
+    <div ng-click="" class="button button-small button-{{getTempColor(torchTemp(1))}} term">
+        {{getMinTempStr(torchTemp(1))}}
+    </div>
+    </div>
+    <div class="col">
+    Текущая </br>
+    <div  ng-click="" class="button button-small button-{{getTempColor(torchTemp(1))}} term">
+        {{getNowTempStr(torchTemp(1))}}
+    </div>
+    </div>
+    <div class="col">
+    Макс </br>
+    <div  ng-click="" class="button button-small button-{{getTempColor(torchTemp(1))}} term">
+        {{getMaxTempStr(torchTemp(1))}}
+    </div>
+    </div>
+    <div class="col">
+    </br><button  ng-click="goToTermOption({{torchTemp(1)}})" class="button button-small button-stable">
+          Настроить
+      </button>
+    </div>
+</div>
+<ion-toggle ion-toggle-text ng-model="statToggle.checked[1]" ng-change="statToggleChange(2)">
+  Котел 2<lable class="button button-small button-{{getPotColor(2)}} oval_small">
+     {{getPotStateText(2)}}
+   </lable>
+</ion-toggle>
+<div  ng-show = "torchTemp(2)" class=" row">
+    <div class="col">
+    Мин </br>
+    <div ng-click="" class="button button-small button-{{getTempColor(torchTemp(2))}} term">
+        {{getMinTempStr(torchTemp(2))}}
+    </div>
+    </div>
+    <div class="col">
+    Текущая </br>
+    <div  ng-click="" class="button button-small button-{{getTempColor(torchTemp(2))}} term">
+        {{getNowTempStr(torchTemp(2))}}
+    </div>
+    </div>
+    <div class="col">
+    Макс </br>
+    <div  ng-click="" class="button button-small button-{{getTempColor(torchTemp(2))}} term">
+        {{getMaxTempStr(torchTemp(2))}}
+    </div>
+    </div>
+    <div class="col">
+    </br><button  ng-click="goToTermOption({{torchTemp(2)}})" class="button button-small button-stable">
+          Настроить
+      </button>
+    </div>
+</div>
+<ion-toggle ion-toggle-text ng-model="statToggle.checked[2]" ng-change="statToggleChange(3)">
+  Котел 3<lable class="button button-small button-{{getPotColor(3)}} oval_small">
+     {{getPotStateText(3)}}
+   </lable>
+</ion-toggle>
+<div  ng-show = "torchTemp(3)" class=" row">
+    <div class="col">
+    Мин </br>
+    <div ng-click="" class="button button-small button-{{getTempColor(torchTemp(3))}} term">
+        {{getMinTempStr(torchTemp(3))}}
+    </div>
+    </div>
+    <div class="col">
+    Текущая </br>
+    <div  ng-click="" class="button button-small button-{{getTempColor(torchTemp(3))}} term">
+        {{getNowTempStr(torchTemp(3))}}
+    </div>
+    </div>
+    <div class="col">
+    Макс </br>
+    <div  ng-click="" class="button button-small button-{{getTempColor(torchTemp(3))}} term">
+        {{getMaxTempStr(torchTemp(3))}}
+    </div>
+    </div>
+    <div class="col">
+    </br><button  ng-click="goToTermOption({{torchTemp(3)}})" class="button button-small button-stable">
+          Настроить
+      </button>
+    </div>
+</div>
+        <!-- <div ng-show = "torchTemp({{potId()}})" class="item">Термодатчики:
           <button  ng-click="seeTempComment({{torchTemp(potId())}})" class="button button-small button-{{getTempColor(torchTemp(potId()))}} term">
               {{getNowTempStr(torchTemp(potId()))}}
           </button>
-      </div>
+      </div> -->
   </ion-content>
 </ion-view>
