@@ -41,7 +41,7 @@
 
   var READ_INTERVAL = 1000;
 
-  var DATA_VERSION = "0.3.1";
+  var DATA_VERSION = "0.3.2";
 
   var DEFAULT_DATA = {
 
@@ -101,10 +101,10 @@
       nowTemp: ["+40","-50","+1","-32","-10"],
       minText: [-99,-99,-99,-99,-99],
       maxText: [99,99,99,99,99],
-      minOut: [-99,-99,-99,-99,-99],
+      minOut: [41,-99,-99,-99,-99],
       maxOut: [99,99,99,99,99],
       comment:["Датчик 1","Датчик 2","Датчик 3","Датчик 4","Датчик 5",],
-      optionNow:[0,0,0,0,0],
+      optionNow:[5,0,7,0,0],
       lastUse: 0,
     },
 
@@ -148,17 +148,15 @@
     $scope.lastSMS = '';
 
     $scope.objects = {
-        items : [],
-        name: ["Первый","Второй","Третий","Четвертый","Пятый","Шестой","Седьмой","Восьмой",]
+        items : [{id:1,label: "Первый"},{id:2,label: "Второй"}],
       };
 
-      for(var i = 0; i < ($scope.objects.name.length); i++) {
-        if ($scope.objects.name[i] != "") $scope.objects.items.push({
-          id : i,
-          label : $scope.objects.name[i]
-        })
-        }
-
+      // for(var i = 0; i < ($scope.objects.name.length); i++) {
+      //   if ($scope.objects.name[i] != "") $scope.objects.items.push({
+      //     id : i,
+      //     label : $scope.objects.name[i]
+      //   })
+      //   }
 
     $scope.changeLastUse = function(id){
       $scope.temperature.lastUse = id;
@@ -218,6 +216,11 @@
 
     $scope.loadData = function(key) {
       $scope[key] = $localstorage.getObject(key + "_" + $scope.potNumber, DEFAULT_DATA[key]);
+    }
+    $scope.deletePotData = function(numberObject) {
+      DATA_KEYS.forEach(function(key){
+        localStorage.removeItem(key + "_" + numberObject)
+      });
     }
 
     $scope.loadAllData = function() {
@@ -370,7 +373,7 @@
 
           $scope.chooseObjects = function (id){
               $scope.saveAllData();
-              $scope.potNumber = id;
+              $scope.potNumber = id-1;
               $scope.loadAllData();
               seeObjects.close();
               $state.go($state.current, {}, {reload: true});
@@ -379,9 +382,59 @@
 
           $scope.objectEditor = function(){
             seeObjects.close();
-            $state.go("app.objectEditor");  
+            $state.go("app.objectEditor");
           }
       };
 
+      $scope.checkOptionPass = function() {
+           $scope.data = {
 
+           }
+
+           // An elaborate, custom popup
+           var password = $ionicPopup.show({
+             template: '<input type="password" placeholder="Введите пароль" ng-model="data.password">',
+             title: 'Пароль?',
+             scope: $scope,
+             buttons: [
+               {
+                 text: '<b>Принять</b>',
+                 type: 'button-positive',
+                 onTap: function(e) {
+                     return $scope.data;
+                 }
+               }
+             ]
+           });
+           password.then(function(data) {
+            if ($scope.data.password == "111") $state.go("app.option.index");
+            else {
+            var  error = $ionicPopup.show({
+                title: 'Ошибка',
+                template: '<label class="" type="password">Пароль неверный</label>'
+              });
+              $timeout(function() {
+                error.close(); //close the popup after 3 seconds for some reason
+                }, 3000);
+            }
+             // console.log('Tapped!', data.comment);
+           });
+      };
+
+      $scope.checkBalance = function(){
+        if ($scope.phones.balance != ""){
+          $scope.startModal(5000);
+        if(window.SMS) SMS.sendSMS($scope.phones.pot,COMMANDS.CHECK_BALANCE($scope.phones.balance), function(){
+              $scope.completeModal();
+        }, $scope.errorModal());
+      }else {
+        var  error = $ionicPopup.show({
+            title: 'Ошибка',
+            template: '<label class="" type="password">Номер проверки баланса не настроен</label>'
+          });
+          $timeout(function() {
+            error.close(); //close the popup after 3 seconds for some reason
+            }, 3000);
+      }
+      }
   })

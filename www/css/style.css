@@ -34,6 +34,21 @@
     margin-top: -7px;
 }
 
+.has-footer.has-tabs {
+  bottom: 93px;
+}
+.bar-footer.has-tabs {
+  bottom: $tabs-height;
+}
+.popup-body {
+  padding: 10px;
+  overflow: scroll;
+  overflow: auto;
+}
+.has-footer.has-tabs {
+  bottom: $tabs-height + $bar-height;
+ }
+
 .mybadge {
   margin-top: -8px;
 }

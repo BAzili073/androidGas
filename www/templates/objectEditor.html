@@ -1,0 +1,29 @@
+
+<ion-view title="Редактор объектов">
+  <ion-content has-header="true">
+    <form  method="post" name="options_number">
+      <div class="list">
+        <label class="item item-input item-select">
+          <div class="input-label">
+            Объект
+          </div>
+          <select ng-change="resetForm()" ng-model="$parent.selected" ng-options="objects.label for objects in objects.items track by objects.id"></select>
+        </label>
+
+        <label class="item item-input">
+          <input type="text" ng-model="$parent.objectLabel" placeholder="Название объекта">
+        </label>
+      </div>
+    </form>
+
+    <div class="button-bar">
+      <a class="button" ng-click="setObjectName()" > Принять изменения</a>
+    </div>
+    <div class="button-bar">
+      <a class="button" ng-click="deleteObject()" > Удалить объект</a>
+    </div>
+    <div class="button-bar">
+      <a class="button" ng-click="createObject()" > Добавить объект </a>
+    </div>
+  </ion-content>
+</ion-view>

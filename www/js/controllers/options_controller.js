@@ -66,17 +66,9 @@ angular.module('starter.controllers')
 })
 
 .controller('numbersController', function($scope, $timeout){
-    $scope.phonesOptions = [
-      { id: -2, label: 'Баланс'},
-      { id: -1, label: 'Прибор'},
-      { id: 0,  label: 'Хозяин'},
-      { id: 1,  label: 'Дополнительный 1' },
-      { id: 2,  label: 'Дополнительный 2' },
-      { id: 3,  label: 'Дополнительный 3' },
-      { id: 4,  label: 'Дополнительный 4' }
-    ];
+    $scope.editObjects = $scope.objects;
 
-    $scope.selected = $scope.phonesOptions[1];
+    $scope.selected = $scope.editObjects[1];
 
     $scope.resetForm = function() {
        switch($scope.selected.id){
@@ -535,13 +527,6 @@ angular.module('starter.controllers')
   $scope.handDel = function(what){
     $scope.startModal(5000);
     if(window.SMS) SMS.sendSMS($scope.phones.pot,COMMANDS.DEL_TMTERM(what), function(){
-          $scope.completeModal();
-    }, $scope.errorModal());
-  }
-
-  $scope.checkBalance = function(){
-    $scope.startModal(5000);
-    if(window.SMS) SMS.sendSMS($scope.phones.pot,COMMANDS.CHECK_BALANCE($scope.phones.balance), function(){
           $scope.completeModal();
     }, $scope.errorModal());
   }

@@ -89,6 +89,7 @@ angular.module('starter', ['ionic', 'starter.controllers'])
   .state('app.option', {
     url: "/option",
     abstract: true,
+    cache: false,
     views: {
       'menuContent': {
         templateUrl: "templates/option.html"
@@ -98,6 +99,7 @@ angular.module('starter', ['ionic', 'starter.controllers'])
 
   .state('app.option.index', {
     url: "/index",
+    cache: false,
     views: {
       'optionContent': {
         templateUrl: "templates/options/index.html"
@@ -117,6 +119,7 @@ angular.module('starter', ['ionic', 'starter.controllers'])
 
   .state('app.option.ss', {
     url: "/ss",
+    cache: false,
     views: {
       'optionContent': {
         templateUrl: "templates/options/ss.html",
@@ -127,6 +130,7 @@ angular.module('starter', ['ionic', 'starter.controllers'])
 
   .state('app.option.nn', {
     url: "/nn",
+    cache: false,
     views: {
       'optionContent': {
         templateUrl: "templates/options/nn.html",
@@ -137,6 +141,7 @@ angular.module('starter', ['ionic', 'starter.controllers'])
 
   .state('app.option.nr', {
     url: "/nr",
+    cache: false,
     views: {
       'optionContent': {
         templateUrl: "templates/options/nr.html",
@@ -147,6 +152,7 @@ angular.module('starter', ['ionic', 'starter.controllers'])
 
   .state('app.option.vs', {
     url: "/vs",
+    cache: false,
     views: {
       'optionContent': {
         templateUrl: "templates/options/vs.html",
@@ -167,6 +173,7 @@ angular.module('starter', ['ionic', 'starter.controllers'])
 
   .state('app.option.nd', {
     url: "/nd",
+    cache: false,
     views: {
       'optionContent': {
         templateUrl: "templates/options/nd.html",
@@ -177,6 +184,7 @@ angular.module('starter', ['ionic', 'starter.controllers'])
 
   .state('app.option.add', {
     url: "/add",
+    cache: false,
     views: {
       'optionContent': {
         templateUrl: "templates/options/add.html",
@@ -198,6 +206,7 @@ angular.module('starter', ['ionic', 'starter.controllers'])
 
   .state('app.objectEditor', {
     url: "/objectEditor",
+    cache: false,
     views: {
       'menuContent': {
         templateUrl: "templates/objectEditor.html",

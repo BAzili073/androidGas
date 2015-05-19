@@ -1,6 +1,6 @@
 
 <ion-view view-title="Управление">
-  <ion-content has-header="true">
+  <ion-content class="has-footer has-header">
         <ion-toggle ion-toggle-text ng-model="statToggle.checked[0]" ng-change="statToggleChange(1)">
           Котел 1<lable class="button button-small button-{{getPotColor(1)}} oval_small">
              {{getPotStateText(1)}}

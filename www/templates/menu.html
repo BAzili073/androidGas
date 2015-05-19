@@ -14,7 +14,7 @@
 
   <ion-side-menu side="left">
     <ion-header-bar class="bar-stable">
-      <h1 class="title">{{$parent.objects.name[($parent.potNumber)]}}</h1>
+      <h1 class="title">{{$parent.objects.items[($parent.potNumber)].label}}{{$parent.objects.items[($parent.potNumber)].id}}</h1>
     </ion-header-bar>
 
     <ion-footer-bar>
@@ -29,14 +29,14 @@
         <ion-item nav-clear menu-close ui-sref="app.gas.pots">
             Котельная
         </ion-item>
-        <ion-item nav-clear menu-close ui-sref="app.option.index">
+        <ion-item nav-clear menu-close ng-click="checkOptionPass()" >
           Настройка
         </ion-item>
         <ion-item nav-clear menu-close ui-sref="app.hand">
           Ручное управление
         </ion-item>
-        <ion-item nav-clear menu-close ui-sref="app.testSms">
-          ТестСМС
+        <ion-item nav-clear menu-close ng-click="checkBalance()">
+          Запрос баланса
         </ion-item>
       </ion-list>
     </ion-content>
