@@ -19,3 +19,9 @@ upload:
 
 say:
 	say "Job is done."
+
+all-debug: build-debug upload-debug say
+build-debug:
+	cordova build android
+upload-debug:
+	cp platforms/android/build/outputs/apk/android-debug.apk ~/Dropbox/bro/

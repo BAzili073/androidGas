@@ -95,6 +95,7 @@
 .tab-item.max_width{
   max-width: none;
 }
+
 /* Empty. Add your own CSS if you like */
 
 /* Styles go here */
@@ -102,6 +103,7 @@
 .toggle-text{
   overflow : hidden;
 }
+
 .toggle-text > .track {
 
   width: auto;
@@ -110,8 +112,9 @@
 
 }
 
-.toggle-text .handle {
+.toggle.toggle-text.toggle-text .handle {
   left: 7px;
+  -webkit-transition: left 0.3s ease-out;
 }
 
 .toggle-text .handle-text {
@@ -128,14 +131,15 @@
 
 }
 
-.toggle-text input:checked + .track .handle {
+.toggle.toggle-text input:checked + .track .handle {
   -webkit-transform: none;
   -moz-transform: none;
   transform: none;
-  left: calc(100% - 34px);
-
-/*  -webkit-transform: translate3d(0, 0,0);*/
+  /*left: calc(100% - 34px);*/
+  /*right: 7px;*/
+  left: 88px;
 }
+
 .track-text {
   line-height: 26px;
   color: white;
