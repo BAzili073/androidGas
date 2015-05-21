@@ -7,7 +7,7 @@
           <div class="input-label">
             Объект
           </div>
-          <select ng-change="resetForm()" ng-model="$parent.selected" ng-options="objects.label for objects in objects.items track by objects.id"></select>
+          <select ng-change="resetForm()" ng-model="$parent.selected" ng-options="objects.label for objects in localobjects.items track by objects.id"></select>
         </label>
 
         <label class="item item-input">

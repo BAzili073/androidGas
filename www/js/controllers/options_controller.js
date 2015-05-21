@@ -66,10 +66,17 @@ angular.module('starter.controllers')
 })
 
 .controller('numbersController', function($scope, $timeout){
-    $scope.editObjects = $scope.objects;
+  $scope.phonesOptions = [
+     { id: -2, label: 'Баланс'},
+     { id: -1, label: 'Прибор'},
+     { id: 0,  label: 'Хозяин'},
+     { id: 1,  label: 'Дополнительный 1' },
+     { id: 2,  label: 'Дополнительный 2' },
+     { id: 3,  label: 'Дополнительный 3' },
+     { id: 4,  label: 'Дополнительный 4' }
+   ];
 
-    $scope.selected = $scope.editObjects[1];
-
+   $scope.selected = $scope.phonesOptions[1];
     $scope.resetForm = function() {
        switch($scope.selected.id){
          case -2: $scope.phoneNumber = $scope.phones.balance;break;
@@ -300,22 +307,37 @@ angular.module('starter.controllers')
     { id: 3, label: 'Автоматика'},
   ];
 
-  $scope.output1Selected = $scope.modeOutput[$scope.nrOptions.modeOutput[0]];
-  $scope.output2Selected = $scope.modeOutput[$scope.nrOptions.modeOutput[1]];
-  $scope.output3Selected = $scope.modeOutput[$scope.nrOptions.modeOutput[2]];
-  $scope.output4Selected = $scope.modeOutput[$scope.nrOptions.modeOutput[3]];
+  $scope.outputSelected = [
+    $scope.modeOutput[$scope.nrOptions.modeOutput[0]],$scope.modeOutput[$scope.nrOptions.modeOutput[1]],
+    $scope.modeOutput[$scope.nrOptions.modeOutput[2]],$scope.modeOutput[$scope.nrOptions.modeOutput[3]]
+  ];
+  $scope.outputComment = [
+    $scope.nrOptions.guardOutput[0],$scope.nrOptions.guardOutput[1],
+    $scope.nrOptions.guardOutput[2],$scope.nrOptions.guardOutput[3],
+    $scope.nrOptions.moduleOutput[0],$scope.nrOptions.moduleOutput[1],
+]
 
   $scope.setNrOptions = function(){
     $scope.startModal(5000);
-    if(window.SMS) SMS.sendSMS($scope.phones.pot, COMMANDS.SET_NROPTION($scope.output1Selected.id,$scope.output2Selected.id,
-      $scope.output3Selected.id,$scope.output4Selected.id), function(){
-          $scope.nrOptions.modeOutput[0] = $scope.output1Selected.id;
-          $scope.nrOptions.modeOutput[1] = $scope.output2Selected.id;
-          $scope.nrOptions.modeOutput[2] = $scope.output3Selected.id;
-          $scope.nrOptions.modeOutput[3] = $scope.output4Selected.id;
+    if (($scope.nrOptions.modeOutput[0] != $scope.outputSelected[0].id) || ($scope.nrOptions.modeOutput[1] != $scope.outputSelected[1].id) ||
+    ($scope.nrOptions.modeOutput[2] != $scope.outputSelected[2].id) || ($scope.nrOptions.modeOutput[3] != $scope.outputSelected[3].id)){
+    if(window.SMS) SMS.sendSMS($scope.phones.pot, COMMANDS.SET_NROPTION($scope.outputSelected[0].id,$scope.outputSelected[1].id,
+      $scope.outputSelected[2].id,$scope.outputSelected[3].id), function(){
+          $scope.nrOptions.modeOutput[0] = $scope.outputSelected[0].id;
+          $scope.nrOptions.modeOutput[1] = $scope.outputSelected[1].id;
+          $scope.nrOptions.modeOutput[2] = $scope.outputSelected[2].id;
+          $scope.nrOptions.modeOutput[3] = $scope.outputSelected[3].id;
           $scope.saveData('nrOptions');
           $scope.completeModal();
            }, $scope.errorModal());
+    }else{$scope.completeModal()}
+        $scope.nrOptions.guardOutput[0] = $scope.outputComment[0];
+        $scope.nrOptions.guardOutput[1] = $scope.outputComment[1];
+        $scope.nrOptions.guardOutput[2] = $scope.outputComment[2];
+        $scope.nrOptions.guardOutput[3] = $scope.outputComment[3];
+        $scope.nrOptions.moduleOutput[0] = $scope.outputComment[4];
+        $scope.nrOptions.moduleOutput[1] = $scope.outputComment[5];
+        $scope.saveData('nrOptions');
   }
 })
 

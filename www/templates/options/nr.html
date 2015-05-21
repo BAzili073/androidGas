@@ -7,25 +7,53 @@
                   <div class="input-label">
                     Выход 1
                   </div>
-                  <select  ng-model="$parent.output1Selected" ng-options="mode.label for mode in modeOutput track by mode.id"></select>
+                  <select  ng-model="$parent.outputSelected[0]" ng-options="mode.label for mode in modeOutput track by mode.id"></select>
+              </label>
+              <label class="item item-input">
+                <input type="text" ng-model="$parent.outputComment[0]" placeholder="Описание выхода 1">
               </label>
               <label class="item item-input item-select">
                   <div class="input-label">
                     Выход 2
                   </div>
-                  <select  ng-model="$parent.output2Selected" ng-options="mode.label for mode in modeOutput track by mode.id"></select>
+                  <select  ng-model="$parent.outputSelected[1]" ng-options="mode.label for mode in modeOutput track by mode.id"></select>
+              </label>
+              <label class="item item-input">
+                <input type="text" ng-model="$parent.outputComment[1]" placeholder="Описание выхода 2">
               </label>
               <label class="item item-input item-select">
                   <div class="input-label">
                     Выход 3
                   </div>
-                  <select  ng-model="$parent.output3Selected" ng-options="mode.label for mode in modeOutput track by mode.id"></select>
+                  <select  ng-model="$parent.outputSelected[2]" ng-options="mode.label for mode in modeOutput track by mode.id"></select>
+              </label>
+              <label class="item item-input">
+                <input type="text" ng-model="$parent.outputComment[2]"placeholder="Описание выхода 3">
               </label>
               <label class="item item-input item-select">
                   <div class="input-label">
                     Выход 4
                   </div>
-                  <select  ng-model="$parent.output4Selected" ng-options="mode.label for mode in modeOutput track by mode.id"></select>
+                  <select  ng-model="$parent.outputSelected[3]" ng-options="mode.label for mode in modeOutput track by mode.id"></select>
+              </label>
+              <label class="item item-input">
+                <input type="text" ng-model="$parent.outputComment[3]" placeholder="Описание выхода 4">
+              </label>
+              <label class="item item-input">
+                  <div class="input-label">
+                    Выход модуль 1
+                  </div>
+              </label>
+              <label class="item item-input">
+                <input type="text" ng-model="$parent.outputComment[4]" placeholder="Описание выхода модуль 1">
+              </label>
+              <label class="item item-input">
+                  <div class="input-label">
+                    Выход модуль 2
+                  </div>
+              </label>
+              <label class="item item-input">
+                <input type="text" ng-model="$parent.outputComment[5]" placeholder="Описание выхода модуль 2">
               </label>
             </div>
                </form>

@@ -109,6 +109,7 @@ angular.module('starter', ['ionic', 'starter.controllers'])
 
   .state('app.option.ns', {
     url: "/ns",
+    cache: false,
     views: {
       'optionContent': {
         templateUrl: "templates/options/ns.html",

@@ -50,7 +50,6 @@ angular.module('starter.controllers')
        outputComment.then(function(data) {
          $scope.ssOptions.moduleOutput[data.idOutput] = data.comment;
          $scope.saveData('ssOptions');
-         // console.log('Tapped!', data.comment);
        });
       };
 
@@ -81,9 +80,6 @@ angular.module('starter.controllers')
              ]
            });
            inputComment.then(function(data) {
-             // $scope.ssOption.text[data.idOutput] = data.comment;
-             // $scope.saveData('ssOption');
-             // console.log('Tapped!', data.comment);
            });
       };
       $scope.getTempComment = function(id){

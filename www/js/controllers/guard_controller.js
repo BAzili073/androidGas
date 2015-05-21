@@ -75,7 +75,6 @@ angular.module('starter.controllers')
         outputComment.then(function(data) {
           $scope.ssOptions.guardOutput[data.idOutput] = data.comment;
           $scope.saveData('ssOptions');
-          // console.log('Tapped!', data.comment);
         });
    };
 
