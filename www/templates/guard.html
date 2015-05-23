@@ -2,7 +2,7 @@
 <ion-view view-title="Охрана">
   <ion-content>
     <button class=" button button-full button-{{getGuardColor()}} noMargin">
-      {{getGuardStateText()}}
+      {{$parent.guardContent.whoChangeGuard}} {{getGuardStateText()}}
     </button>
     <ion-toggle ion-toggle-text  ng-model="statToggle.checked" ng-change="statToggleChange()">
    Режим охраны:

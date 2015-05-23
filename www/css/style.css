@@ -9,6 +9,7 @@
    /*background-color: #228B22;*/
    text-align:center;
 }
+
 .quadratic_red {
 
   background: red;
@@ -90,6 +91,9 @@
 }
 .button.noMargin {
   margin: 0px;
+}
+.item.noMargin {
+  border-width: 0px;
 }
 
 .tab-item.max_width{

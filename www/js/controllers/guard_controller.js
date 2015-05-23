@@ -11,9 +11,15 @@ angular.module('starter.controllers')
    }
 
    $scope.statToggleChange = function(){
-     $scope.guardContent.stateGuard = $scope.statToggle.checked;
-     $scope.saveData('guardContent');
-     $scope.guardContent.statusGuard = 0
+    //  console.log(COMMANDS.SET_GUARD($scope.statToggle.checked));
+     $scope.startModal(5000);
+     if(window.SMS) SMS.sendSMS($scope.phones.pot, COMMANDS.SET_GUARD($scope.statToggle.checked), function(){
+         $scope.guardContent.stateGuard = $scope.statToggle.checked;
+         $scope.saveData('guardContent');
+         $scope.guardContent.statusGuard = 2;
+     }, $timeout(function(){
+       if($scope.guardContent.statusGuard != 2) $scope.errorModal();
+     }, 3000));
    }
 
    $scope.getGuardState = function(){
@@ -37,12 +43,6 @@ angular.module('starter.controllers')
      }
    $scope.getOutputColor = function(number){
      return $scope.setOutputColors($scope.guardContent.outputs[number])
-     }
-
-
-     $scope.outputComment = {
-       text: "text",
-       id: 1
      }
 
 
@@ -77,6 +77,10 @@ angular.module('starter.controllers')
           $scope.saveData('ssOptions');
         });
    };
+   
+   $scope.seePotGet = function(num){
+     return $scope.potContent.seePot[num];
+   }
 
    $scope.seeInputComment = function(id) {
         $scope.data = {

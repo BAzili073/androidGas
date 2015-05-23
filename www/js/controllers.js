@@ -1,9 +1,9 @@
 var NUMBER = "+79021201364";
 
 var GUARD_STATES=[
-  {text : "Ожидание ответа", color: "calm"},
-  {text: "На охране", color:"balanced"},
   {text : "Снят с охраны", color: "stable"},
+  {text: "На охране", color:"balanced"},
+  {text : "Ожидание ответа", color: "calm"},
   {text: "Ошибка" , color: "assertive"}
 ];
 
@@ -22,20 +22,24 @@ var COMMANDS = {
   DEL_TMTERM: function(what){ return 'с' + what;},
   RESET_DEVICE: function(){ return 'ресет';},
   CHECK_BALANCE: function(number){ return 'б ' + number;},
-  SET_GUARD: function(state){ return 'o'+state;},
-  SET_OUTPUT: function(number,state){ return 'o'+number + ' ' + state;},
+  SET_GUARD: function(state){ return 'о'+ (state ? 1:0);},
+  SET_OUTPUT: function(number,state){ return 'в'+number + ' ' + state;},
   SET_TEMPTEXT: function(number,min,max){ return 'т'+number + 'с' +' '+ min + max;},
   SET_TEMPOUT: function(number,output,min,max){ return 'т'+ number + 'в' + output +' '+ min + max;},
 };
 
 var SMS_REGEX = {
-  REPORT_GUARD: /вх:([+,-]*) вых:([0,1]*) (сеть 220В|акк!)/,
-  BOOT_SMS: /(?:(?:х )?вер:(\d.\d) запуск (на охране|снят с охраны)(?: т:)?((?:[+-]\d*;)*)(?: тм=(\d*))?)? ?(?:вх:([+,-]*) вых:([0,1]*) (220в|акк!))?/
+  REPORT_GUARD: /(?:х )?(?:вер:(\d.\d ))?(?:запуск )?(на охране|снят с охраны)(?: т:((?:-?\d;*)*)?(?: тм=(\d*))?)? ?(?:вх:([+-]*) вых:([01]*) (220в|акк!))/,
+  REPORT_MODULE: /(?:вер:\d.\d )?(?:запуск )?кот:(\d{3}) вх:([01]{8}) вых:([10]{2})/,
+  CHANGE_GUARD: /(?:(\d{11})|(?:тм=(\d*))) (на охране|снят с охраны)/,
+  SATURN_ALARM: /тревога (\d): [а-я]*/,
+  MODULE_ALARM: /(сработал|восстановление) (\d): [а-я]*/,
+  POWER: /(отказ|восстановление) 220в/
 };
 
 var READ_INTERVAL = 1000;
 
-var DATA_VERSION = "0.3.9";
+var DATA_VERSION = "0.4.9";
 
 var DEFAULT_DATA = {
 
@@ -83,8 +87,8 @@ var DEFAULT_DATA = {
 
   nrOptions:{
     modeOutput: [0,0,0,0],
-    guardOutput: ["1","2","3","4"],
-    moduleOutput: ["1","2"],
+    guardOutput: ["Выход 1","Выход 2","Выход 3","Выход 4"],
+    moduleOutput: ["доп.выход 1","доп.выход 2"],
   },
 
   ndOptions:{
@@ -92,17 +96,18 @@ var DEFAULT_DATA = {
   },
 
   temperature:{
-    nowTemp: ["+40","-50","+1","-32","-10"],
+    nowTemp: ["","","","",""],
     minText: [-99,-99,-99,-99,-99],
     maxText: [99,99,99,99,99],
-    minOut: [41,-99,-99,-99,-99],
+    minOut: [-99,-99,-99,-99,-99],
     maxOut: [99,99,99,99,99],
     comment:["Датчик 1","Датчик 2","Датчик 3","Датчик 4","Датчик 5",],
-    optionNow:[5,0,7,0,0],
+    optionNow:[0,0,0,0,0],
     lastUse: 0,
   },
 
   potContent:{
+    seePot: [true,true,true],
     statToggle: [false,false,false],
     torchToggle: [true,true,true],
     potState: [0,0,0],
@@ -111,14 +116,17 @@ var DEFAULT_DATA = {
 
   guardContent:{
     stateGuard: true,//true = on false = off
-    statusGuard: 1, //0 - off, 1 - on, 2> - alarm
+    statusGuard: 2, //0 - off, 1 - on, 2-wait 3> - alarm
     power: true, //220
     inputs: [false, false, false, false, false], // true - alarm, false - ok
     guardState: 0,
+    counterTM:0,
+    whoChangeGuard:"",
   },
 
   handContent:{
-    outputs: [false, false, false, false,false,false],// true - on, false - off
+    outputsSaturn: [false, false, false, false],// true - on, false - off
+    outputsModule: [false, false],// true - on, false - off
   }
 
 };
@@ -136,12 +144,13 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
   $localstorage.checkVersion(DATA_VERSION);
 
 
-  $scope.potNumber = 0;
+
   $scope.lastSMS = '';
 
   $scope.objects = $localstorage.getObject('objects',{
     items : [{id:0,label: "Котельная №1"}],
   });
+  $scope.potNumber = $scope.objects.items[0].id;
 
   // for(var i = 0; i < ($scope.objects.name.length); i++) {
   //   if ($scope.objects.name[i] != "") $scope.objects.items.push({
@@ -201,10 +210,12 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
     if(!$scope.modal) return;
     $scope.modal.status = 'error';
   }
+
   $scope.setPot = function(num){
-    $scope.potNumber = typeof num !== 'number'? num : $scope.objects.items[0].id;
+    $scope.potNumber = $scope.objects.items[0].id;
     $scope.loadAllData();
   }
+
   $scope.saveObjects = function(key) {
     $localstorage.setObject(key, $scope[key]);
   }
@@ -289,9 +300,50 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
 
   $scope.reportGuard = function(body) {
     var data = SMS_REGEX.REPORT_GUARD.exec(body);
-    $scope.guardContent.inputs = data[1].split("").map(function(i){ return i === "-" });
-    $scope.guardContent.outputs = data[2].split("").map(function(i){ return i === "1" });
-    $scope.guardContent.power = data[3].indexOf("220") >= 0;
+    $scope.temperature.nowTemp.map(function(i){ return ""})
+    $scope.guardContent.stateGuard = data[2].indexOf("на охране") >= 0;
+    $scope.guardContent.statusGuard = (data[2].indexOf("на охране") >= 0) ? 1:0;
+    $scope.temperature.nowTemp = data[3].split(";").map(function(i){ if (i>0){ return "+" + i} else {return i}})
+    $scope.guardContent.counterTM = data[4]
+    $scope.guardContent.inputs = data[5].split("").map(function(i){ return i === "+" });
+    $scope.handContent.outputsSaturn = data[6].split("").map(function(i){ return i === "1" });
+    $scope.guardContent.power = data[7].indexOf("220") >= 0;
+    $scope.saveData('guardContent');
+    $scope.saveData('temperature');
+    $scope.saveData('handContent');
+  }
+  $scope.reportModule = function(body) {
+    var data = SMS_REGEX.REPORT_MODULE.exec(body);
+    $scope.potContent.potState = data[1].split("");
+    $scope.potContent.inputs = data[2].split("").map(function(i){ return i === "1" });
+    $scope.handContent.outputsModule = data[3].split("").map(function(i){ return i === "1" });
+    $scope.saveData('potContent');
+    $scope.saveData('handContent');
+  }
+
+  $scope.changeGuard = function(body) {
+    var data = SMS_REGEX.CHANGE_GUARD.exec(body);
+    if (data[1]) $scope.guardContent.whoChangeGuard = data[1]
+    else $scope.guardContent.whoChangeGuard = data[2]
+    $scope.guardContent.stateGuard = data[3].indexOf("на охране") >= 0;
+    $scope.guardContent.statusGuard = (data[3].indexOf("на охране") >= 0) ? 1:0;
+    $scope.saveData('guardContent');
+  }
+
+  $scope.saturnAlarm = function(body) {
+    var data = SMS_REGEX.SATURN_ALARM.exec(body);
+    $scope.guardContent.inputs[data[1]-1] = true;
+    $scope.saveData('guardContent');
+  }
+  $scope.moduleAlarm = function(body) {
+    var data = SMS_REGEX.MODULE_ALARM.exec(body);
+    $scope.potContent.inputs[data[2]-1] = data[1].indexOf("сработал") >= 0;
+    $scope.saveData('potContent');
+  }
+  $scope.saturnPower = function(body) {
+    var data = SMS_REGEX.POWER.exec(body);
+    $scope.guardContent.power = data[1].indexOf("восстановление") >= 0;
+    $scope.saveData('guardContent');
   }
 
   $scope.receiveSMS = function(sms){
@@ -299,18 +351,15 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
 
     var body = sms.body;
     switch(true){
-      case SMS_REGEX.REPORT_GUARD.test(body): $scope.reportGuard(body);break;
+      case SMS_REGEX.REPORT_GUARD.test(body): $scope.reportGuard(body); break;
+      case SMS_REGEX.REPORT_MODULE.test(body): $scope.reportModule(body); break;
+      case SMS_REGEX.CHANGE_GUARD.test(body): $scope.changeGuard(body); break;
+      case SMS_REGEX.SATURN_ALARM.test(body): $scope.saturnAlarm(body); break;
+      case SMS_REGEX.MODULE_ALARM.test(body): $scope.moduleAlarm(body); break;
+      case SMS_REGEX.POWER.test(body): $scope.saturnPower(body); break;
       default: console.warn("Undefined sms received: ", body);
     }
-  }
-
-
-  $scope.data1 = [
-    {body : "вх:+--+- вых:0001 акк!"},
-  ]
-
-  $scope.testSms = function(){
-    $scope.receiveSMS($scope.data1[0]);
+    $state.go($state.current, {}, {reload: true});
   }
 
   $scope.initSMS = function() {
@@ -344,13 +393,19 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
 
   document.addEventListener('deviceready', $scope.initSMS, false);
 
+  $scope.getLabelFromId = function(inId){
+      return (_.find($scope.objects.items, {id: inId}).label);
+  }
 
-
+$scope.getItemLabel = function(currentId){
+    if (currentId==$scope.potNumber) return (">> " + $scope.getLabelFromId(currentId) + " <<")
+    else return $scope.getLabelFromId(currentId);
+}
 
   $scope.showObjects = function(){
 
     var seeObjects = $ionicPopup.show({
-      template: '<button  ng-click="chooseObjects(item.id);" class="button button-block item-icon-right" ng-repeat="item in objects.items">{{item.label}}</button>',
+      template: '<button  ng-click="chooseObjects(item.id);" class="button button-block item-icon-right" ng-repeat="item in objects.items">{{getItemLabel(item.id)}}</button>',
       title: 'Объекты',
       scope: $scope,
       buttons: [
@@ -382,7 +437,7 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
 
     // An elaborate, custom popup
     var password = $ionicPopup.show({
-      template: '<input type="password" placeholder=" Введите пароль" ng-model="data.password">',
+      template: '<input type="password" placeholder=" Введите код доступа" ng-model="data.password">',
       title: 'Вход в настройки',
       scope: $scope,
       buttons: [
@@ -403,7 +458,7 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
       } else {
 
         var  error = $ionicPopup.show({
-          title: 'Пароль неверный',
+          title: 'Код доступа неверный',
           buttons: [ { text: 'OK', type: 'button-assertive' } ]
         });
 
@@ -412,19 +467,30 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
     });
   };
 
+  $scope.data1 = [
+    // {body : " на охране т:50;4;-4 вх:+++++ вых:0100 220в"},
+    // {body : "79021201364 снят с охраны"},
+    // {body : "тревога 3: тратратра"},
+    // {body : "восстановление 220в"},
+    {body : "восстановление 3: 220в"},
+    // {body : "вер:3.1 запуск кот:102 вх:00110000 вых:10"},
+
+  ],
+
   $scope.checkBalance = function(){
-    if ($scope.phones.balance != ""){
-      $scope.startModal(5000);
-      if(window.SMS) SMS.sendSMS($scope.phones.pot,COMMANDS.CHECK_BALANCE($scope.phones.balance), function(){
-        $scope.completeModal();
-      }, $scope.errorModal());
-    } else {
-      var  error = $ionicPopup.show({
-        title: 'Ошибка',
-        subTitle: 'Номер проверки баланса не настроен',
-        buttons: [ { text: 'OK', type: 'button-assertive' } ]
-      });
-    }
+      $scope.receiveSMS($scope.data1[0]);
+    // if ($scope.phones.balance != ""){
+    //   $scope.startModal(5000);
+    //   if(window.SMS) SMS.sendSMS($scope.phones.pot,COMMANDS.CHECK_BALANCE($scope.phones.balance), function(){
+    //     $scope.completeModal();
+    //   }, $scope.errorModal());
+    // } else {
+    //   var  error = $ionicPopup.show({
+    //     title: 'Ошибка',
+    //     subTitle: 'Номер проверки баланса не настроен',
+    //     buttons: [ { text: 'OK', type: 'button-assertive' } ]
+    //   });
+    // }
   }
 
   $scope.currentPot = function() {

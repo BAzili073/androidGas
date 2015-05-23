@@ -1,6 +1,7 @@
 
 <ion-view view-title="Управление">
   <ion-content class="has-footer has-header">
+    <div ng-show="seePotGet(0)">
         <ion-toggle ion-toggle-text ng-model="statToggle.checked[0]" ng-change="statToggleChange(1)">
           Котел 1<lable class="button button-small button-{{getPotColor(1)}} oval_small">
              {{getPotStateText(1)}}
@@ -31,6 +32,8 @@
       </button>
     </div>
 </div>
+</div>
+<div ng-show="seePotGet(1)">
 <ion-toggle ion-toggle-text ng-model="statToggle.checked[1]" ng-change="statToggleChange(2)">
   Котел 2<lable class="button button-small button-{{getPotColor(2)}} oval_small">
      {{getPotStateText(2)}}
@@ -61,6 +64,8 @@
       </button>
     </div>
 </div>
+</div>
+<div ng-show="seePotGet(2)">
 <ion-toggle ion-toggle-text ng-model="statToggle.checked[2]" ng-change="statToggleChange(3)">
   Котел 3<lable class="button button-small button-{{getPotColor(3)}} oval_small">
      {{getPotStateText(3)}}
@@ -90,6 +95,7 @@
           Настроить
       </button>
     </div>
+</div>
 </div>
         <!-- <div ng-show = "torchTemp({{potId()}})" class="item">Термодатчики:
           <button  ng-click="seeTempComment({{torchTemp(potId())}})" class="button button-small button-{{getTempColor(torchTemp(potId()))}} term">

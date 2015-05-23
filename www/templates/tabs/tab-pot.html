@@ -7,17 +7,17 @@
         18.05.2015 23:46
       </div>
 
-      <a class="item item-icon-right">
+      <a ng-show="seePotGet(0)" class="item item-icon-right">
         Котел 1<i>
           <span class="badge badge-{{getPotColor(0)}}">{{getPotStateText(0)}}</span>
         </i>
       </a>
-      <a class="item item-icon-right">
+      <a  ng-show="seePotGet(1)" class="item item-icon-right">
         Котел 2<i>
           <span class="badge badge-{{getPotColor(1)}}">{{getPotStateText(1)}}</span>
         </i>
       </a>
-      <a class="item item-icon-right">
+      <a ng-show="seePotGet(2)" class="item item-icon-right">
         Котел 3<i>
           <span class="badge badge-{{getPotColor(2)}}">{{getPotStateText(2)}}</span>
         </i>
