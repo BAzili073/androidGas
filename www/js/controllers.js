@@ -20,10 +20,11 @@ var COMMANDS = {
   SET_VMOPTION: function(number,minT,inactiveT,waitT,outOn,outOff){ return 'вм ' + (number-10) + waitT + minT + inactiveT + outOn + outOff;},
   SET_TEXT: function(id,text){ return id < 6 ? 'сс' + id + ' ' + text : 'см' + (id-5) + ' ' + text },
   DEL_TMTERM: function(what){ return 'с' + what;},
-  RESET_DEVICE: function(){ return 'ресет';},
+  RESET_DEVICE: "ресет",
   CHECK_BALANCE: function(number){ return 'б ' + number;},
   SET_GUARD: function(state){ return 'о'+ (state ? 1:0);},
-  SET_OUTPUT: function(number,state){ return 'в'+number + ' ' + state;},
+  SET_OUTPUT: function(number,state){ return 'в'+number + ' ' + (state ? 1:0);},
+  CONTROL_POT: function(state,number){ return (state ? 'вкл ':'откл ') + number },
   SET_TEMPTEXT: function(number,min,max){ return 'т'+number + 'с' +' '+ min + max;},
   SET_TEMPOUT: function(number,output,min,max){ return 'т'+ number + 'в' + output +' '+ min + max;},
 };
@@ -34,12 +35,14 @@ var SMS_REGEX = {
   CHANGE_GUARD: /(?:(\d{11})|(?:тм=(\d*))) (на охране|снят с охраны)/,
   SATURN_ALARM: /тревога (\d): [а-я]*/,
   MODULE_ALARM: /(сработал|восстановление) (\d): [а-я]*/,
-  POWER: /(отказ|восстановление) 220в/
+  POT_MESSAGES: /([\dа-я\s\n]*): котел (\d)/,
+  POWER: /(отказ|восстановление) 220в/,
+  ERROR_SMS: /ошибка:([\dа-я\s\n]*)/,
 };
 
-var READ_INTERVAL = 1000;
+var READ_INTERVAL = 40000;
 
-var DATA_VERSION = "0.4.9";
+var DATA_VERSION = "0.5.3";
 
 var DEFAULT_DATA = {
 
@@ -110,12 +113,12 @@ var DEFAULT_DATA = {
     seePot: [true,true,true],
     statToggle: [false,false,false],
     torchToggle: [true,true,true],
-    potState: [0,0,0],
+    potState: [9,9,9],
     inputs: [false,false,false,false,false,false,false,false],
   },
 
   guardContent:{
-    stateGuard: true,//true = on false = off
+    stateGuard: false,//true = on false = off
     statusGuard: 2, //0 - off, 1 - on, 2-wait 3> - alarm
     power: true, //220
     inputs: [false, false, false, false, false], // true - alarm, false - ok
@@ -132,7 +135,7 @@ var DEFAULT_DATA = {
 };
 
 var DATA_KEYS = ['phones', 'ssOptions', 'nsOptions', 'vsOptions', 'nrOptions', 'ndOptions', 'temperature', 'potContent', 'guardContent', 'handContent'];
-
+var TAB_ACTIVE = 1;
 angular.module('starter.controllers', ['starter.services', 'starter.constants', 'starter.directives'])
 
 .controller('AppCtrl', function($scope,$state,$ionicHistory, $window, $interval, $localstorage, $ionicModal, $timeout, $ionicPopup) {
@@ -146,19 +149,20 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
 
 
   $scope.lastSMS = '';
+  $scope.lastObjId = '';
 
   $scope.objects = $localstorage.getObject('objects',{
-    items : [{id:0,label: "Котельная №1"}],
+    items : [{id:0,label: "Котельная №1",number: NUMBER}],
   });
   $scope.potNumber = $scope.objects.items[0].id;
 
-  // for(var i = 0; i < ($scope.objects.name.length); i++) {
-  //   if ($scope.objects.name[i] != "") $scope.objects.items.push({
-  //     id : i,
-  //     label : $scope.objects.name[i]
-  //   })
-  //   }
+ $scope.getTabActive = function(tab){
+   if (tab==TAB_ACTIVE) return "active"
+ }
 
+  $scope.currentPot = function() {
+    return _.find($scope.objects.items, {id: $scope.potNumber});
+  }
   $scope.changeLastUse = function(id){
     $scope.temperature.lastUse = id;
   }
@@ -245,9 +249,11 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
     });
   }
 
-  $scope.setPotNumber = function(value){
+  $scope.setPotNumber = function(value,lab){
     $scope.startModal(1000);
     $scope.phones.pot = value;
+    $scope.objects.item[$scope.currentPot()].number = value;
+    $scope.saveObjects('objects');
     $scope.saveData('phones');
     $scope.completeModal();
   }
@@ -345,6 +351,22 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
     $scope.guardContent.power = data[1].indexOf("восстановление") >= 0;
     $scope.saveData('guardContent');
   }
+  $scope.potMessages = function(body) {
+    var data = SMS_REGEX.POT_MESSAGES.exec(body);
+    console.log (data[1])
+    switch(data[1]){
+      case "остановка":$scope.potContent.potState[data[2]-1]=0;break;
+      case "запуск":$scope.potContent.potState[data[2]-1]=1;break;
+      case "нет пламени":$scope.potContent.potState[data[2]-1]=2;break;
+      case "перегрев теплоносителя 1":$scope.potContent.potState[data[2]-1]=3;break;
+      case "нет тяги":$scope.potContent.potState[data[2]-1]=4;break;
+      case "перегрев теплоносителя 2":$scope.potContent.potState[data[2]-1]=5;break;
+      case "низкое напряжение":$scope.potContent.potState[data[2]-1]=6;break;
+      case "нет нагрева теплоносителя":$scope.potContent.potState[data[2]-1]=7;break;
+      case "нет ответа":$scope.potContent.potState[data[2]-1]=8;break;
+    }
+    $scope.saveData('potContent');
+  }
 
   $scope.receiveSMS = function(sms){
     $scope.lastSMS = JSON.stringify(sms);
@@ -357,20 +379,19 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
       case SMS_REGEX.SATURN_ALARM.test(body): $scope.saturnAlarm(body); break;
       case SMS_REGEX.MODULE_ALARM.test(body): $scope.moduleAlarm(body); break;
       case SMS_REGEX.POWER.test(body): $scope.saturnPower(body); break;
+      case SMS_REGEX.POT_MESSAGES.test(body): $scope.potMessages(body); break;
       default: console.warn("Undefined sms received: ", body);
     }
     $state.go($state.current, {}, {reload: true});
   }
 
   $scope.initSMS = function() {
-
     if(!$scope.sms.init) {
       $scope.startModal(30000, "Загрузка данных");
       SMS.sendSMS($scope.phones.pot, COMMANDS.REPORT, $scope.finishModal, $scope.errorModal());
     }
 
     $interval (function(){
-
       var filter = {
         box : 'inbox',
         read : 0,
@@ -378,11 +399,25 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
       };
 
       if(window.SMS) SMS.listSMS(filter, function(data){
+        $scope.timesee = data[0].date;
         if(Array.isArray(data)) {
-          for(var i in data) {
-            if (data[i].address == $scope.phones.pot)
-            $scope.receiveSMS(data[i]);
-          }
+          _.forOwnRight(data, function(value, key) {
+            $scope.objects.items.forEach(function(obj){
+              if (data[key].address == obj.number)
+                if (obj.id == $scope.currentPot().id)
+                    $scope.receiveSMS(data[key]);
+                else{
+                  $scope.lastObjId = $scope.potNumber;
+                  $scope.saveAllData();
+                  $scope.potNumber = obj.id;
+                  $scope.loadAllData();
+                  $scope.receiveSMS(data[key]);
+                  $scope.saveAllData();
+                  $scope.smsOtherObj($scope.currentPot().label)
+                }
+            });
+
+          });
         }
       }, function(err) { $scope.startModal(null, "Не могу прочитать SMS", true) });
 
@@ -396,11 +431,41 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
   $scope.getLabelFromId = function(inId){
       return (_.find($scope.objects.items, {id: inId}).label);
   }
+  $scope.getIdFromLabel = function(lab){
+      return (_.find($scope.objects.items, {label: lab}).id);
+  }
+
 
 $scope.getItemLabel = function(currentId){
     if (currentId==$scope.potNumber) return (">> " + $scope.getLabelFromId(currentId) + " <<")
     else return $scope.getLabelFromId(currentId);
 }
+
+$scope.smsOtherObj = function(lab){
+
+  var seeObj = $ionicPopup.show({
+    // template: '<button  ng-click="chooseObjects(item.id);" class="button button-block item-icon-right" ng-repeat="item in objects.items">{{getItemLabel(item.id)}}</button>',
+    title: 'Активность',
+    subTitle:'Обеъкт ' + lab,
+    scope: $scope,
+    buttons: [
+      {
+        text: '<b>Просмотр</b>',
+        type: 'button-stable',
+        onTap: function() {
+        }
+      },
+      {
+        text: '<b>Закрыть</b>',
+        type: 'button-positive',
+        onTap: function() {
+          $scope.potNumber = $scope.lastObjId;
+          $scope.loadAllData();
+        }
+      }
+    ]
+  });
+};
 
   $scope.showObjects = function(){
 
@@ -468,17 +533,31 @@ $scope.getItemLabel = function(currentId){
   };
 
   $scope.data1 = [
-    // {body : " на охране т:50;4;-4 вх:+++++ вых:0100 220в"},
+    // {body : " на охране т:50;4;-4 вх:----- вых:0100 220в"},
     // {body : "79021201364 снят с охраны"},
     // {body : "тревога 3: тратратра"},
     // {body : "восстановление 220в"},
-    {body : "восстановление 3: 220в"},
-    // {body : "вер:3.1 запуск кот:102 вх:00110000 вых:10"},
+    // {body : "восстановление 3: 220в"},
+    // {body : "вер:3.1 запуск кот:678 вх:00110000 вых:10"},
+    {body: "перегрев теплоносителя 2: котел 3"}
 
   ],
 
   $scope.checkBalance = function(){
       $scope.receiveSMS($scope.data1[0]);
+    $scope.timeConverter = function (UNIX_timestamp){
+      var a = new Date(UNIX_timestamp*1000);
+      var months = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+      var year = a.getFullYear();
+      var month = months[a.getMonth()];
+      var date = a.getDate();
+      var hour = a.getHours();
+      var min = a.getMinutes();
+      var sec = a.getSeconds();
+      var time = date + ',' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
+      return time;
+    }
+    console.log($scope.timeConverter(14327324533))
     // if ($scope.phones.balance != ""){
     //   $scope.startModal(5000);
     //   if(window.SMS) SMS.sendSMS($scope.phones.pot,COMMANDS.CHECK_BALANCE($scope.phones.balance), function(){
@@ -493,7 +572,4 @@ $scope.getItemLabel = function(currentId){
     // }
   }
 
-  $scope.currentPot = function() {
-    return _.find($scope.objects.items, {id: $scope.potNumber});
-  }
 })

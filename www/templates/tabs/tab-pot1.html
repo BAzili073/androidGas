@@ -1,5 +1,5 @@
 
-<ion-view view-title="Управление">
+<ion-view view-title="{{currentPot().label}}">
   <ion-content class="has-footer has-header">
     <div ng-show="seePotGet(0)">
         <ion-toggle ion-toggle-text ng-model="statToggle.checked[0]" ng-change="statToggleChange(1)">

@@ -2,8 +2,15 @@ angular.module('starter.constants', [])
 
 
 .constant("POT_STATES", [
-  {text : "Ожидание ответа", color: "calm"},
-  {text: "Запущен", color:"balanced"},
   {text : "Остановлен", color: "stable"},
-  {text: "Ошибка" , color: "assertive"}
+  {text: "Запущен", color:"balanced"},
+  {text: "Нет пламени" , color: "assertive"},
+  {text: "Перегрев 1" , color: "assertive"},
+  {text: "Нет тяги" , color: "assertive"},
+  {text: "Перегрев 2" , color: "assertive"},
+  {text: "Низкое напр." , color: "calm"},
+  {text: "Нет нагрева" , color: "calm"},
+  {text: "Не подключен" , color: "stable"},
+  {text : "Ожидание ответа", color: "calm"},
+
 ])

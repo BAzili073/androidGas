@@ -5,12 +5,14 @@
         <button class="button button-icon ion-navicon" menu-toggle="left"></button>
       </ion-nav-buttons>
   </ion-nav-bar>
+  <div class=" tabs-striped">
   <div class="tabs">
-    <a class="tab-item max_width" ui-sref="app.gas.pots" nav-transition="none">
+    <a class="tab-item max_width {{getTabActive(1)}}" ui-sref="app.gas.pots" nav-transition="none">
       Котельная
     </a>
-    <a class="tab-item max_width" ui-sref="app.gas.pot" nav-transition="none">
+    <a class="tab-item max_width {{getTabActive(2)}}" ui-sref="app.gas.pot" nav-transition="none">
       Управление
     </a>
+</div>
 </div>
 </ion-nav-view>

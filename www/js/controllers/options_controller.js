@@ -91,7 +91,9 @@ angular.module('starter.controllers')
 
     $scope.setPhone = function(){
      if ($scope.selected.id < 0 ){
-      if ($scope.selected.id == -1 ) $scope.setPotNumber($scope.phoneNumber);
+      if ($scope.selected.id == -1 ){
+        $scope.setPotNumber($scope.phoneNumber);
+      }
       if ($scope.selected.id == -2 ) $scope.setBalanceNumber($scope.phoneNumber);
   }else
       $scope.updateNumber($scope.selected.id, $scope.phoneNumber);

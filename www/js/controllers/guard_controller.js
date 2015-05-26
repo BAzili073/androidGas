@@ -12,14 +12,13 @@ angular.module('starter.controllers')
 
    $scope.statToggleChange = function(){
     //  console.log(COMMANDS.SET_GUARD($scope.statToggle.checked));
-     $scope.startModal(5000);
+     $scope.startModal(1000);
      if(window.SMS) SMS.sendSMS($scope.phones.pot, COMMANDS.SET_GUARD($scope.statToggle.checked), function(){
          $scope.guardContent.stateGuard = $scope.statToggle.checked;
          $scope.saveData('guardContent');
          $scope.guardContent.statusGuard = 2;
-     }, $timeout(function(){
-       if($scope.guardContent.statusGuard != 2) $scope.errorModal();
-     }, 3000));
+         $scope.toggleSendSuccesful();
+     }, $scope.toggleSendError());
    }
 
    $scope.getGuardState = function(){
@@ -77,7 +76,7 @@ angular.module('starter.controllers')
           $scope.saveData('ssOptions');
         });
    };
-   
+
    $scope.seePotGet = function(num){
      return $scope.potContent.seePot[num];
    }
