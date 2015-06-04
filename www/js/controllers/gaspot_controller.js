@@ -4,7 +4,6 @@ angular.module('starter.controllers')
   TAB_ACTIVE = 2;
    $scope.statToggle = {
      checked: [$scope.potContent.statToggle[0],$scope.potContent.statToggle[1],$scope.potContent.statToggle[2]]
-
    }
 
   $scope.potId = function() {
@@ -14,14 +13,14 @@ angular.module('starter.controllers')
     $scope.statToggleChange = function(id){
       $scope.startModal(1000);
       var num = id - 1;
-      id = id + 4;
-      if(window.SMS) SMS.sendSMS($scope.phones.pot, COMMANDS.CONTROL_POT($scope.statToggle.checked[id-1],id), function(){
-        $scope.potContent.statToggle[id-1] = $scope.statToggle.checked[id-1];
+      // id = id + 4;
+      if(window.SMS) SMS.sendSMS($scope.phones.pot, COMMANDS.CONTROL_POT($scope.statToggle.checked[num],id), function(){
+        $scope.potContent.statToggle[num] = $scope.statToggle.checked[num];
         $scope.saveData('potContent');
-        $scope.potContent.potState[id-1] = 9;
+        $scope.potContent.potState[num] = 9;
         $scope.toggleSendSuccesful();
     }, $scope.toggleSendError());
-    // console.log(COMMANDS.CONTROL_POT($scope.statToggle.checked[num],id));
+    console.log(COMMANDS.CONTROL_POT($scope.statToggle.checked[num],id));
     }
 
     $scope.torchToggleChange = function(id){

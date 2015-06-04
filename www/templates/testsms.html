@@ -1,12 +1,10 @@
 <ion-view view-title="SMS">
   <ion-content>
-    <ion-list>
-      <ion-item ng-repeat="playlist in playlists" href="#/app/playlists/{{playlist.id}}">
-        {{sms.body}}
-      </ion-item>
-      <div class="item">
-        <button ng-click="testSms()" class="button button-block button-stable"><i></i>тестСмс</button>
-      </div>
-    </ion-list>
-  </ion-content>
+    id:{{$parent.lastIdSms}}
+    time:{{$parent.lastSmsTime}}
+    <div class="button-bar">
+      <a class="button" ng-click="getLastSmsTime()">Время?</a>
+    </div>
+    <button class="button" ng-click="playMusic()">Play from file system</button>
+</ion-content>
 </ion-view>

@@ -490,16 +490,17 @@ angular.module('starter.controllers')
   $scope.setTemperature = function(){
     if ($scope.selected.id == 0){
       $scope.startModal(5000);
-      if(window.SMS) SMS.sendSMS($scope.phones.pot, COMMANDS.SET_TEMPTEXT($scope.numberSelected.id-1,
+      if(window.SMS) SMS.sendSMS($scope.phones.pot, COMMANDS.SET_TEMPTEXT($scope.numberSelected.id,
       $scope.getMinTemp(),$scope.getMaxTemp()), function(){
             $scope.temperature.minText[$scope.numberSelected.id-1] = $scope.minTemp;
             $scope.temperature.maxText[$scope.numberSelected.id-1] = $scope.maxTemp;
             $scope.saveData('temperature');
             $scope.completeModal();
       }, $scope.errorModal());
+      // console.log(COMMANDS.SET_TEMPTEXT($scope.numberSelected.id,$scope.getMinTemp(),$scope.getMaxTemp()));
     }else{
       $scope.startModal(5000);
-      if(window.SMS) SMS.sendSMS($scope.phones.pot, COMMANDS.SET_TEMPOUT($scope.numberSelected.id-1,$scope.selected.id,
+      if(window.SMS) SMS.sendSMS($scope.phones.pot, COMMANDS.SET_TEMPOUT($scope.numberSelected.id,$scope.selected.id,
       $scope.getMinTemp(),$scope.getMaxTemp()), function(){
             $scope.temperature.minOut[$scope.numberSelected.id-1] = $scope.minTemp;
             $scope.temperature.maxOut[$scope.numberSelected.id-1] = $scope.maxTemp;
@@ -508,6 +509,7 @@ angular.module('starter.controllers')
             $scope.saveData('temperature');
             $scope.completeModal();
       }, $scope.errorModal());
+      console.log(COMMANDS.SET_TEMPOUT($scope.numberSelected.id,$scope.selected.id,$scope.getMinTemp(),$scope.getMaxTemp()));
 
     }
   }

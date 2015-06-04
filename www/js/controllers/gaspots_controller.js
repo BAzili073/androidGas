@@ -2,7 +2,6 @@ angular.module('starter.controllers')
 
 .controller('gaspotsController', function($scope, POT_STATES, $ionicPopup) {
   TAB_ACTIVE = 1;
-
   $scope.receiveReport = function(){
     if(window.SMS) SMS.sendSMS($scope.phones.pot, COMMANDS.REPORT, function(){
     });

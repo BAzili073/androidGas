@@ -39,16 +39,7 @@ angular.module('starter', ['ionic', 'starter.controllers'])
     }
   })
 
-  .state('app.testSms', {
-    url: "/sms",
-    views: {
-      'menuContent': {
-        templateUrl: "templates/testsms.html",
-        // controller: 'guardController'
-      }
 
-    }
-  })
 
 
   .state('app.gas', {
@@ -102,7 +93,8 @@ angular.module('starter', ['ionic', 'starter.controllers'])
     cache: false,
     views: {
       'optionContent': {
-        templateUrl: "templates/options/index.html"
+        templateUrl: "templates/options/index.html",
+        controller: 'guardController'
       }
     }
   })
@@ -213,6 +205,17 @@ angular.module('starter', ['ionic', 'starter.controllers'])
         templateUrl: "templates/objectEditor.html",
         controller: "editorController"
       }
+    }
+  })
+
+  .state('app.testSms', {
+    url: "/sms",
+    views: {
+      'menuContent': {
+        templateUrl: "templates/testsms.html",
+        // controller: 'smsController'
+      }
+
     }
   })
 

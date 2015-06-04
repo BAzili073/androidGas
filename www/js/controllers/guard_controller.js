@@ -6,13 +6,17 @@ angular.module('starter.controllers')
     checked: $scope.guardContent.stateGuard
   }
 
+  $scope.getErrorModule = function(){
+    return $scope.potContent.errorModule;
+  }
+
   $scope.tempId = function() {
     return $state.params.tempId;
    }
 
    $scope.statToggleChange = function(){
     //  console.log(COMMANDS.SET_GUARD($scope.statToggle.checked));
-     $scope.startModal(1000);
+    //  $scope.startModal(1000);
      if(window.SMS) SMS.sendSMS($scope.phones.pot, COMMANDS.SET_GUARD($scope.statToggle.checked), function(){
          $scope.guardContent.stateGuard = $scope.statToggle.checked;
          $scope.saveData('guardContent');
@@ -176,4 +180,10 @@ angular.module('starter.controllers')
             }
       }
     }
+
+
+    $scope.getColorOption = function(lab){
+      // return GUARD_STATES[$scope.optionContent].color;
+    }
+
 })

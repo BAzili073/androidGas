@@ -4,9 +4,17 @@
       <div ng-click="receiveReport()" class="item item-icon-right">
         Последнее обновление <i class="icon ion-loop">
         </i></br>
-        18.05.2015 23:46
+        {{$parent.lastSmsTime}}
       </div>
-
+      sms:{{$parent.lastSMS}}
+      id:{{$parent.lastIdSms}}
+      error:{{$parent.lasterror}}
+      <div ng-show="getErrorModule()">
+        <lable class="item assertive">
+          Нет дополнительного модуля
+        </lable>
+      </div>
+      <div ng-show="!getErrorModule()">
       <a ng-show="seePotGet(0)" class="item item-icon-right">
         Котел 1<i>
           <span class="badge badge-{{getPotColor(0)}}">{{getPotStateText(0)}}</span>
@@ -38,6 +46,7 @@
                 <button ng-click="seeInputComment(8)" class="button button-small button-{{getInputColor(7)}} oval">8</button>
             </span>
       </div>
+    </div>
       <div ng-show = "getNowTemp(1)" class="row">
         <div class="col col">
           <button ng-click="seeTempComment(1)" class="button button-small button-{{getTempColor(1)}} term">
