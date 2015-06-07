@@ -36,6 +36,7 @@ var SMS_REGEX = {
   SATURN_ALARM: /тревога(\d): [а-я]*/,
   MODULE_ALARM: /(сработал|восстановление) (\d): [а-я]*/,
   POT_MESSAGES: /([\dа-я\s\n]*): котел (\d)/,
+  TEMP_MESSAGES:/т(\d)\((-?\d*)\)(<|>| в норме)(-?\d*)?/,
   POWER: /(отказ|восстановление) 220в/,
   ERROR_SMS: /ошибка:([\dа-я\s\n]*)/,
   ERROR_MODULE: /отказ дополнительного модуля/,
@@ -44,7 +45,7 @@ var SMS_REGEX = {
 
 var READ_INTERVAL = 10000;
 
-var DATA_VERSION = "0.5.7";
+var DATA_VERSION = "0.6.3";
 
 var DEFAULT_DATA = {
 
@@ -152,7 +153,7 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
 
 
 
-.controller('AppCtrl', function($scope, $cordovaMedia, $cordovaFile, $state,$ionicHistory, $window, $interval, $localstorage, $ionicModal, $timeout, $ionicPopup) {
+.controller('AppCtrl', function($scope, $cordovaToast, $cordovaMedia, $cordovaFile, $state,$ionicHistory, $window, $interval, $localstorage, $ionicModal, $timeout, $ionicPopup) {
   $scope.post = {url: 'http://', title: ''};
   $scope.sms = {
     init: true
@@ -162,11 +163,15 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
 
   $scope.timelastSMS;
   $scope.lastSMS = '';
-  $scope.lastIdSms = 1;
   $scope.lastObjId = '';
+
+  $scope.myVariables = $localstorage.getObject('myVariables',{
+    lastIdSms: 1,
+  });
 
   $scope.objects = $localstorage.getObject('objects',{
     items : [{id:0,label: "Котельная №1",number: NUMBER}],
+
   });
 
   $scope.potNumber = $scope.objects.items[0].id;
@@ -238,7 +243,7 @@ $scope.getIndexCurrentPot = function(){
   }
 
   $scope.setPot = function(num){
-    $scope.potNumber = $scope.objects.items[0].id;
+    $scope.potNumber = $scope.objects.items[num].id;
     $scope.loadAllData();
   }
 
@@ -272,12 +277,13 @@ $scope.getIndexCurrentPot = function(){
   }
 
   $scope.setPotNumber = function(value){
-    $scope.startModal(1000);
+    // $scope.startModal(1000);
     $scope.phones.pot = value;
     $scope.objects.items[$scope.getIndexCurrentPot()].number = value;
     $scope.saveObjects('objects');
     $scope.saveData('phones');
-    $scope.completeModal();
+    // $scope.completeModal();
+    // $cordovaToast.showLongBottom('Выполнено');
   }
   $scope.setBalanceNumber = function(value){
     $scope.startModal(1000);
@@ -385,7 +391,7 @@ $scope.getIndexCurrentPot = function(){
 
   $scope.potMessages = function(body) {
     var data = SMS_REGEX.POT_MESSAGES.exec(body);
-    console.log (data[1])
+    // console.log (data[1])
     switch(data[1]){
       case "остановка":$scope.potContent.potState[data[2]-1]=0;break;
       case "запуск":$scope.potContent.potState[data[2]-1]=1;break;
@@ -400,9 +406,18 @@ $scope.getIndexCurrentPot = function(){
     $scope.saveData('potContent');
   }
 
+  $scope.tempMessages = function(body) {
+    var data = SMS_REGEX.TEMP_MESSAGES.exec(body);
+    $scope.temperature.nowTemp[data[1]-1]
+    if (data[2]>0) $scope.temperature.nowTemp[data[1]-1] = "+" + data[2];
+    else $scope.temperature.nowTemp[data[1]-1] = data[2];
+    $scope.saveData('temperature');
+  }
+
   $scope.receiveSMS = function(sms){
     $scope.lastSMS = JSON.stringify(sms);
-    $scope.lastIdSms = sms._id;
+    $scope.myVariables.lastIdSms = sms._id;
+    $scope.saveObjects('myVariables');
     $scope.getLastSmsTime();
 
     var body = sms.body;
@@ -415,6 +430,7 @@ $scope.getIndexCurrentPot = function(){
       case SMS_REGEX.POWER.test(body): $scope.saturnPower(body); break;
       case SMS_REGEX.POT_MESSAGES.test(body): $scope.potMessages(body); break;
       case SMS_REGEX.ERROR_MODULE.test(body): $scope.errorModule(); break;
+      case SMS_REGEX.TEMP_MESSAGES.test(body): $scope.tempMessages(body); break;
       default: console.warn("Undefined sms received: ", body);
     }
     $state.go($state.current, {}, {reload: true});
@@ -457,7 +473,7 @@ $scope.getIndexCurrentPot = function(){
         if(Array.isArray(data)) {
           _.forOwnRight(data, function(value, key) {
             $scope.objects.items.forEach(function(obj){
-              if ((data[key].address == obj.number)  && (data[key]._id > $scope.lastIdSms))
+              if ((data[key].address == obj.number)  && (data[key]._id >$scope.myVariables.lastIdSms))
                 if (obj.id == $scope.currentPot().id)
                     $scope.receiveSMS(data[key]);
                 else{
@@ -602,14 +618,15 @@ $scope.smsOtherObj = function(lab){
     return time;
   }
   $scope.data1 = [
-    // {body : " запуск снят с охраны вх:+--+- вых:00000 220в "},
+    // {body : " запуск снят с охраны т:-56 вх:+--+- вых:00000 220в "},
     // {body : "79021201364 снят с охраны"},
     // {body : "тревога 3: тратратра"},
     // {body : "восстановление 220в"},
     // {body : "восстановление 3: 220в"},
-    {body : "вер:3.1 запуск кот:101 вх:00110000 вых:10"},
+    // {body : "вер:3.1 запуск кот:101 вх:00110000 вых:10",},
     // {body: "перегрев теплоносителя 2: котел 3"},
     // {body: "отказ дополнительного модуля"}
+    {body: "т1(23) в норме"}
 
   ],
 
@@ -633,8 +650,9 @@ $scope.smsOtherObj = function(lab){
   $scope.toggleSendError = function(){
     return false;
   }
+
   $scope.toggleSendSuccesful = function(){
-    return false;
+        $cordovaToast.showLongBottom('Выполнено');
   }
 
   $scope.getCurrentTime = function(){
@@ -646,10 +664,22 @@ $scope.smsOtherObj = function(lab){
       $scope.lastSmsTime = $scope.getCurrentTime();
       $scope.saveData('lastSmsTime');
   }
+  $scope.testtimeout = function(){
+    $timeout(function(){
+        console.log("Timeout lost");
+    }, 10000)
+  }
+  $scope.initMusic = function(){
+   $scope.MusicSrc = "/android_asset/www/audio.mp3";
+// if (!media) var media = new Media(src, null, null, null);
+   $scope.MusicMedia = $cordovaMedia.newMedia($scope.MusicSrc);
+ }
+  $scope.controlMusic = function(cont){
+      if (!$scope.MusicMedia) $scope.initMusic();
+    if (cont == "play")
+    $scope.MusicMedia.play();
+    if (cont == "stop")
+    $scope.MusicMedia.stop();
+  }
 
-$scope.playMusic = function(src){
-      var src1 = "/src/audio.mp3";
-      var media = new Media(src, null, null, mediaStatusCallback);
-      media.play();
-    };
 })

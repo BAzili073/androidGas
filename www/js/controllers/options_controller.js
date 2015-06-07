@@ -68,7 +68,7 @@ angular.module('starter.controllers')
 .controller('numbersController', function($scope, $timeout){
   $scope.phonesOptions = [
      { id: -2, label: 'Баланс'},
-     { id: -1, label: 'Прибор'},
+    //  { id: -1, label: 'Прибор'},
      { id: 0,  label: 'Хозяин'},
      { id: 1,  label: 'Дополнительный 1' },
      { id: 2,  label: 'Дополнительный 2' },
@@ -91,9 +91,6 @@ angular.module('starter.controllers')
 
     $scope.setPhone = function(){
      if ($scope.selected.id < 0 ){
-      if ($scope.selected.id == -1 ){
-        $scope.setPotNumber($scope.phoneNumber);
-      }
       if ($scope.selected.id == -2 ) $scope.setBalanceNumber($scope.phoneNumber);
   }else
       $scope.updateNumber($scope.selected.id, $scope.phoneNumber);

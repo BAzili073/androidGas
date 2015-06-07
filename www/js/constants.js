@@ -10,7 +10,7 @@ angular.module('starter.constants', [])
   {text: "Перегрев 2" , color: "assertive"},
   {text: "Низкое напр." , color: "calm"},
   {text: "Нет нагрева" , color: "calm"},
-  {text: "Не подключен" , color: "stable"},
+  {text: "Ошибка шлейфа" , color: "assertive"},
   {text : "Ожидание ответа", color: "calm"},
 
 ])

@@ -5,6 +5,10 @@
     <div class="button-bar">
       <a class="button" ng-click="getLastSmsTime()">Время?</a>
     </div>
-    <button class="button" ng-click="playMusic()">Play from file system</button>
+    <button class="button" ng-click="controlMusic('play')">Test play music</button>
+    <button class="button" ng-click="controlMusic('stop')">Test stop music</button>
+    <button class="button" ng-click="toggleSendSuccesful()">Test toast 2</button>
+    <button class="button" ng-click="testtimeout()">Test timeout</button>
+  </br>  number {{$parent.phones.pot}}
 </ion-content>
 </ion-view>

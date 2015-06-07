@@ -20,7 +20,7 @@ angular.module('starter.controllers')
         $scope.potContent.potState[num] = 9;
         $scope.toggleSendSuccesful();
     }, $scope.toggleSendError());
-    console.log(COMMANDS.CONTROL_POT($scope.statToggle.checked[num],id));
+    // console.log(COMMANDS.CONTROL_POT($scope.statToggle.checked[num],id));
     }
 
     $scope.torchToggleChange = function(id){

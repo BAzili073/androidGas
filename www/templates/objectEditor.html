@@ -9,7 +9,7 @@
           </div>
           <select ng-change="resetForm()" ng-model="$parent.selected" ng-options="objects.label for objects in localobjects.items track by objects.id"></select>
         </label>
-
+<!-- 
         <label class="item item-input">
           <input type="text" ng-model="$parent.objectLabel" placeholder="Название объекта">
         </label>
@@ -18,11 +18,11 @@
       <label class="col col"><ion-checkbox class="noMargin " ng-model="potCheck[0]">1 </ion-checkbox></label>
       <label class="col col"><ion-checkbox class="noMargin " ng-model="potCheck[1]">2 </ion-checkbox></label>
       <label class="col col"><ion-checkbox class="noMargin " ng-model="potCheck[2]">3 </ion-checkbox></label>
-    </div>
+    </div> -->
   </div>
 </form>
     <div class="button-bar">
-      <a class="button" ng-click="setObjectName()" > Принять изменения</a>
+      <a class="button" ng-click="changeObject()" > Изменить объект</a>
     </div>
     <div class="button-bar">
       <a class="button" ng-click="deleteObject()" > Удалить объект</a>
