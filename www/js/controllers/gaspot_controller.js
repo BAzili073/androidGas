@@ -10,18 +10,21 @@ angular.module('starter.controllers')
     return parseInt($state.params.potId);
    }
 
+   $scope.togglePotSuccesful = function(num){
+       $scope.potContent.statToggle[num] = $scope.statToggle.checked[num];
+       $scope.saveData('potContent');
+       $scope.potContent.potState[num] = 9;
+       $scope.toggleSendSuccesful();
+   }
+
     $scope.statToggleChange = function(id){
       $scope.startModal(1000);
       var num = id - 1;
-      // id = id + 4;
-      if(window.SMS) SMS.sendSMS($scope.phones.pot, COMMANDS.CONTROL_POT($scope.statToggle.checked[num],id), function(){
-        $scope.potContent.statToggle[num] = $scope.statToggle.checked[num];
-        $scope.saveData('potContent');
-        $scope.potContent.potState[num] = 9;
-        $scope.toggleSendSuccesful();
-    }, $scope.toggleSendError());
-    // console.log(COMMANDS.CONTROL_POT($scope.statToggle.checked[num],id));
+      var data = num;
+      $scope.sendSmsMessage(COMMANDS.CONTROL_POT($scope.statToggle.checked[num],id),$scope.togglePotSuccesful,$scope.toggleSendError,data)
     }
+
+
 
     $scope.torchToggleChange = function(id){
       $scope.potContent.torchToggle[id-1] = $scope.torchToggle.checked[id-1];

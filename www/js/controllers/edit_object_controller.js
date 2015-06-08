@@ -1,6 +1,6 @@
 angular.module('starter.controllers')
 
-.controller('editorController', function($scope,$cordovaToast, $state, $ionicPopup, $location) {
+.controller('editorController', function($scope, $state, $ionicPopup, $location) {
   $scope.localobjects = {
       items : [],
     };
@@ -88,7 +88,8 @@ angular.module('starter.controllers')
               text: '<b>Принять</b>',
               type: 'button-positive',
               onTap: function(e) {
-                if (!$scope.data.label) {
+                if (!$scope.data.label || !$scope.data.number) {
+                  $scope.showToast('Заполните все поля');
                   //don't allow the user to close unless he enters wifi password
                   e.preventDefault();
                 } else {
@@ -97,14 +98,14 @@ angular.module('starter.controllers')
                     $scope.objects.items[id].label = $scope.data.label;
                     $scope.objects.items[id].number = $scope.data.number;
                     $scope.saveData('potContent');
-                    $cordovaToast.showLongBottom('Объект "' + $scope.data.label + '" изменен');
+                    $scope.showToast('Объект "' + $scope.data.label + '" изменен');
                   }else{
                       $scope.data.id = $scope.objects.items[$scope.objects.items.length-1].id+1;
                       $scope.objects.items.push($scope.data);
                       $scope.lastObjId = $scope.potNumber;
                       $scope.saveAllData();
                       $scope.setPot($scope.objects.items.length-1);
-                      $cordovaToast.showLongBottom('Объект "' + $scope.data.label + '" добавлен');
+                      $scope.showToast('Объект "' + $scope.data.label + '" добавлен');
                   }
                   $scope.setPotNumber($scope.data.number);
                   $scope.setPot($scope.lastObjId);

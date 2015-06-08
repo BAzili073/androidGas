@@ -10,26 +10,29 @@ angular.module('starter.controllers')
       {checked: $scope.handContent.outputsModule[1]},
     ];
 
+    $scope.statToggleSaturnChangeSuccessful = function(data){
+      $scope.handContent.outputsSaturn[data[1]] = data[0];
+      $scope.saveData('handContent');
+      $scope.toggleSendSuccesful();
+    }
+
     $scope.statToggleSaturnChange = function(number){
-      $scope.startModal(1000);
       var pot_number = number + 1;
-      if(window.SMS) SMS.sendSMS($scope.phones.pot, COMMANDS.SET_OUTPUT(pot_number, $scope.statOutput[number].checked), function(){
-          $scope.handContent.outputsSaturn[number] = $scope.statOutput[number].checked;
-          $scope.saveData('handContent');
-          $scope.toggleSendSuccesful();
-      }, $scope.toggleSendError());
-      // console.log(COMMANDS.SET_OUTPUT(pot_number, $scope.statOutput[number].checked));
+      var data = [$scope.statOutput[number].checked,number];
+      $scope.sendSmsMessage(COMMANDS.SET_OUTPUT(pot_number, $scope.statOutput[number].checked),$scope.statToggleSaturnChangeSuccessful,$scope.toggleSendError,data)
+    }
+
+    $scope.statToggleModuleChangeSuccessful = function(data){
+      $scope.handContent.outputsModule[data[1]] = data[0];
+      $scope.saveData('handContent');
+      $scope.toggleSendSuccesful();
     }
 
       $scope.statToggleModuleChange = function(number){
-        $scope.startModal(1000);
         number = number + 4;
         var pot_number = number + 4;
-        if(window.SMS) SMS.sendSMS($scope.phones.pot, COMMANDS.CONTROL_POT($scope.statOutput[number].checked,number), function(){
-        $scope.handContent.outputsModule[number] = $scope.statOutput[number].checked;
-        $scope.saveData('handContent');
-        $scope.toggleSendSuccesful();
-        }, $scope.toggleSendError());
-        // console.log(COMMANDS.CONTROL_POT($scope.statOutput[number].checked,pot_number));
+        var data = [$scope.statOutput[number].checked,number];
+        $scope.sendSmsMessage(COMMANDS.CONTROL_POT($scope.statOutput[number].checked,number),$scope.statToggleModuleChangeSuccessful,$scope.toggleSendError,data);
+
       }
   })

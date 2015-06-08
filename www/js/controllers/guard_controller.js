@@ -14,15 +14,17 @@ angular.module('starter.controllers')
     return $state.params.tempId;
    }
 
+   $scope.toggleGuardSuccesful = function(){
+     $scope.guardContent.stateGuard = $scope.statToggle.checked;
+     $scope.saveData('guardContent');
+     $scope.guardContent.statusGuard = 2;
+     $scope.toggleSendSuccesful();
+   }
+   
    $scope.statToggleChange = function(){
     //  console.log(COMMANDS.SET_GUARD($scope.statToggle.checked));
     //  $scope.startModal(1000);
-     if(window.SMS) SMS.sendSMS($scope.phones.pot, COMMANDS.SET_GUARD($scope.statToggle.checked), function(){
-         $scope.guardContent.stateGuard = $scope.statToggle.checked;
-         $scope.saveData('guardContent');
-         $scope.guardContent.statusGuard = 2;
-         $scope.toggleSendSuccesful();
-     }, $scope.toggleSendError());
+      $scope.sendSmsMessage(COMMANDS.SET_GUARD($scope.statToggle.checked),$scope.toggleGuardSuccesful,$scope.toggleSendError)
    }
 
    $scope.getGuardState = function(){

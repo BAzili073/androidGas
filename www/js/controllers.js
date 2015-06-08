@@ -1,5 +1,7 @@
 var NUMBER = "+79021201364";
 
+var MUSIC_SRC = "/android_asset/www/alarm.mp3";
+
 var GUARD_STATES=[
   {text : "Снят с охраны", color: "stable"},
   {text: "На охране", color:"balanced"},
@@ -33,7 +35,7 @@ var SMS_REGEX = {
   REPORT_GUARD: /(х )?(?:вер:(\d.\d) )?(?:запуск )?(на охране|снят с охраны)(?: т:((?:-?\d;*)*)?(?: тм=(\d*))?)? ?(?:вх:([+-]*) вых:([01]*) (220в|акк!))/,
   REPORT_MODULE: /(?:вер:\d.\d )?(?:запуск )?кот:(\d{3}) вх:([01]{8}) вых:([10]{2})/,
   CHANGE_GUARD: /(?:(\d{11})|(?:тм=(\d*))) (на охране|снят с охраны)/,
-  SATURN_ALARM: /тревога(\d): [а-я]*/,
+  SATURN_ALARM: /тревога (\d): [а-я]*/,
   MODULE_ALARM: /(сработал|восстановление) (\d): [а-я]*/,
   POT_MESSAGES: /([\dа-я\s\n]*): котел (\d)/,
   TEMP_MESSAGES:/т(\d)\((-?\d*)\)(<|>| в норме)(-?\d*)?/,
@@ -164,7 +166,12 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
   $scope.timelastSMS;
   $scope.lastSMS = '';
   $scope.lastObjId = '';
+  $scope.counter = 1;
+  $scope.deviceVar = {device: false, historyFile:false, settingMode: false, playLoopAlarm:false}
 
+  $scope.getDataVersion = function(){
+    return DATA_VERSION;
+  }
   $scope.myVariables = $localstorage.getObject('myVariables',{
     lastIdSms: 1,
   });
@@ -176,16 +183,47 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
 
   $scope.potNumber = $scope.objects.items[0].id;
 
- $scope.getTabActive = function(tab){
-   if (tab==TAB_ACTIVE) return "active"
- }
+  $scope.showToast = function(text){
+    if ($scope.deviceVar.device) $cordovaToast.showLongBottom(text);
+    else console.log(text);
+  }
 
-$scope.getIndexCurrentPot = function(){
-      var ind = _.findIndex($scope.objects.items, function(chr) {
+  $scope.saveHistory = function(time,text){
+    if ($scope.deviceVar.historyFile) $cordovaFile.writeExistingFile(cordova.file.externalDataDirectory, "history.txt", time + "   ::::   " + text + "\n")
+    else console.log(time + "   ::::   " + text + "\n");
+  }
+
+  $scope.sendSmsMessage = function(text,success,error,data){
+    var ok = 0;
+    if (!$scope.deviceVar.settingMode){
+        if(window.SMS)
+        SMS.sendSMS($scope.phones.pot, text,
+          function(){$timeout(function(){
+            success(data);
+            ok = 1;
+            $scope.saveHistory($scope.getCurrentTime()," |-> " + $scope.phones.pot + " текст: " + text)
+          }, 500)},
+          function(){$timeout(function(){
+              if (ok != 1) error();}, 1000)
+          })
+      }else{
+        success(data);
+        $scope.saveHistory($scope.getCurrentTime()," Режим настройки |-> " + "текст: " + text)
+        }
+  }
+
+
+
+  $scope.getTabActive = function(tab){
+    if (tab==TAB_ACTIVE) return "active"
+  }
+
+  $scope.getIndexCurrentPot = function(){
+    var ind = _.findIndex($scope.objects.items, function(chr) {
       return chr.id == $scope.potNumber;
-     });
-     return ind;
-}
+    });
+    return ind;
+  }
 
   $scope.currentPot = function() {
     return _.find($scope.objects.items, {id: $scope.potNumber});
@@ -292,44 +330,45 @@ $scope.getIndexCurrentPot = function(){
     $scope.completeModal();
   }
 
+  $scope.updateNumberSuccesful = function(data){
+    switch(data[0]){
+      case 0: $scope.phones.master = data[1];break;
+      case 1: $scope.phones.ext1 = data[1];break;
+      case 2: $scope.phones.ext2 = data[1];break;
+      case 3: $scope.phones.ext3 = data[1];break;
+      case 4: $scope.phones.ext4 = data[1];break;
+    }
+    $scope.completeModal();
+  }
+
+  $scope.updateTextSuccessful = function(data){
+    $scope.ssOptions.text[data[0]] = data[1];
+    $scope.saveData('ssOptions');
+    $scope.completeModal();
+  }
+
   $scope.updateNumber = function(id, phone){
     $scope.startModal(5000);
-
-    if(window.SMS) SMS.sendSMS($scope.phones.pot, COMMANDS.SET_PHONE(id, phone), function(){
-
-      switch(id){
-        case 0: $scope.phones.master = phone;break;
-        case 1: $scope.phones.ext1 = phone;break;
-        case 2: $scope.phones.ext2 = phone;break;
-        case 3: $scope.phones.ext3 = phone;break;
-        case 4: $scope.phones.ext4 = phone;break;
-      }
-
-      $scope.completeModal();
-
-    }, $scope.errorModal());
-
+    var data = [id,phone];
+    $scope.sendSmsMessage(COMMANDS.SET_PHONE(id, phone),$scope.updateTextSuccessful,$scope.errorModal,data)
   }
+
+
 
   $scope.updateText = function(id,text){
     $scope.startModal(5000);
-    if(window.SMS) SMS.sendSMS($scope.phones.pot, COMMANDS.SET_TEXT(id, text), function(){
-      $scope.ssOptions.text[id] = text;
-      $scope.saveData('ssOptions');
-      $scope.completeModal();
-    }, $scope.errorModal());
+    var data = [id,text]
+    $scope.sendSmsMessage(COMMANDS.SET_TEXT(id, text),$scope.updateNumberSuccesful,$scope.errorModal,data)
   }
 
   $scope.smsRequestBalance = function(){
     $scope.startModal(5000);
-    if(window.SMS) SMS.sendSMS($scope.phones.pot, COMMANDS.CHECK_BALANCE($scope.phones.balance), function(){
-      $scope.completeModal();
-    }, $scope.errorModal());
+    $scope.sendSmsMessage(COMMANDS.CHECK_BALANCE($scope.phones.balance),$scope.toggleSendSuccesful,$scope.errorModal,data)
   }
 
   $scope.smsRequestReport = function(){
     $scope.startModal(5000);
-    SMS.sendSMS($scope.phones.pot, COMMANDS.REPORT, $scope.finishModal, $scope.errorModal());
+    $scope.sendSmsMessage(COMMANDS.REPORT,$scope.toggleSendSuccesful,$scope.errorModal,data)
   }
 
   $scope.reportGuard = function(body) {
@@ -354,128 +393,144 @@ $scope.getIndexCurrentPot = function(){
     $scope.potContent.statToggle = data[1].split("").map(function(i){
       if (i == 0) return false;
       if (i == 1) return true;});
-    $scope.potContent.inputs = data[2].split("").map(function(i){ return i === "1" });
-    $scope.handContent.outputsModule = data[3].split("").map(function(i){ return i === "1" });
-    $scope.saveData('potContent');
-    $scope.saveData('handContent');
-  }
-
-  $scope.changeGuard = function(body) {
-    var data = SMS_REGEX.CHANGE_GUARD.exec(body);
-    if (data[1]) $scope.guardContent.whoChangeGuard = data[1]
-    else $scope.guardContent.whoChangeGuard = data[2]
-    $scope.guardContent.stateGuard = data[3].indexOf("на охране") >= 0;
-    $scope.guardContent.statusGuard = (data[3].indexOf("на охране") >= 0) ? 1:0;
-    $scope.saveData('guardContent');
-  }
-
-  $scope.saturnAlarm = function(body) {
-    var data = SMS_REGEX.SATURN_ALARM.exec(body);
-    $scope.guardContent.inputs[data[1]-1] = true;
-    $scope.saveData('guardContent');
-  }
-  $scope.moduleAlarm = function(body) {
-    var data = SMS_REGEX.MODULE_ALARM.exec(body);
-    $scope.potContent.inputs[data[2]-1] = data[1].indexOf("сработал") >= 0;
-    $scope.saveData('potContent');
-  }
-  $scope.saturnPower = function(body) {
-    var data = SMS_REGEX.POWER.exec(body);
-    $scope.guardContent.power = data[1].indexOf("восстановление") >= 0;
-    $scope.saveData('guardContent');
-  }
-  $scope.errorModule = function() {
-    $scope.potContent.errorModule = true;
-    $scope.saveData('potContent');
-  }
-
-  $scope.potMessages = function(body) {
-    var data = SMS_REGEX.POT_MESSAGES.exec(body);
-    // console.log (data[1])
-    switch(data[1]){
-      case "остановка":$scope.potContent.potState[data[2]-1]=0;break;
-      case "запуск":$scope.potContent.potState[data[2]-1]=1;break;
-      case "нет пламени":$scope.potContent.potState[data[2]-1]=2;break;
-      case "перегрев теплоносителя 1":$scope.potContent.potState[data[2]-1]=3;break;
-      case "нет тяги":$scope.potContent.potState[data[2]-1]=4;break;
-      case "перегрев теплоносителя 2":$scope.potContent.potState[data[2]-1]=5;break;
-      case "низкое напряжение":$scope.potContent.potState[data[2]-1]=6;break;
-      case "нет нагрева теплоносителя":$scope.potContent.potState[data[2]-1]=7;break;
-      case "нет ответа":$scope.potContent.potState[data[2]-1]=8;break;
+      $scope.potContent.inputs = data[2].split("").map(function(i){ return i === "1" });
+      $scope.handContent.outputsModule = data[3].split("").map(function(i){ return i === "1" });
+      $scope.saveData('potContent');
+      $scope.saveData('handContent');
     }
-    $scope.saveData('potContent');
-  }
 
-  $scope.tempMessages = function(body) {
-    var data = SMS_REGEX.TEMP_MESSAGES.exec(body);
-    $scope.temperature.nowTemp[data[1]-1]
-    if (data[2]>0) $scope.temperature.nowTemp[data[1]-1] = "+" + data[2];
-    else $scope.temperature.nowTemp[data[1]-1] = data[2];
-    $scope.saveData('temperature');
-  }
-
-  $scope.receiveSMS = function(sms){
-    $scope.lastSMS = JSON.stringify(sms);
-    $scope.myVariables.lastIdSms = sms._id;
-    $scope.saveObjects('myVariables');
-    $scope.getLastSmsTime();
-
-    var body = sms.body;
-    switch(true){
-      case SMS_REGEX.REPORT_GUARD.test(body): $scope.reportGuard(body); break;
-      case SMS_REGEX.REPORT_MODULE.test(body): $scope.reportModule(body); break;
-      case SMS_REGEX.CHANGE_GUARD.test(body): $scope.changeGuard(body); break;
-      case SMS_REGEX.SATURN_ALARM.test(body): $scope.saturnAlarm(body); break;
-      case SMS_REGEX.MODULE_ALARM.test(body): $scope.moduleAlarm(body); break;
-      case SMS_REGEX.POWER.test(body): $scope.saturnPower(body); break;
-      case SMS_REGEX.POT_MESSAGES.test(body): $scope.potMessages(body); break;
-      case SMS_REGEX.ERROR_MODULE.test(body): $scope.errorModule(); break;
-      case SMS_REGEX.TEMP_MESSAGES.test(body): $scope.tempMessages(body); break;
-      default: console.warn("Undefined sms received: ", body);
+    $scope.changeGuard = function(body) {
+      var data = SMS_REGEX.CHANGE_GUARD.exec(body);
+      if (data[1]) $scope.guardContent.whoChangeGuard = data[1]
+      else $scope.guardContent.whoChangeGuard = data[2]
+      $scope.guardContent.stateGuard = data[3].indexOf("на охране") >= 0;
+      $scope.guardContent.statusGuard = (data[3].indexOf("на охране") >= 0) ? 1:0;
+      $scope.saveData('guardContent');
     }
-    $state.go($state.current, {}, {reload: true});
-  }
 
-  $scope.getFileAccess = function() {
-    $cordovaFile.createDir(cordova.file.applicationStorageDirectory, "new_dir", false)
+    $scope.saturnAlarm = function(body) {
+      var data = SMS_REGEX.SATURN_ALARM.exec(body);
+      $scope.guardContent.inputs[data[1]-1] = true;
+      $scope.saveData('guardContent');
+      $scope.playAlarm(body);
+    }
+    $scope.moduleAlarm = function(body) {
+      var data = SMS_REGEX.MODULE_ALARM.exec(body);
+      $scope.potContent.inputs[data[2]-1] = data[1].indexOf("сработал") >= 0;
+      $scope.saveData('potContent');
+      $scope.playAlarm(body);
+    }
+    $scope.saturnPower = function(body) {
+      var data = SMS_REGEX.POWER.exec(body);
+      $scope.guardContent.power = data[1].indexOf("восстановление") >= 0;
+      $scope.saveData('guardContent');
+    }
+    $scope.errorModule = function() {
+      $scope.potContent.errorModule = true;
+      $scope.saveData('potContent');
+    }
+
+    $scope.potMessages = function(body) {
+      var data = SMS_REGEX.POT_MESSAGES.exec(body);
+      // console.log (data[1])
+      switch(data[1]){
+        case "остановка":$scope.potContent.potState[data[2]-1]=0;break;
+        case "запуск":$scope.potContent.potState[data[2]-1]=1;break;
+        case "нет пламени":$scope.potContent.potState[data[2]-1]=2;break;
+        case "перегрев теплоносителя 1":$scope.potContent.potState[data[2]-1]=3;break;
+        case "нет тяги":$scope.potContent.potState[data[2]-1]=4;break;
+        case "перегрев теплоносителя 2":$scope.potContent.potState[data[2]-1]=5;break;
+        case "низкое напряжение":$scope.potContent.potState[data[2]-1]=6;break;
+        case "нет нагрева теплоносителя":$scope.potContent.potState[data[2]-1]=7;break;
+        case "нет ответа":$scope.potContent.potState[data[2]-1]=8;break;
+      }
+      $scope.saveData('potContent');
+    }
+
+    $scope.tempMessages = function(body) {
+      var data = SMS_REGEX.TEMP_MESSAGES.exec(body);
+      $scope.temperature.nowTemp[data[1]-1]
+      if (data[2]>0) $scope.temperature.nowTemp[data[1]-1] = "+" + data[2];
+      else $scope.temperature.nowTemp[data[1]-1] = data[2];
+      $scope.saveData('temperature');
+    }
+
+    $scope.receiveSMS = function(sms){
+      $scope.lastSMS = JSON.stringify(sms);
+      $scope.myVariables.lastIdSms = sms._id;
+      $scope.saveObjects('myVariables');
+      $scope.getLastSmsTime();
+      $scope.saveHistory($scope.getCurrentTime()," |<- " + sms.address + " текст: " + sms.body)
+
+      var body = sms.body;
+      switch(true){
+        case SMS_REGEX.REPORT_GUARD.test(body): $scope.reportGuard(body); break;
+        case SMS_REGEX.REPORT_MODULE.test(body): $scope.reportModule(body); break;
+        case SMS_REGEX.CHANGE_GUARD.test(body): $scope.changeGuard(body); break;
+        case SMS_REGEX.SATURN_ALARM.test(body): $scope.saturnAlarm(body); break;
+        case SMS_REGEX.MODULE_ALARM.test(body): $scope.moduleAlarm(body); break;
+        case SMS_REGEX.POWER.test(body): $scope.saturnPower(body); break;
+        case SMS_REGEX.POT_MESSAGES.test(body): $scope.potMessages(body); break;
+        case SMS_REGEX.ERROR_MODULE.test(body): $scope.errorModule(); break;
+        case SMS_REGEX.TEMP_MESSAGES.test(body): $scope.tempMessages(body); break;
+        default: console.warn("Undefined sms received: ", body);
+      }
+      $state.go($state.current, {}, {reload: true});
+    }
+
+    $scope.getFileAccess = function() {
+      $cordovaFile.checkFile(cordova.file.externalDataDirectory, "history.txt")
       .then(function (success) {
-        $scope.lasterror = "success createDir";
-        // success
+          $scope.showToast("Успешно");
+          $scope.deviceVar.historyFile = true;
       }, function (error) {
-        $scope.lasterror = "error createDir";
+        $cordovaFile.createFile(cordova.file.externalDataDirectory, "history.txt", true)
+        .then(function (success) {
+          $scope.showToast("Создание файла " + cordova.file.dataDirectory);
+          $scope.deviceVar.historyFile = true;
+        }, function (error) {
+          $scope.showToast("Ошибка создания файла");
+        });
+
       });
-      $scope.lasterror = "OK acccess";
-  }
 
-  $scope.errorFileAccess = function() {
-      $scope.lasterror = "NOT acccess";
-  }
-
-  $scope.initSMS = function() {
-
-    // window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, $scope.getFileAccess, $scope.errorFileAccess);
-
-
-    if(!$scope.sms.init) {
-      $scope.startModal(30000, "Загрузка данных");
-      SMS.sendSMS($scope.phones.pot, COMMANDS.REPORT, $scope.finishModal, $scope.errorModal());
     }
 
-    $interval (function(){
-      var filter = {
-        box : 'inbox',
-        read : 0,
-        address : $scope.phones.pot,
-      };
+    $scope.testText = function(){
+      $scope.counter = $scope.counter + 1;
+      $scope.intext = $scope.counter + '\n'
+      $cordovaFile.writeExistingFile(cordova.file.externalDataDirectory, "history.txt", $scope.intext)
+    }
 
-      if(window.SMS) SMS.listSMS(filter, function(data){
-        $scope.timesee = data[0].date;
-        if(Array.isArray(data)) {
-          _.forOwnRight(data, function(value, key) {
-            $scope.objects.items.forEach(function(obj){
-              if ((data[key].address == obj.number)  && (data[key]._id >$scope.myVariables.lastIdSms))
+    $scope.errorFileAccess = function() {
+      $scope.showToast("Нет доступа к системе");
+    }
+
+    $scope.deviceready = function() {
+      $scope.deviceVar.device = true;
+      window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, $scope.getFileAccess, $scope.errorFileAccess);
+
+
+      if(!$scope.sms.init) {
+        $scope.startModal(30000, "Загрузка данных");
+          $scope.smsRequestReport();
+      }
+
+      $interval (function(){
+        var filter = {
+          box : 'inbox',
+          read : 0,
+          address : $scope.phones.pot,
+        };
+
+        if(window.SMS) SMS.listSMS(filter, function(data){
+          $scope.timesee = data[0].date;
+          if(Array.isArray(data)) {
+            _.forOwnRight(data, function(value, key) {
+              $scope.objects.items.forEach(function(obj){
+                if ((data[key].address == obj.number)  && (data[key]._id >$scope.myVariables.lastIdSms))
                 if (obj.id == $scope.currentPot().id)
-                    $scope.receiveSMS(data[key]);
+                $scope.receiveSMS(data[key]);
                 else{
                   $scope.lastObjId = $scope.potNumber;
                   $scope.saveAllData();
@@ -485,201 +540,247 @@ $scope.getIndexCurrentPot = function(){
                   $scope.saveAllData();
                   $scope.smsOtherObj($scope.currentPot().label)
                 }
+              });
+
             });
-
-          });
-        }
-      }, function(err) { $scope.startModal(null, "Не могу прочитать SMS", true) });
-
-    }, READ_INTERVAL)
-  };
-
-  $scope.loadAllData();
-
-  document.addEventListener('deviceready', $scope.initSMS, false);
-
-  $scope.getLabelFromId = function(inId){
-      return (_.find($scope.objects.items, {id: inId}).label);
-  }
-  $scope.getIdFromLabel = function(lab){
-      return (_.find($scope.objects.items, {label: lab}).id);
-  }
-
-
-$scope.getItemLabel = function(currentId){
-        return $scope.getLabelFromId(currentId);
-}
-
-$scope.getObjColor = function(id){
-    if (id==$scope.potNumber) return "calm";
-    else return "light";
-}
-
-$scope.smsOtherObj = function(lab){
-
-  var seeObj = $ionicPopup.show({
-    // template: '<button  ng-click="chooseObjects(item.id);" class="button button-block item-icon-right" ng-repeat="item in objects.items">{{getItemLabel(item.id)}}</button>',
-    title: 'Активность',
-    subTitle:'Обеъкт ' + lab,
-    scope: $scope,
-    buttons: [
-      {
-        text: '<b>Просмотр</b>',
-        type: 'button-stable',
-        onTap: function() {
-        }
-      },
-      {
-        text: '<b>Закрыть</b>',
-        type: 'button-positive',
-        onTap: function() {
-          $scope.potNumber = $scope.lastObjId;
-          $scope.loadAllData();
-        }
-      }
-    ]
-  });
-};
-
-  $scope.showObjects = function(){
-
-    var seeObjects = $ionicPopup.show({
-      template: '<button  ng-click="chooseObjects(item.id);" class="button button-block button-{{getObjColor(item.id)}} item-icon-right" ng-repeat="item in objects.items">{{getItemLabel(item.id)}}</button>',
-      title: 'Объекты',
-      scope: $scope,
-      buttons: [
-        {
-          text: '<b>Закрыть</b>',
-          type: 'button-positive',
-        }
-      ]
-    });
-
-    $scope.chooseObjects = function (id){
-      $scope.saveAllData();
-      $scope.potNumber = id;
-      $scope.loadAllData();
-      seeObjects.close();
-      $state.go($state.current, {}, {reload: true});
-    }
-
-    $scope.objectEditor = function(){
-      seeObjects.close();
-      $state.go("app.objectEditor");
-    }
-  };
-
-  $scope.checkOptionPass = function() {
-    $scope.data = {
-      password: 111
-    }
-
-    // An elaborate, custom popup
-    var password = $ionicPopup.show({
-      template: '<input type="password" placeholder=" Введите код доступа" ng-model="data.password">',
-      title: 'Вход в настройки',
-      scope: $scope,
-      buttons: [
-        {
-          text: '<b>Принять</b>',
-          type: 'button-positive',
-          onTap: function(e) {
-            return $scope.data;
           }
-        }
-      ]
-    });
+        }, function(err) { $scope.startModal(null, "Не могу прочитать SMS", true) });
 
-    password.then(function(data) {
+      }, READ_INTERVAL)
 
-      if ($scope.data.password == "111") {
-        $state.go("app.option.index");
-      } else {
+    };
 
-        var  error = $ionicPopup.show({
-          title: 'Код доступа неверный',
-          buttons: [ { text: 'OK', type: 'button-assertive' } ]
-        });
+    $scope.loadAllData();
 
+    document.addEventListener('deviceready', $scope.deviceready, false);
+
+    $scope.getLabelFromId = function(inId){
+      return (_.find($scope.objects.items, {id: inId}).label);
+    }
+    $scope.getIdFromLabel = function(lab){
+      return (_.find($scope.objects.items, {label: lab}).id);
+    }
+
+
+    $scope.getItemLabel = function(currentId){
+      return $scope.getLabelFromId(currentId);
+    }
+
+    $scope.getObjColor = function(id){
+      if (id==$scope.potNumber) return "calm";
+      else return "light";
+    }
+
+    $scope.smsOtherObj = function(lab){
+
+      var seeObj = $ionicPopup.show({
+        // template: '<button  ng-click="chooseObjects(item.id);" class="button button-block item-icon-right" ng-repeat="item in objects.items">{{getItemLabel(item.id)}}</button>',
+        title: 'Активность',
+        subTitle:'Обеъкт ' + lab,
+        scope: $scope,
+        buttons: [
+          {
+            text: '<b>Просмотр</b>',
+            type: 'button-stable',
+            onTap: function() {
+            }
+          },
+          {
+            text: '<b>Закрыть</b>',
+            type: 'button-positive',
+            onTap: function() {
+              $scope.potNumber = $scope.lastObjId;
+              $scope.loadAllData();
+            }
+          }
+        ]
+      });
+    };
+
+    $scope.showObjects = function(){
+
+      var seeObjects = $ionicPopup.show({
+        template: '<button  ng-click="chooseObjects(item.id);" class="button button-block button-{{getObjColor(item.id)}} item-icon-right" ng-repeat="item in objects.items">{{getItemLabel(item.id)}}</button>',
+        title: 'Объекты',
+        scope: $scope,
+        buttons: [
+          {
+            text: '<b>Закрыть</b>',
+            type: 'button-positive',
+          }
+        ]
+      });
+
+      $scope.chooseObjects = function (id){
+        $scope.saveAllData();
+        $scope.potNumber = id;
+        $scope.loadAllData();
+        seeObjects.close();
+        $state.go($state.current, {}, {reload: true});
       }
 
-    });
-  };
-  $scope.timeConverter = function (UNIX_timestamp){
-    var a = new Date(UNIX_timestamp*1000);
-    var months = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-    var year = a.getFullYear();
-    var month = months[a.getMonth()];
-    var date = a.getDate();
-    var hour = a.getHours();
-    var min = a.getMinutes();
-    var sec = a.getSeconds();
-    var time = date + ',' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
-    return time;
-  }
-  $scope.data1 = [
-    // {body : " запуск снят с охраны т:-56 вх:+--+- вых:00000 220в "},
-    // {body : "79021201364 снят с охраны"},
-    // {body : "тревога 3: тратратра"},
-    // {body : "восстановление 220в"},
-    // {body : "восстановление 3: 220в"},
-    // {body : "вер:3.1 запуск кот:101 вх:00110000 вых:10",},
-    // {body: "перегрев теплоносителя 2: котел 3"},
-    // {body: "отказ дополнительного модуля"}
-    {body: "т1(23) в норме"}
+      $scope.objectEditor = function(){
+        seeObjects.close();
+        $state.go("app.objectEditor");
+      }
+    };
 
-  ],
+    $scope.checkOptionPass = function() {
+      $scope.data = {
+        password: 111
+      }
 
-  $scope.checkBalance = function(){
+      // An elaborate, custom popup
+      var password = $ionicPopup.show({
+        template: '<input type="password" placeholder=" Введите код доступа" ng-model="data.password">',
+        title: 'Вход в настройки',
+        scope: $scope,
+        buttons: [
+          {
+            text: '<b>Принять</b>',
+            type: 'button-positive',
+            onTap: function(e) {
+              return $scope.data;
+            }
+          }
+        ]
+      });
+
+      password.then(function(data) {
+
+        if ($scope.data.password == "111") {
+          $scope.saveHistory($scope.getCurrentTime(),"Вход в настройки (" + $scope.data.password +")")
+          $state.go("app.option.index");
+        } else {
+
+          var  error = $ionicPopup.show({
+            title: 'Код доступа неверный',
+            buttons: [ { text: 'OK', type: 'button-assertive' } ]
+          });
+
+        }
+
+      });
+    };
+    $scope.timeConverter = function (UNIX_timestamp){
+      var a = new Date(UNIX_timestamp*1000);
+      var months = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+      var year = a.getFullYear();
+      var month = months[a.getMonth()];
+      var date = a.getDate();
+      var hour = a.getHours();
+      var min = a.getMinutes();
+      var sec = a.getSeconds();
+      var time = date + ',' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
+      return time;
+    }
+    $scope.data1 = [
+      // {body : " запуск снят с охраны т:-56 вх:+--+- вых:00000 220в "},
+      // {body : "79021201364 снят с охраны"},
+      {body : "тревога 3: тратратра"},
+      // {body : "восстановление 220в"},
+      // {body : "восстановление 3: 220в"},
+      // {body : "вер:3.1 запуск кот:101 вх:00110000 вых:10",},
+      // {body: "перегрев теплоносителя 2: котел 3"},
+      // {body: "отказ дополнительного модуля"}
+      // {body: "т1(23) в норме"}
+
+    ],
+
+    $scope.checkBalance = function(){
       $scope.receiveSMS($scope.data1[0]);
 
-    console.log($scope.timeConverter(14327324533))
-    // if ($scope.phones.balance != ""){
-    //   $scope.startModal(5000);
-    //   if(window.SMS) SMS.sendSMS($scope.phones.pot,COMMANDS.CHECK_BALANCE($scope.phones.balance), function(){
-    //     $scope.completeModal();
-    //   }, $scope.errorModal());
-    // } else {
-    //   var  error = $ionicPopup.show({
-    //     title: 'Ошибка',
-    //     subTitle: 'Номер проверки баланса не настроен',
-    //     buttons: [ { text: 'OK', type: 'button-assertive' } ]
-    //   });
-    // }
-  }
-  $scope.toggleSendError = function(){
-    return false;
-  }
+      console.log($scope.timeConverter(14327324533))
+      // if ($scope.phones.balance != ""){
+      // $scope.smsRequestBalance();
+      // } else {
+      //   var  error = $ionicPopup.show({
+      //     title: 'Ошибка',
+      //     subTitle: 'Номер проверки баланса не настроен',
+      //     buttons: [ { text: 'OK', type: 'button-assertive' } ]
+      //   });
+      // }
+    }
+    $scope.toggleSendError = function(){
+      $scope.showToast('Ошибка');
+    }
 
-  $scope.toggleSendSuccesful = function(){
-        $cordovaToast.showLongBottom('Выполнено');
-  }
+    $scope.toggleSendSuccesful = function(){
+      $scope.showToast('Выполнено');
+    }
 
-  $scope.getCurrentTime = function(){
+
+    $scope.getCurrentTime = function(){
       var currentTime = new Date()/1000;
       return $scope.timeConverter(currentTime);
-  }
+    }
 
-  $scope.getLastSmsTime = function(){
+    $scope.getLastSmsTime = function(){
       $scope.lastSmsTime = $scope.getCurrentTime();
       $scope.saveData('lastSmsTime');
-  }
-  $scope.testtimeout = function(){
-    $timeout(function(){
+    }
+    $scope.testtimeout = function(){
+      $timeout(function(){
         console.log("Timeout lost");
-    }, 10000)
-  }
-  $scope.initMusic = function(){
-   $scope.MusicSrc = "/android_asset/www/audio.mp3";
-// if (!media) var media = new Media(src, null, null, null);
-   $scope.MusicMedia = $cordovaMedia.newMedia($scope.MusicSrc);
- }
-  $scope.controlMusic = function(cont){
-      if (!$scope.MusicMedia) $scope.initMusic();
-    if (cont == "play")
-    $scope.MusicMedia.play();
-    if (cont == "stop")
-    $scope.MusicMedia.stop();
-  }
+      }, 10000)
+    }
+    $scope.initMusic = function(){
+      // if (!media) var media = new Media(src, null, null, null);
+      $scope.MusicMedia = $cordovaMedia.newMedia(MUSIC_SRC);
+    }
+    $scope.loopPlayAlarm = function(){
+      $scope.controlMusic("play");
+      if ($scope.deviceVar.playLoopAlarm) $timeout(function(){
+        if ($scope.deviceVar.playLoopAlarm) $scope.loopPlayAlarm();
+      }, 4500)
+    }
 
-})
+    $scope.playAlarm = function(obj){
+      $scope.deviceVar.playLoopAlarm = true;
+      // $scope.loopPlayAlarm();
+      var playAlarm = $ionicPopup.show({
+        template: '<div class = "item">' + obj + '</div>',
+        title: '<div class = "item assertive">' + $scope.currentPot().label + '</div>',
+        scope: $scope,
+        buttons: [
+          {
+            text: '<b>Принять</b>',
+            type: 'button-positive',
+            onTap: function(e) {
+              $scope.deviceVar.playLoopAlarm = false;
+              $scope.controlMusic("stop");
+            }
+          }
+        ]
+      });
+    }
+
+    $scope.controlMusic = function(cont){
+      if ($scope.deviceVar.device){
+      if (!$scope.MusicMedia) $scope.initMusic();
+      if (cont == "play")
+        $scope.MusicMedia.play();
+      if (cont == "stop")
+        $scope.MusicMedia.stop();}
+    }
+
+    $scope.ok = function(){
+        $scope.showToast('Выполнено');
+    }
+    $scope.notok = function(){
+        $scope.showToast('Ошибка');
+    }
+
+
+
+    $scope.testsms = function(){
+      $scope.sendSmsMessage("aaaa",$scope.ok,$scope.notok)
+        // var vari = $scope.sendSmsMessage("aaaa");
+        // if (vari == 2){
+        //   $scope.showToast('Ошибка');
+        // }else if (vari == 1){
+        //   $scope.showToast('Выполнено');
+        // }
+    }
+
+  })

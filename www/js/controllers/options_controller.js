@@ -41,27 +41,39 @@ angular.module('starter.controllers')
        errorSms : $scope.nsOptions.errorSms
      };
 
+     $scope.setNsOptionsSuccessful = function(data){
+       $scope.nsOptions.startS = data[0];
+       $scope.nsOptions.rGuard = data[1];
+       $scope.nsOptions.rapCommands = data[2];
+       $scope.nsOptions.blockOutput = data[3];
+       $scope.nsOptions.useInput = data[4];
+       $scope.nsOptions.smsAlarm = data[5];
+       $scope.nsOptions.autoGuard = data[6];
+       $scope.nsOptions.errorSms = data[7];
+       $scope.nsOptions.timeAlarm = data[8];
+       $scope.nsOptions.timeWaitGuard = data[9];
+       $scope.saveData('nsOptions');
+       $scope.completeModal();
+     }
+
      $scope.setNsOptions = function(){
        $scope.startModal(5000);
-       if(window.SMS) SMS.sendSMS($scope.phones.pot, COMMANDS.SET_NSOPTIONS($scope.nsCheckbox.startS, $scope.nsCheckbox.rGuard,$scope.nsCheckbox.rapCommands,
+       var data = [];
+       data[0]= $scope.nsCheckbox.startS;
+       data[1] = $scope.nsCheckbox.rGuard;
+       data[2] = $scope.nsCheckbox.rapCommands;
+       data[3] = $scope.nsCheckbox.blockOutput;
+       data[4] = $scope.nsCheckbox.useInput;
+       data[5] = $scope.nsCheckbox.smsAlarm;
+       data[6] = $scope.nsCheckbox.autoGuard;
+       data[7] = $scope.nsCheckbox.errorSms;
+       data[8]= $scope.timeAlarmselected.id;
+       data[9]= $scope.timeWaitGuardselected.id;
+
+       $scope.sendSmsMessage(COMMANDS.SET_NSOPTIONS($scope.nsCheckbox.startS, $scope.nsCheckbox.rGuard,$scope.nsCheckbox.rapCommands,
          $scope.nsCheckbox.blockOutput,$scope.nsCheckbox.useInput,$scope.nsCheckbox.smsAlarm,$scope.nsCheckbox.autoGuard,
-         $scope.nsCheckbox.errorSms,$scope.timeAlarmselected.id,$scope.timeWaitGuardselected.id), function(){
-
-         $scope.nsOptions.startS = $scope.nsCheckbox.startS;
-         $scope.nsOptions.rGuard = $scope.nsCheckbox.rGuard;
-         $scope.nsOptions.rapCommands = $scope.nsCheckbox.rapCommands;
-         $scope.nsOptions.blockOutput = $scope.nsCheckbox.blockOutput;
-         $scope.nsOptions.useInput = $scope.nsCheckbox.useInput;
-         $scope.nsOptions.smsAlarm = $scope.nsCheckbox.smsAlarm;
-         $scope.nsOptions.autoGuard = $scope.nsCheckbox.autoGuard;
-         $scope.nsOptions.errorSms = $scope.nsCheckbox.errorSms;
-         $scope.nsOptions.timeAlarm = $scope.timeAlarmselected.id;
-         $scope.nsOptions.timeWaitGuard = $scope.timeWaitGuardselected.id;
-         $scope.saveData('nsOptions');
-         $scope.completeModal();
-
-       }, $scope.errorModal());
-
+         $scope.nsCheckbox.errorSms,$scope.timeAlarmselected.id,$scope.timeWaitGuardselected.id),
+         $scope.setNsOptionsSuccessful,$scope.errorModal(),data);
      }
 })
 
@@ -246,38 +258,60 @@ angular.module('starter.controllers')
     return parseInt($scope.numberInputselected.id);
   };
 
+  $scope.setVsOptionsSuccessful = function(data){
+    $scope.vsOptions.minVoltage[data[0]] = data[1];
+    $scope.vsOptions.maxVoltage[data[0]] = data[2];
+    $scope.vsOptions.minTime[data[0]] = data[3];
+    $scope.vsOptions.inactiveTime[data[0]] = data[4];
+    $scope.vsOptions.waitTime[data[0]] = data[5];
+    $scope.vsOptions.modeInput[data[0]] = data[6];
+    $scope.vsOptions.outInput[data[0]] = data[7];
+    $scope.saveData('vsOptions');
+    $scope.completeModal();
+  }
+
+  $scope.setVmOptionsSuccessful = function(data){
+    $scope.vsOptions.minTimeModule[data[0]] = $scope.minTimeModuleselected.id-1;
+    $scope.vsOptions.inactiveTimeModule[data[0]] = $scope.inactiveTimeModuleselected.id;
+    $scope.vsOptions.waitTimeModule[data[0]] = $scope.waitTimeModuleselected.id;
+    $scope.vsOptions.outInputOnModule[data[0]] = $scope.outInputOnModuleselected.id;
+    $scope.vsOptions.outInputOffModule[data[0]] = $scope.outInputOffModuleselected.id;
+    $scope.saveData('vsOptions');
+    $scope.completeModal();
+  }
+
+
   $scope.setVsOptions = function(){
     if ($scope.numberInputselected.id<10){
-       $scope.startModal(5000);
-        if(window.SMS) SMS.sendSMS($scope.phones.pot, COMMANDS.SET_VSOPTION($scope.numberInputselected.id,$scope.minVoltageselected.id,
-          $scope.maxVoltageselected.id,$scope.minTimeselected.id,$scope.inactiveTimeselected.id,$scope.waitTimeselected.id,
-          $scope.modeInputselected.id,$scope.outInputselected.id), function(){
-          $scope.vsOptions.minVoltage[$scope.numberInputselected.id-1] = $scope.minVoltageselected.id-1;
-          $scope.vsOptions.maxVoltage[$scope.numberInputselected.id-1] = $scope.maxVoltageselected.id-1;
-          $scope.vsOptions.minTime[$scope.numberInputselected.id-1] = $scope.minTimeselected.id-1;
-          $scope.vsOptions.inactiveTime[$scope.numberInputselected.id-1] = $scope.inactiveTimeselected.id-1;
-          $scope.vsOptions.waitTime[$scope.numberInputselected.id-1] = $scope.waitTimeselected.id;
-          $scope.vsOptions.modeInput[$scope.numberInputselected.id-1] = $scope.modeInputselected.id;
-          $scope.vsOptions.outInput[$scope.numberInputselected.id-1] = $scope.outInputselected.id;
-          $scope.saveData('vsOptions');
-          $scope.completeModal();
-
-        }, $scope.errorModal());
+          $scope.startModal(5000);
+          var data =[];
+          data[0] = $scope.numberInputselected.id-1;
+          data[1]= $scope.minVoltageselected.id-1;
+          data[2] = $scope.maxVoltageselected.id-1;
+          data[3] = $scope.minTimeselected.id-1;
+          data[4]= $scope.inactiveTimeselected.id-1;
+          data[5] = $scope.waitTimeselected.id;
+          data[6] = $scope.modeInputselected.id;
+          data[7] = $scope.outInputselected.id;
+          $scope.sendSmsMessage(COMMANDS.SET_VSOPTION($scope.numberInputselected.id,$scope.minVoltageselected.id,
+            $scope.maxVoltageselected.id,$scope.minTimeselected.id,$scope.inactiveTimeselected.id,$scope.waitTimeselected.id,
+            $scope.modeInputselected.id,$scope.outInputselected.id),
+            $scope.setVsOptionsSuccessful,$scope.errorModal(),data)
     }else{
-       if(window.SMS) SMS.sendSMS($scope.phones.pot, COMMANDS.SET_VMOPTION($scope.numberInputselected.id,$scope.minTimeModuleselected.id,
-         $scope.inactiveTimeModuleselected.id,$scope.waitTimeModuleselected.id,$scope.outInputOnModuleselected.id,$scope.outInputOffModuleselected.id),
-          function(){
-           $scope.vsOptions.minTimeModule[$scope.numberInputselected.id-11] = $scope.minTimeModuleselected.id-1;
-           $scope.vsOptions.inactiveTimeModule[$scope.numberInputselected.id-11] = $scope.inactiveTimeModuleselected.id;
-           $scope.vsOptions.waitTimeModule[$scope.numberInputselected.id-11] = $scope.waitTimeModuleselected.id;
-           $scope.vsOptions.outInputOnModule[$scope.numberInputselected.id-11] = $scope.outInputOnModuleselected.id;
-           $scope.vsOptions.outInputOffModule[$scope.numberInputselected.id-11] = $scope.outInputOffModuleselected.id;
-         $scope.saveData('vsOptions');
-         $scope.completeModal();
+            var data = [];
+           data[0] = $scope.numberInputselected.id-11;
+            data[1] = $scope.minTimeModuleselected.id-1;
+            data[2] = $scope.inactiveTimeModuleselected.id;
+            data[3] = $scope.waitTimeModuleselected.id;
+            data[4] = $scope.outInputOnModuleselected.id;
+            data[5] = $scope.outInputOffModuleselected.id;
+         $scope.sendSmsMessage(COMMANDS.SET_VMOPTION($scope.numberInputselected.id,$scope.minTimeModuleselected.id,
+           $scope.inactiveTimeModuleselected.id,$scope.waitTimeModuleselected.id,$scope.outInputOnModuleselected.id,$scope.outInputOffModuleselected.id),
+           $scope.setVmOptionsSuccessful,$scope.errorModal,data)
 
-       }, $scope.errorModal());
     }
   }
+
     $scope.resetForm = function() {
       if ($scope.numberInputselected.id<10){
         $scope.minVoltageselected = $scope.minVoltage[$scope.vsOptions.minVoltage[$scope.numberInputselected.id-1]];
@@ -315,28 +349,38 @@ angular.module('starter.controllers')
     $scope.nrOptions.guardOutput[2],$scope.nrOptions.guardOutput[3],
     $scope.nrOptions.moduleOutput[0],$scope.nrOptions.moduleOutput[1],
 ]
+  $scope.setOutoutComments = function(){
+    $scope.nrOptions.guardOutput[0] = $scope.outputComment[0];
+    $scope.nrOptions.guardOutput[1] = $scope.outputComment[1];
+    $scope.nrOptions.guardOutput[2] = $scope.outputComment[2];
+    $scope.nrOptions.guardOutput[3] = $scope.outputComment[3];
+    $scope.nrOptions.moduleOutput[0] = $scope.outputComment[4];
+    $scope.nrOptions.moduleOutput[1] = $scope.outputComment[5];
+    $scope.saveData('nrOptions');
+  }
+
+  $scope.setNrOptionsSuccessful = function(data){
+    $scope.nrOptions.modeOutput[0] = data[0];
+    $scope.nrOptions.modeOutput[1] = data[1];
+    $scope.nrOptions.modeOutput[2] = data[2];
+    $scope.nrOptions.modeOutput[3] = data[3];
+    $scope.saveData('nrOptions');
+    $scope.completeModal();
+  }
 
   $scope.setNrOptions = function(){
     $scope.startModal(5000);
     if (($scope.nrOptions.modeOutput[0] != $scope.outputSelected[0].id) || ($scope.nrOptions.modeOutput[1] != $scope.outputSelected[1].id) ||
     ($scope.nrOptions.modeOutput[2] != $scope.outputSelected[2].id) || ($scope.nrOptions.modeOutput[3] != $scope.outputSelected[3].id)){
-    if(window.SMS) SMS.sendSMS($scope.phones.pot, COMMANDS.SET_NROPTION($scope.outputSelected[0].id,$scope.outputSelected[1].id,
-      $scope.outputSelected[2].id,$scope.outputSelected[3].id), function(){
-          $scope.nrOptions.modeOutput[0] = $scope.outputSelected[0].id;
-          $scope.nrOptions.modeOutput[1] = $scope.outputSelected[1].id;
-          $scope.nrOptions.modeOutput[2] = $scope.outputSelected[2].id;
-          $scope.nrOptions.modeOutput[3] = $scope.outputSelected[3].id;
-          $scope.saveData('nrOptions');
-          $scope.completeModal();
-           }, $scope.errorModal());
+    var data = [];
+    data[0] = $scope.outputSelected[0].id;
+    data[1] = $scope.outputSelected[1].id;
+    data[2] = $scope.outputSelected[2].id;
+    data[3] = $scope.outputSelected[3].id;
+    $scope.sendSmsMessage(COMMANDS.SET_NROPTION($scope.outputSelected[0].id,$scope.outputSelected[1].id,
+      $scope.outputSelected[2].id,$scope.outputSelected[3].id),$scope.setNrOptionsSuccessful,$scope.errorModal,data)
     }else{$scope.completeModal()}
-        $scope.nrOptions.guardOutput[0] = $scope.outputComment[0];
-        $scope.nrOptions.guardOutput[1] = $scope.outputComment[1];
-        $scope.nrOptions.guardOutput[2] = $scope.outputComment[2];
-        $scope.nrOptions.guardOutput[3] = $scope.outputComment[3];
-        $scope.nrOptions.moduleOutput[0] = $scope.outputComment[4];
-        $scope.nrOptions.moduleOutput[1] = $scope.outputComment[5];
-        $scope.saveData('nrOptions');
+    $scope.setOutoutComments();
   }
 })
 
@@ -484,30 +528,41 @@ angular.module('starter.controllers')
     return $scope.whatTemp;
   }
 
+  $scope.setTextTemperatureSuccessful = function(data){
+    $scope.temperature.minText[data[0]] = data[1];
+    $scope.temperature.maxText[data[0]] = data[2];
+    $scope.saveData('temperature');
+    $scope.completeModal();
+  }
+
+  $scope.setOutTemperatureSuccessful = function(data){
+    $scope.temperature.minOut[data[0]] = data[1];
+    $scope.temperature.maxOut[data[0]] = data[2];
+    $scope.temperature.optionNow[data[0]] = data[3];
+    $scope.temperature.comment[data[0]] = data[4];
+    $scope.saveData('temperature');
+    $scope.completeModal();
+  }
+
   $scope.setTemperature = function(){
     if ($scope.selected.id == 0){
       $scope.startModal(5000);
-      if(window.SMS) SMS.sendSMS($scope.phones.pot, COMMANDS.SET_TEMPTEXT($scope.numberSelected.id,
-      $scope.getMinTemp(),$scope.getMaxTemp()), function(){
-            $scope.temperature.minText[$scope.numberSelected.id-1] = $scope.minTemp;
-            $scope.temperature.maxText[$scope.numberSelected.id-1] = $scope.maxTemp;
-            $scope.saveData('temperature');
-            $scope.completeModal();
-      }, $scope.errorModal());
-      // console.log(COMMANDS.SET_TEMPTEXT($scope.numberSelected.id,$scope.getMinTemp(),$scope.getMaxTemp()));
+      var data = [];
+      data[0] = $scope.numberSelected.id-1
+      data[1] = $scope.minTemp;
+      data[2] = $scope.maxTemp;
+      $scope.sendSmsMessage(COMMANDS.SET_TEMPTEXT($scope.numberSelected.id,$scope.getMinTemp(),$scope.getMaxTemp()),
+        $scope.setTextTemperatureSuccessful,$scope.errorModal,data);
     }else{
       $scope.startModal(5000);
-      if(window.SMS) SMS.sendSMS($scope.phones.pot, COMMANDS.SET_TEMPOUT($scope.numberSelected.id,$scope.selected.id,
-      $scope.getMinTemp(),$scope.getMaxTemp()), function(){
-            $scope.temperature.minOut[$scope.numberSelected.id-1] = $scope.minTemp;
-            $scope.temperature.maxOut[$scope.numberSelected.id-1] = $scope.maxTemp;
-            $scope.temperature.optionNow[$scope.numberSelected.id-1] = $scope.selected.id;
-            $scope.temperature.comment[$scope.numberSelected.id-1] = $scope.comments;
-            $scope.saveData('temperature');
-            $scope.completeModal();
-      }, $scope.errorModal());
-      console.log(COMMANDS.SET_TEMPOUT($scope.numberSelected.id,$scope.selected.id,$scope.getMinTemp(),$scope.getMaxTemp()));
-
+         var data = [];
+         data[0] = $scope.numberSelected.id-1;
+         data[1] = $scope.minTemp;
+         data[2] = $scope.maxTemp;
+         data[3] = $scope.selected.id;
+         data[4] = $scope.comments;
+         $scope.sendSmsMessage(COMMANDS.SET_TEMPOUT($scope.numberSelected.id,$scope.selected.id,$scope.getMinTemp(),$scope.getMaxTemp()),
+           $scope.setOutTemperatureSuccessful,$scope.errorModal,data)
     }
   }
 })
@@ -531,17 +586,25 @@ angular.module('starter.controllers')
   $scope.access3Selected = $scope.numberAccess[$scope.ndOptions.numberAccess[2]];
   $scope.access4Selected = $scope.numberAccess[$scope.ndOptions.numberAccess[3]];
 
+  $scope.setNdOptionsSuccessful = function(data){
+    $scope.ndOptions.numberAccess[0] = data[0];
+    $scope.ndOptions.numberAccess[1] = data[1];
+    $scope.ndOptions.numberAccess[2] = data[2];
+    $scope.ndOptions.numberAccess[3] = data[3];
+    $scope.saveData('ndOptions');
+    $scope.completeModal();
+  }
+
   $scope.setNdOptions = function(){
     $scope.startModal(5000);
-    if(window.SMS) SMS.sendSMS($scope.phones.pot, COMMANDS.SET_NDOPTION($scope.access1Selected.id,$scope.access2Selected.id,
-      $scope.access3Selected.id,$scope.access4Selected.id), function(){
-          $scope.ndOptions.numberAccess[0] = $scope.access1Selected.id;
-          $scope.ndOptions.numberAccess[1] = $scope.access2Selected.id;
-          $scope.ndOptions.numberAccess[2] = $scope.access3Selected.id;
-          $scope.ndOptions.numberAccess[3] = $scope.access4Selected.id;
-          $scope.saveData('ndOptions');
-          $scope.completeModal();
-           }, $scope.errorModal());
+    var data = [];
+    data[0] = $scope.access1Selected.id;
+    data[1] = $scope.access2Selected.id;
+    data[2] = $scope.access3Selected.id;
+    data[3] = $scope.access4Selected.id;
+    $scope.sendSmsMessage(COMMANDS.SET_NDOPTION($scope.access1Selected.id,$scope.access2Selected.id,
+      $scope.access3Selected.id,$scope.access4Selected.id),
+      $scope.setNdOptionsSuccessful,$scope.errorModal,data)
   }
 })
 
@@ -549,16 +612,29 @@ angular.module('starter.controllers')
 
   $scope.handDel = function(what){
     $scope.startModal(5000);
-    if(window.SMS) SMS.sendSMS($scope.phones.pot,COMMANDS.DEL_TMTERM(what), function(){
-          $scope.completeModal();
-    }, $scope.errorModal());
+    $scope.sendSmsMessage(COMMANDS.DEL_TMTERM(what),$scope.completeModal,$scope.errorModal)
   }
 
   $scope.resetDevice = function(){
     $scope.startModal(5000);
-    if(window.SMS) SMS.sendSMS($scope.phones.pot,COMMANDS.RESET_DEVICE(), function(){
-          $scope.completeModal();
-    }, $scope.errorModal());
+    $scope.sendSmsMessage(COMMANDS.RESET_DEVICE(),$scope.completeModal,$scope.errorModal)
+  }
+
+  $scope.getHistoryAccessText = function() {
+    if ($scope.deviceVar.historyFile) return "Успешно";
+    else return  "Ошибка";
+  }
+  $scope.getHistoryAccessColor = function() {
+    if ($scope.deviceVar.historyFile) return "balanced";
+    else return  "assertive";
+  }
+
+  $scope.statToggle = {
+    checked: $scope.deviceVar.settingMode
+  }
+
+  $scope.statToggleChange = function(){
+    $scope.deviceVar.settingMode = $scope.statToggle.checked;
   }
 
 
