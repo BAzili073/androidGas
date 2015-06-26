@@ -1,5 +1,7 @@
 var NUMBER = "+79021201364";
 
+var SMS_LIMIT = 50;
+
 var TIME_WAIT_OPERATION = 200;
 
 var TIME_WAIT = 100;
@@ -184,7 +186,7 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
 
   $scope.objects = $localstorage.getObject('objects',{
     // items:[],
-    items : [{id:0,label: "Котельная №1",number: NUMBER}],
+    items : [{id:0,label: "Котельная №1",number: NUMBER,unReadSms: false}],
 
   });
 
@@ -493,8 +495,14 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
       if (data[3] != " в норме") $scope.playAlarm("тревога температуры");
       $scope.saveData('temperature');
     }
+    $scope.errorSms = function(body) {
+      var data = SMS_REGEX.ERROR_SMS.exec(body);
+      $scope.playAlarm(data[1]);
+      // console.log(data);
+    }
 
     $scope.receiveSMS = function(sms){
+      $scope.unReadSmsSet(true);
       $scope.myVariables.counterSmsRec = $scope.myVariables.counterSmsRec + 1;
       $scope.lastSMS = JSON.stringify(sms);
       $scope.myVariables.lastIdSms = sms.date/1000;
@@ -513,6 +521,7 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
         case SMS_REGEX.POT_MESSAGES.test(body): $scope.potMessages(body); break;
         case SMS_REGEX.ERROR_MODULE.test(body): $scope.errorModule(body); break;
         case SMS_REGEX.TEMP_MESSAGES.test(body): $scope.tempMessages(body); break;
+        case SMS_REGEX.ERROR_SMS.test(body): $scope.errorSms(body); break;
         default: console.warn("Undefined sms received: ", body);
       }
       $state.go($state.current, {}, {reload: true});
@@ -526,7 +535,7 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
       }, function (error) {
         $cordovaFile.createFile(cordova.file.externalDataDirectory, "history.txt", true)
         .then(function (success) {
-          $scope.showToast("Создание файла " + cordova.file.dataDirectory);
+          $scope.showToast("Создание файла истории");
           $scope.deviceVar.historyFile = true;
         }, function (error) {
           $scope.showToast("Ошибка создания файла");
@@ -570,6 +579,15 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
       $timeout($scope.startApplication, 7000);
     }
 
+    $scope.unReadSmsSet = function(val){
+        $scope.objects.items[$scope.getIndexCurrentPot()].unReadSms = val;
+        $scope.saveObjects('objects');
+    }
+    $scope.unReadSmsGet = function(currentId){
+      if ($scope.getObjectFromId(currentId).unReadSms)
+      return true;
+      else false;
+    }
 
     $scope.deviceready = function() {
 
@@ -594,8 +612,9 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
             _.forEachRight(data, function(value, key) {
                     $scope.objects.items.forEach(function(obj){
                       if ((data[key].address == obj.number)  && (data[key].date/1000  >  $scope.myVariables.lastIdSms)){
-                            if (obj.id == $scope.currentPot().id)
+                            if (obj.id == $scope.currentPot().id){
                             $scope.receiveSMS(data[key]);
+                            }
                             else{
                               $scope.lastObjId = $scope.potNumber;
                               $scope.saveAllData();
@@ -612,27 +631,33 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
             });
           }
         }, function(err) { $scope.startModal(null, "Не могу прочитать SMS", true) });
-        if ($scope.myVariables.counterSmsRec > 50) { $scope.showToast("Извините, пробный период закончился"); $scope.exitServiceGas(); }
+        if (($scope.myVariables.counterSmsRec > SMS_LIMIT) && (SMS_LIMIT)) { $scope.showToast("Извините, пробный период закончился"); $timeout($scope.exitServiceGas,4000); }
       }, READ_INTERVAL)
       $timeout($scope.startApplication, 7000);
       $scope.checkObjects();
     };
 
     document.addEventListener('deviceready', $scope.deviceready, $timeout($scope.deviceNotReady, 1000));
-
+    if (($scope.myVariables.counterSmsRec > SMS_LIMIT) && (SMS_LIMIT)) { $scope.showToast("Извините, пробный период закончился"); $timeout($scope.exitServiceGas,4000); }
     $scope.checkObjects();
 
-    $scope.getLabelFromId = function(inId){
-      return (_.find($scope.objects.items, {id: inId}).label);
+    $scope.getObjectFromId = function(inId){
+      return (_.find($scope.objects.items, {id: inId}));
     }
     $scope.getIdFromLabel = function(lab){
       return (_.find($scope.objects.items, {label: lab}).id);
     }
 
-
     $scope.getItemLabel = function(currentId){
-      return $scope.getLabelFromId(currentId);
+      return $scope.getObjectFromId(currentId).label;
     }
+
+    $scope.unReadSmsGet = function(currentId){
+      if ($scope.getObjectFromId(currentId).unReadSms)
+      return true;
+      else false;
+    }
+
 
     $scope.getObjColor = function(id){
       if (id==$scope.potNumber) return "calm";
@@ -668,7 +693,7 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
     $scope.showObjects = function(){
 
       var seeObjects = $ionicPopup.show({
-        template: '<button  ng-click="chooseObjects(item.id);" class="button button-block button-{{getObjColor(item.id)}} item-icon-right" ng-repeat="item in objects.items">{{getItemLabel(item.id)}}</button>',
+        template: '<button  ng-click="chooseObjects(item.id);" class="button button-block button-{{getObjColor(item.id)}} item-icon-right" ng-repeat="item in objects.items">{{getItemLabel(item.id)}}<i ng-show="unReadSmsGet(item.id)" class="icon assertive ion-email"></i></button>',
         title: 'Объекты',
         scope: $scope,
         buttons: [
@@ -683,6 +708,7 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
         $scope.saveAllData();
         $scope.potNumber = id;
         $scope.loadAllData();
+        $scope.unReadSmsSet(false);
         seeObjects.close();
         $state.go($state.current, {}, {reload: true});
       }
@@ -737,7 +763,8 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
       // {body: "нет пламени: котел 3"},
       // {body: "перегрев теплоносителя 2: котел 3"},
       // {body: "отказ дополнительного модуля"}
-      {body: "т1(23) в норме"}
+      {body: "ошибка: подбор тм"}
+      // {body: "т1(23) в норме"}
       // {body: "т2(54)>58"}
 
     ],
@@ -746,6 +773,8 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
       $scope.data1[0].date = 1427650000000;
       $scope.data1[0].address = "+79021201364";
       $scope.receiveSMS($scope.data1[0]);
+      // $scope.lastObjId = 1;// $scope.potNumber;
+      // $scope.smsOtherObj($scope.currentPot().label)
       // $scope.sendSmsMessage("тревога 3: взлом двери!",$scope.toggleSendSuccesful,$scope.toggleSendError);
       // $scope.sendSmsMessage(" запуск снят с охраны т:-56 вх:+--+- вых:00000 220в ",$scope.toggleSendSuccesful,$scope.toggleSendError);
       // $scope.sendSmsMessage("перегрев теплоносителя 2: котел 3",$scope.toggleSendSuccesful,$scope.toggleSendError);
@@ -845,5 +874,9 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
 
     $scope.setModuleGet = function(){
       return $scope.potContent.setModule;
+    }
+
+    $scope.smsLimitGet = function(){
+      return SMS_LIMIT;
     }
   })

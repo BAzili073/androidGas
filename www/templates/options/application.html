@@ -11,9 +11,9 @@
       Версия программы:
         <span class="badge dark">{{getDataVersion()}}</span>
     </div>
-    <div class="item">
-      Принято смс:
-        <span class="badge dark">{{$parent.myVariables.counterSmsRec}} из 50</span>
+    <div ng-show="smsLimitGet()" class="item assertive-bg stable" >
+     Принято смс:
+        <span class="badge stable">{{$parent.myVariables.counterSmsRec}} из {{smsLimitGet()}}</span>
     </div>
   </ion-content>
 </ion-view>
