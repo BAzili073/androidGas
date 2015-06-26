@@ -118,6 +118,10 @@ angular.module('starter.controllers')
     { id: 3,  label: 'Сатурн 3'},
     { id: 4,  label: 'Сатурн 4' },
     { id: 5,  label: 'Сатурн 5' },
+  ];
+
+    if ($scope.setModuleGet()){
+  $scope.numberInput.push(
     { id: 11,  label: 'Модуль 1' },
     { id: 12,  label: 'Модуль 2' },
     { id: 13,  label: 'Модуль 3' },
@@ -125,8 +129,7 @@ angular.module('starter.controllers')
     { id: 15,  label: 'Модуль 5' },
     { id: 16,  label: 'Модуль 6' },
     { id: 17,  label: 'Модуль 7' },
-    { id: 18,  label: 'Модуль 8' },
-  ];
+    { id: 18,  label: 'Модуль 8' })}
 
   $scope.minVoltage = [
     { id: 1, label: '1'},
@@ -379,7 +382,10 @@ angular.module('starter.controllers')
     data[3] = $scope.outputSelected[3].id;
     $scope.sendSmsMessage(COMMANDS.SET_NROPTION($scope.outputSelected[0].id,$scope.outputSelected[1].id,
       $scope.outputSelected[2].id,$scope.outputSelected[3].id),$scope.setNrOptionsSuccessful,$scope.errorModal,data)
-    }else{$scope.completeModal()}
+    }else{
+      $scope.saveHistory($scope.getCurrentTime(),"Изменение комментариев к выходам");
+      $scope.completeModal()
+    }
     $scope.setOutoutComments();
   }
 })
@@ -390,16 +396,19 @@ angular.module('starter.controllers')
     { id: 2, label: 'Сатурн 2'},
     { id: 3,  label: 'Сатурн 3'},
     { id: 4,  label: 'Сатурн 4' },
-    { id: 5,  label: 'Сатурн 5' },
-    { id: 11,  label: 'Модуль 1' },
-    { id: 12,  label: 'Модуль 2' },
-    { id: 13,  label: 'Модуль 3' },
-    { id: 14,  label: 'Модуль 4' },
-    { id: 15,  label: 'Модуль 5' },
-    { id: 16,  label: 'Модуль 6' },
-    { id: 17,  label: 'Модуль 7' },
-    { id: 18,  label: 'Модуль 8' },
-  ];
+    { id: 5,  label: 'Сатурн 5' }];
+    
+    if ($scope.setModuleGet()){
+      $scope.textInputsOptions.push(
+      { id: 11,  label: 'Модуль 1' },
+      { id: 12,  label: 'Модуль 2' },
+      { id: 13,  label: 'Модуль 3' },
+      { id: 14,  label: 'Модуль 4' },
+      { id: 15,  label: 'Модуль 5' },
+      { id: 16,  label: 'Модуль 6' },
+      { id: 17,  label: 'Модуль 7' },
+      { id: 18,  label: 'Модуль 8' })
+    }
 
   $scope.selected = $scope.textInputsOptions[0];
 
@@ -620,6 +629,11 @@ angular.module('starter.controllers')
     $scope.sendSmsMessage(COMMANDS.RESET_DEVICE(),$scope.completeModal,$scope.errorModal)
   }
 
+})
+
+
+.controller('applicationController', function($scope, $localstorage){
+
   $scope.getHistoryAccessText = function() {
     if ($scope.deviceVar.historyFile) return "Успешно";
     else return  "Ошибка";
@@ -636,6 +650,4 @@ angular.module('starter.controllers')
   $scope.statToggleChange = function(){
     $scope.deviceVar.settingMode = $scope.statToggle.checked;
   }
-
-
 })

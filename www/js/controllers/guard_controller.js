@@ -20,11 +20,36 @@ angular.module('starter.controllers')
      $scope.guardContent.statusGuard = 2;
      $scope.toggleSendSuccesful();
    }
-   
+
    $scope.statToggleChange = function(){
     //  console.log(COMMANDS.SET_GUARD($scope.statToggle.checked));
     //  $scope.startModal(1000);
-      $scope.sendSmsMessage(COMMANDS.SET_GUARD($scope.statToggle.checked),$scope.toggleGuardSuccesful,$scope.toggleSendError)
+      if ($scope.guardContent.statusGuard == 2){
+          var playAlarm = $ionicPopup.show({
+            template: 'Изменить состояние?',
+            title: 'Объект не получил ответ',
+            scope: $scope,
+            buttons: [
+              {
+                text: '<b>Изменить</b>',
+                type: 'button-positive',
+                onTap: function(e) {
+                  $scope.sendSmsMessage(COMMANDS.SET_GUARD($scope.statToggle.checked),$scope.toggleGuardSuccesful,$scope.toggleSendError)
+                }
+              },{
+                text: '<b>Повторить</b>',
+                type: 'button-positive',
+                onTap: function(e) {
+                  $scope.sendSmsMessage(COMMANDS.SET_GUARD(!$scope.statToggle.checked),$scope.toggleGuardSuccesful,$scope.toggleSendError)
+                  $scope.statToggle.checked = !$scope.statToggle.checked;
+                }
+              }
+            ]
+          });
+        }else{
+              $scope.sendSmsMessage(COMMANDS.SET_GUARD($scope.statToggle.checked),$scope.toggleGuardSuccesful,$scope.toggleSendError)
+        }
+
    }
 
    $scope.getGuardState = function(){
@@ -183,7 +208,9 @@ angular.module('starter.controllers')
       }
     }
 
-
+    $scope.receiveReport = function(){
+      $scope.sendSmsMessage(COMMANDS.REPORT,$scope.toggleSendSuccesful,$scope.toggleSendError)
+    }
     $scope.getColorOption = function(lab){
       // return GUARD_STATES[$scope.optionContent].color;
     }

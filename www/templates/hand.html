@@ -13,10 +13,10 @@
       <ion-toggle ion-toggle-text ng-model="statOutput[3].checked" ng-change="statToggleSaturnChange(3)">
         {{$parent.nrOptions.guardOutput[3]}}
       </ion-toggle>
-      <ion-toggle ion-toggle-text ng-model="statOutput[4].checked" ng-change="statToggleModuleChange(0)">
+      <ion-toggle ng-show="setModuleGet()" ion-toggle-text ng-model="statOutput[4].checked" ng-change="statToggleModuleChange(0)">
         {{$parent.nrOptions.moduleOutput[0]}}
       </ion-toggle>
-      <ion-toggle ion-toggle-text ng-model="statOutput[5].checked" ng-change="statToggleModuleChange(1)">
+      <ion-toggle ng-show="setModuleGet()" ion-toggle-text ng-model="statOutput[5].checked" ng-change="statToggleModuleChange(1)">
         {{$parent.nrOptions.moduleOutput[1]}}
       </ion-toggle>
     </form>

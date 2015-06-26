@@ -1,6 +1,11 @@
 
 <ion-view view-title="{{currentPot().label}}">
   <ion-content>
+    <div ng-show="!setModuleGet()" ng-click="receiveReport()" class="item item-icon-right">
+      Последнее обновление <i class="icon ion-loop">
+      </i></br>
+      {{$parent.lastSmsTime}}
+    </div>
     <button class=" button button-full button-{{getGuardColor()}} noMargin">
       {{$parent.guardContent.whoChangeGuard}} {{getGuardStateText()}}
     </button>
@@ -29,6 +34,65 @@
         </span>
   </div>
 
+  <div ng-show="!setModuleGet()">
+  <div ng-show = "getNowTemp(1)" class="row">
+    <div class="col col">
+      <button ng-click="seeTempComment(1)" class="button button-small button-{{getTempColor(1)}} term">
+        {{getNowTempStr(1)}}
+      </button>
+    </div>
+        <label class="item-input col-80 mysize">
+            {{$parent.temperature.comment[0]}}
+        </label>
+  </div>
+
+
+  <div ng-show = "getNowTemp(2)" class="row">
+    <div class="col col">
+      <button ng-click="seeTempComment(2)" class="button button-small button-{{getTempColor(2)}} term">
+        {{getNowTempStr(2)}}
+      </button>
+    </div>
+        <label class="item-input col-80 mysize">
+            {{$parent.temperature.comment[1]}}
+        </label>
+  </div>
+
+  <div ng-show = "getNowTemp(3)" class="row">
+    <div class="col col">
+      <button ng-click="seeTempComment(3)" class="button button-small button-{{getTempColor(3)}} term">
+        {{getNowTempStr(3)}}
+      </button>
+    </div>
+        <label class="item-input col-80 mysize">
+            {{$parent.temperature.comment[2]}}
+        </label>
+  </div>
+
+  <div ng-show = "getNowTemp(4)" class="row">
+    <div class="col col">
+      <button ng-click="seeTempComment(4)" class="button button-small button-{{getTempColor(4)}} term">
+        {{getNowTempStr(4)}}
+      </button>
+    </div>
+        <label class="item-input col-80 mysize">
+            {{$parent.temperature.comment[3]}}
+        </label>
+  </div>
+
+  <div ng-show = "getNowTemp(5)" class="row">
+    <div class="col col">
+      <button ng-click="seeTempComment(5)" class="button button-small button-{{getTempColor(5)}} term">
+        {{getNowTempStr(5)}}
+      </button>
+    </div>
+        <label class="item-input col-80 mysize">
+            {{$parent.temperature.comment[4]}}
+        </label>
+  </div>
+</div>
+
+
   <!-- <div class="item">Выходы:
         <span class = "badge mybadge">
             <button ng-click="seeOutputComment(1)" class="button button-small button-{{getOutputColor(0)}} oval">1</button>
@@ -37,10 +101,6 @@
             <button ng-click="seeOutputComment(4)" class="button button-small button-{{getOutputColor(3)}} oval">4</button>
         </span>
   </div> -->
-
-
-</div>
-
 
   </ion-content>
 </ion-view>

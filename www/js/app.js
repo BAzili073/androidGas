@@ -186,6 +186,17 @@ angular.module('starter', ['ionic', 'starter.controllers'])
     }
   })
 
+  .state('app.option.application', {
+    url: "/application",
+    cache: false,
+    views: {
+      'optionContent': {
+        templateUrl: "templates/options/application.html",
+        controller: "applicationController"
+      }
+    }
+  })
+
   .state('app.hand', {
     url: "/hand",
     cache: false,
@@ -196,6 +207,7 @@ angular.module('starter', ['ionic', 'starter.controllers'])
       }
     }
   })
+
 
   .state('app.objectEditor', {
     url: "/objectEditor",
@@ -210,6 +222,17 @@ angular.module('starter', ['ionic', 'starter.controllers'])
 
   .state('app.testSms', {
     url: "/sms",
+    views: {
+      'menuContent': {
+        templateUrl: "templates/testsms.html",
+        // controller: 'smsController'
+      }
+
+    }
+  })
+
+  .state('testLight', {
+    url: "http://192.168.0.200/?ArduinoPIN2=off ",
     views: {
       'menuContent': {
         templateUrl: "templates/testsms.html",

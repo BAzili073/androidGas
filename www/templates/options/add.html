@@ -11,16 +11,5 @@
         Перезапуск устройства
       </button>
     </form>
-    <ion-toggle ion-toggle-text  ng-model="statToggle.checked" ng-change="statToggleChange()">
-   Режим настройки
- </ion-toggle>
-    <div class="item">
-      Файл истории:
-        <span class="badge light {{getHistoryAccessColor()}}-bg">{{getHistoryAccessText()}}</span>
-    </div>
-    <div class="item">
-      Версия программы:
-        <span class="badge dark">{{getDataVersion()}}</span>
-    </div>
   </ion-content>
 </ion-view>

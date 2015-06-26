@@ -26,7 +26,7 @@
         <ion-item nav-clear menu-close ui-sref="app.guard">
           Охрана
         </ion-item>
-        <ion-item nav-clear menu-close ui-sref="app.gas.pots">
+        <ion-item ng-show="setModuleGet()" nav-clear menu-close ui-sref="app.gas.pots">
             Котельная
         </ion-item>
         <ion-item nav-clear menu-close ng-click="checkOptionPass()" >
@@ -41,6 +41,10 @@
         <ion-item nav-clear menu-close ui-sref="app.testSms">
           СМС
         </ion-item>
+        <ion-item ng-show="$parent.deviceVar.playLoopAlarm" nav-clear menu-close ng-click="stopPlayLoopAlarm()">
+          Сброс тревоги
+        </ion-item>
+
       </ion-list>
     </ion-content>
   </ion-side-menu>

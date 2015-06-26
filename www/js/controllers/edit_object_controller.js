@@ -30,7 +30,6 @@ angular.module('starter.controllers')
     $scope.createObject($scope.objects.items[$scope.selected.id],$scope.selected.id);
   }
 
-  $scope.resetForm();
 
   $scope.deleteObject = function() {
        $scope.data = {
@@ -50,11 +49,16 @@ angular.module('starter.controllers')
              text: '<b>Да</b>',
              type: 'button-positive',
              onTap: function(e) {
+               $scope.saveHistory ($scope.getCurrentTime(),"Объект " + ($scope.objects.items[$scope.selected.id].label) + "(" + ($scope.objects.items[$scope.selected.id].number) + ")"+ " удален")
                  $scope.deletePotData($scope.objects.items[$scope.selected.id].id);
                  $state.go($state.current, {}, {reload: true});
                 if ((_.find($scope.objects.items, {label: $scope.selected.label})).id == $scope.potNumber){
                   $scope.objects.items.splice($scope.selected.id,1);
-                  $scope.setPot()
+                  if ($scope.objects.items == []) {
+                    $scope.deviceVar.presenceObject = false;
+                  }else{
+                    $scope.setPot($scope.objects.items[0].id);
+                  }
                 }else{$scope.objects.items.splice($scope.selected.id,1);}
                 $scope.saveObjects('objects');
              }
@@ -66,19 +70,24 @@ angular.module('starter.controllers')
      $scope.createObject = function(obj,id) {
         if (obj){ $scope.data = obj;
           $scope.dataPot = $scope.potContent.seePot;
+          $scope.data.setModule = $scope.potContent.setModule;
         } else{
-            $scope.data= {};
+            $scope.data = {setModule:true};
             $scope.dataPot = [true,true,true]
         };
 
         // An elaborate, custom popup
         var create = $ionicPopup.show({
-          template: 'Название:<input type="text" ng-model="data.label" placeholder="До 15 символов" ></br>Номер:<input type="text" ng-model="data.number" placeholder="+79876543210">Котлы:<div class="item item-input"><label class="col col"><ion-checkbox class="noMargin " ng-model="dataPot[0]"></ion-checkbox></label><label class="col col"><ion-checkbox class="noMargin " ng-model="dataPot[1]"></ion-checkbox></label><label class="col col"><ion-checkbox class="noMargin " ng-model="dataPot[2]"></ion-checkbox></label></div>',
+          template: 'Название:<input type="text" ng-model="data.label" placeholder="До 15 символов" ></br>Номер:<input type="text" ng-model="data.number" placeholder="+79876543210">Котлы:<div class="item item-input"><label class="col col"><ion-checkbox class="noMargin " ng-model="dataPot[0]"></ion-checkbox></label><label class="col col"><ion-checkbox class="noMargin " ng-model="dataPot[1]"></ion-checkbox></label><label class="col col"><ion-checkbox class="noMargin " ng-model="dataPot[2]"></ion-checkbox></label></div></br><div><label><ion-checkbox class="noMargin " ng-model="data.setModule">Доп.модуль</ion-checkbox></label></div>',
           title: 'Объект',
           scope: $scope,
           buttons: [
             { text: 'Отмена',
             onTap: function() {
+              if (!$scope.deviceVar.presenceObject) {
+                if ($scope.deviceVar.device) $scope.exitServiceGas();
+                else $scope.createObject();
+              }
               if (obj) {
                   $scope.setPot($scope.lastObjId);
               }
@@ -94,19 +103,28 @@ angular.module('starter.controllers')
                   e.preventDefault();
                 } else {
                   if (obj){
-                    $scope.potContent.seePot = $scope.dataPot;
                     $scope.objects.items[id].label = $scope.data.label;
                     $scope.objects.items[id].number = $scope.data.number;
-                    $scope.saveData('potContent');
                     $scope.showToast('Объект "' + $scope.data.label + '" изменен');
+                    $scope.saveHistory ($scope.getCurrentTime(),"Объект " + $scope.data.label + "(" + $scope.data.number + ")"+ " изменен")
                   }else{
-                      $scope.data.id = $scope.objects.items[$scope.objects.items.length-1].id+1;
+                    if (!$scope.deviceVar.presenceObject){
+                        $scope.data.id = 0;
+                        $scope.lastObjId = 0;
+                      }else {
+                        $scope.data.id = $scope.objects.items[$scope.objects.items.length-1].id+1;
+                        $scope.lastObjId = $scope.potNumber;
+                      }
                       $scope.objects.items.push($scope.data);
-                      $scope.lastObjId = $scope.potNumber;
                       $scope.saveAllData();
                       $scope.setPot($scope.objects.items.length-1);
                       $scope.showToast('Объект "' + $scope.data.label + '" добавлен');
+                      $scope.saveHistory ($scope.getCurrentTime(),"Объект " + $scope.data.label + "(" + $scope.data.number + ")"+ " создан")
                   }
+                  $scope.deviceVar.presenceObject = true;
+                  $scope.potContent.setModule = $scope.data.setModule;
+                  $scope.potContent.seePot = $scope.dataPot;
+                  $scope.saveData('potContent');
                   $scope.setPotNumber($scope.data.number);
                   $scope.setPot($scope.lastObjId);
                   $scope.saveObjects('objects');
@@ -118,4 +136,6 @@ angular.module('starter.controllers')
           ]
         });
       }
+      if (!$scope.deviceVar.presenceObject) $scope.createObject();
+      else $scope.resetForm();
   })

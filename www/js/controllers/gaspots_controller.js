@@ -2,9 +2,6 @@ angular.module('starter.controllers')
 
 .controller('gaspotsController', function($scope, POT_STATES, $ionicPopup) {
   TAB_ACTIVE = 1;
-  $scope.receiveReport = function(){
-    $scope.sendSmsMessage(COMMANDS.REPORT,$scope.toggleSendSuccesful,$scope.toggleSendError)
-  }
 
   $scope.getPotState = function(id){
     return POT_STATES[$scope.potContent.potState[id]];

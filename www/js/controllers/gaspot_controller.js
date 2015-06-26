@@ -10,6 +10,8 @@ angular.module('starter.controllers')
     return parseInt($state.params.potId);
    }
 
+
+
    $scope.togglePotSuccesful = function(num){
        $scope.potContent.statToggle[num] = $scope.statToggle.checked[num];
        $scope.saveData('potContent');
@@ -18,10 +20,33 @@ angular.module('starter.controllers')
    }
 
     $scope.statToggleChange = function(id){
-      $scope.startModal(1000);
       var num = id - 1;
       var data = num;
-      $scope.sendSmsMessage(COMMANDS.CONTROL_POT($scope.statToggle.checked[num],id),$scope.togglePotSuccesful,$scope.toggleSendError,data)
+      if ($scope.potContent.potState[num] == 9){
+          var playAlarm = $ionicPopup.show({
+            template: 'Изменить состояние?',
+            title: 'Объект не получил ответ',
+            scope: $scope,
+            buttons: [
+              {
+                text: '<b>Изменить</b>',
+                type: 'button-positive',
+                onTap: function(e) {
+                  $scope.sendSmsMessage(COMMANDS.CONTROL_POT($scope.statToggle.checked[num],id),$scope.togglePotSuccesful,$scope.toggleSendError,data)
+                }
+              },{
+                text: '<b>Повторить</b>',
+                type: 'button-positive',
+                onTap: function(e) {
+                  $scope.sendSmsMessage(COMMANDS.CONTROL_POT(!$scope.statToggle.checked[num],id),$scope.togglePotSuccesful,$scope.toggleSendError,data)
+                  $scope.statToggle.checked[num] = !$scope.statToggle.checked[num]
+                }
+              }
+            ]
+          });
+        }else{
+          $scope.sendSmsMessage(COMMANDS.CONTROL_POT($scope.statToggle.checked[num],id),$scope.togglePotSuccesful,$scope.toggleSendError,data)
+        }
     }
 
 
