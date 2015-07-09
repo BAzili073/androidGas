@@ -22,7 +22,7 @@ angular.module('starter.controllers')
     $scope.statToggleChange = function(id){
       var num = id - 1;
       var data = num;
-      if ($scope.potContent.potState[num] == 9){
+      if ($scope.potContent.potState[num] > 1){
           var playAlarm = $ionicPopup.show({
             template: 'Изменить состояние?',
             title: 'Объект не получил ответ',

@@ -1,7 +1,10 @@
 <ion-view title="Приложения">
   <ion-content has-header="true">
-    <ion-toggle ion-toggle-text  ng-model="statToggle.checked" ng-change="statToggleChange()">
+    <ion-toggle ion-toggle-text  ng-model="statToggle.settingMode" ng-change="statToggleChange()">
    Режим настройки
+ </ion-toggle>
+ <ion-toggle ion-toggle-text  ng-model="statToggle.notification" ng-change="notifToggleChange()">
+     Уведомления
  </ion-toggle>
     <div class="item">
       Файл истории:
@@ -13,7 +16,7 @@
     </div>
     <div ng-show="smsLimitGet()" class="item assertive-bg stable" >
      Принято смс:
-        <span class="badge stable">{{$parent.myVariables.counterSmsRec}} из {{smsLimitGet()}}</span>
+        <span class="badge stable">{{$parent.appVariables.counterSmsRec}} из {{smsLimitGet()}}</span>
     </div>
   </ion-content>
 </ion-view>

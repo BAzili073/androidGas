@@ -1,10 +1,8 @@
 angular.module('starter.controllers')
 
 .controller('guardController', function($scope, $state, $ionicPopup, $location) {
-
-  $scope.statToggle = {
-    checked: $scope.guardContent.stateGuard
-  }
+if ($scope.deviceVar.presenceObject)  $scope.statToggle = {checked: $scope.guardContent.stateGuard}
+else  $scope.statToggle = {checked: false}
 
   $scope.getErrorModule = function(){
     return $scope.potContent.errorModule;

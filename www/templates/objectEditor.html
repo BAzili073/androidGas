@@ -9,7 +9,7 @@
           </div>
           <select ng-change="resetForm()" ng-model="$parent.selected" ng-options="objects.label for objects in localobjects.items track by objects.id"></select>
         </label>
-<!-- 
+<!--
         <label class="item item-input">
           <input type="text" ng-model="$parent.objectLabel" placeholder="Название объекта">
         </label>
@@ -26,6 +26,9 @@
     </div>
     <div class="button-bar">
       <a class="button" ng-click="deleteObject()" > Удалить объект</a>
+    </div>
+    <div class="button-bar">
+      <a class="button" ng-click="regInObject()" > Регистрация в объекте</a>
     </div>
     <div class="button-bar">
       <a class="button" ng-click="createObject()" > Добавить объект </a>

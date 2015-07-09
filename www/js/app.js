@@ -27,6 +27,7 @@ angular.module('starter', ['ionic', 'starter.controllers'])
     controller: 'AppCtrl'
   })
 
+
   .state('app.guard', {
     url: "/guard",
     cache: false,
@@ -38,9 +39,6 @@ angular.module('starter', ['ionic', 'starter.controllers'])
 
     }
   })
-
-
-
 
   .state('app.gas', {
     url: "/gas",

@@ -397,7 +397,7 @@ angular.module('starter.controllers')
     { id: 3,  label: 'Сатурн 3'},
     { id: 4,  label: 'Сатурн 4' },
     { id: 5,  label: 'Сатурн 5' }];
-    
+
     if ($scope.setModuleGet()){
       $scope.textInputsOptions.push(
       { id: 11,  label: 'Модуль 1' },
@@ -464,13 +464,6 @@ angular.module('starter.controllers')
   // $scope.getOptionNow = function(){
   //   return $scope.termoOptions[1].label
   // }
-  $scope.resetForm = function() {
-    $scope.minTemp = $scope.temperature.minOut[$scope.numberSelected.id-1];
-    $scope.maxTemp = $scope.temperature.maxOut[$scope.numberSelected.id-1];
-    $scope.selected = $scope.termoOptions[$scope.temperature.optionNow[$scope.numberSelected.id-1]];
-    $scope.comments = $scope.temperature.comment[$scope.numberSelected.id-1];
-  }
-
   $scope.resetForm2 = function() {
      if (($scope.selected.id) == 0){
       $scope.minTemp = $scope.temperature.minText[$scope.numberSelected.id-1];
@@ -481,13 +474,34 @@ angular.module('starter.controllers')
     }
   }
 
-  $scope.getMinTemp = function(){
-    if ($scope.minTemp>0) return '+' + $scope.minTemp;
-    else return  $scope.minTemp;
+  $scope.resetForm = function() {
+    $scope.selected = $scope.termoOptions[$scope.temperature.optionNow[$scope.numberSelected.id-1]];
+    $scope.resetForm2();
+    $scope.comments = $scope.temperature.comment[$scope.numberSelected.id-1];
   }
+
+
+  $scope.checkAddZero = function(varib){
+      var var_return;
+      if (varib < 0) var_return = varib * (-1);
+      else   var_return = varib;
+      if (var_return < 10) var_return = "0" + var_return;
+      if (varib < 0) var_return = "-" + var_return;
+      return var_return;
+  }
+
+  $scope.getMinTemp = function(){
+    if ($scope.minTemp>=0){
+       return '+' + sprintf("%02d",$scope.minTemp);
+    }
+    else return sprintf("%03d",$scope.minTemp);
+  }
+
   $scope.getMaxTemp = function(){
-    if ($scope.maxTemp>0) return '+' + $scope.maxTemp;
-    else return $scope.maxTemp;
+    if ($scope.maxTemp>=0){
+       return '+' + sprintf("%02d",$scope.maxTemp);
+    }
+    else return sprintf("%03d",$scope.maxTemp);
   }
 
   $scope.minusMinTemp = function(){
@@ -626,7 +640,7 @@ angular.module('starter.controllers')
 
   $scope.resetDevice = function(){
     $scope.startModal(5000);
-    $scope.sendSmsMessage(COMMANDS.RESET_DEVICE(),$scope.completeModal,$scope.errorModal)
+    $scope.sendSmsMessage(COMMANDS.RESET_DEVICE,$scope.completeModal,$scope.errorModal)
   }
 
 })
@@ -644,10 +658,17 @@ angular.module('starter.controllers')
   }
 
   $scope.statToggle = {
-    checked: $scope.deviceVar.settingMode
+    settingMode: $scope.deviceVar.settingMode,
+    notification: $scope.appVariables.seeNotification
   }
 
   $scope.statToggleChange = function(){
-    $scope.deviceVar.settingMode = $scope.statToggle.checked;
+    $scope.deviceVar.settingMode = $scope.statToggle.settingMode;
+    $scope.appVariables.seeNotification = $scope.statToggle.notification;
+  }
+
+  $scope.notifToggleChange = function(){
+    $scope.appVariables.seeNotification = $scope.statToggle.notification;
+    $scope.saveObjects('appVariables');
   }
 })
