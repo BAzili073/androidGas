@@ -7,7 +7,7 @@
       {{$parent.lastSmsTime}}
     </div>
     <button class=" button button-full button-{{getGuardColor()}} noMargin">
-      {{$parent.guardContent.whoChangeGuard}} {{getGuardStateText()}}
+       {{getGuardStateText()}}{{$parent.guardContent.whoChangeGuard}}
     </button>
     <ion-toggle ion-toggle-text  ng-model="statToggle.checked" ng-change="statToggleChange()">
    Режим охраны:

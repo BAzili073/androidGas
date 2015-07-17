@@ -672,3 +672,53 @@ angular.module('starter.controllers')
     $scope.saveObjects('appVariables');
   }
 })
+
+.controller('keyTMController', function($scope,$state, $localstorage){
+  $scope.tmOptions = [
+     { id: 1,  label: '1 (' + $scope.guardContent.keyTMName[1] + ')'},
+     { id: 2,  label: '2 (' + $scope.guardContent.keyTMName[2] + ')' },
+     { id: 3,  label: '3 (' + $scope.guardContent.keyTMName[3] + ')' },
+     { id: 4,  label: '4 (' + $scope.guardContent.keyTMName[4] + ')' },
+     { id: 5,  label: '5 (' + $scope.guardContent.keyTMName[5] + ')' },
+     { id: 6,  label: '6 (' + $scope.guardContent.keyTMName[6] + ')' },
+     { id: 7,  label: '7 (' + $scope.guardContent.keyTMName[7] + ')' },
+     { id: 8,  label: '8 (' + $scope.guardContent.keyTMName[8] + ')' },
+     { id: 9,  label: '9 (' + $scope.guardContent.keyTMName[9] + ')' },
+     { id: 10,  label: '10 (' + $scope.guardContent.keyTMName[10] + ')' },
+     { id: 11,  label: '11 (' + $scope.guardContent.keyTMName[11] + ')' },
+     { id: 12,  label: '12 (' + $scope.guardContent.keyTMName[12] + ')' },
+     { id: 13,  label: '13 (' + $scope.guardContent.keyTMName[13] + ')' },
+     { id: 14,  label: '14 (' + $scope.guardContent.keyTMName[14] + ')' },
+     { id: 15,  label: '15 (' + $scope.guardContent.keyTMName[15] + ')' },
+   ];
+   $scope.selected = $scope.tmOptions[$scope.guardContent.keyTMName[0] - 1]
+    $scope.resetForm = function() {
+       switch($scope.selected.id){
+         case 1: $scope.tmName = $scope.guardContent.keyTMName[1];break;
+         case 2: $scope.tmName = $scope.guardContent.keyTMName[2];break;
+         case 3: $scope.tmName = $scope.guardContent.keyTMName[3];break;
+         case 4: $scope.tmName = $scope.guardContent.keyTMName[4];break;
+         case 5: $scope.tmName = $scope.guardContent.keyTMName[5];break;
+         case 6: $scope.tmName = $scope.guardContent.keyTMName[6];break;
+         case 7: $scope.tmName = $scope.guardContent.keyTMName[7];break;
+         case 8: $scope.tmName = $scope.guardContent.keyTMName[8];break;
+         case 9: $scope.tmName = $scope.guardContent.keyTMName[9];break;
+         case 10: $scope.tmName = $scope.guardContent.keyTMName[10];break;
+         case 11: $scope.tmName = $scope.guardContent.keyTMName[11];break;
+         case 12: $scope.tmName = $scope.guardContent.keyTMName[12];break;
+         case 13: $scope.tmName = $scope.guardContent.keyTMName[13];break;
+         case 14: $scope.tmName = $scope.guardContent.keyTMName[14];break;
+         case 15: $scope.tmName = $scope.guardContent.keyTMName[15];break;
+       }
+    }
+
+    $scope.setTMName = function(){
+      $scope.guardContent.keyTMName[$scope.selected.id] = $scope.tmName;
+      $scope.guardContent.keyTMName[0] = $scope.selected.id;
+      $scope.saveData('guardContent');
+      $state.go($state.current, {}, {reload: true});
+    }
+
+    $scope.resetForm();
+
+})

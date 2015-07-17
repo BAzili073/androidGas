@@ -1,0 +1,22 @@
+<ion-view title="TM ключи">
+  <ion-content has-header="true">
+    <form  method="post" name="options_number">
+      <div class="list">
+        <label class="item item-input item-select">
+          <div class="input-label">
+            Выбранные ключ TM:
+          </div>
+          <select ng-change="resetForm()" ng-model="$parent.selected" ng-options="tm.label for tm in tmOptions track by tm.id"></select>
+        </label>
+
+        <label class="item item-input">
+          <input type="text" ng-model="$parent.tmName" placeholder="Имя владельца TM ключа">
+        </label>
+      </div>
+    </form>
+
+    <div class="button-bar">
+      <a class="button" ng-click="setTMName()" > Задать настройку </a>
+    </div>
+  </ion-content>
+</ion-view>

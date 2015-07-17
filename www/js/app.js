@@ -184,6 +184,17 @@ angular.module('starter', ['ionic', 'starter.controllers'])
     }
   })
 
+  .state('app.option.tm', {
+    url: "/keys",
+    cache: false,
+    views: {
+      'optionContent': {
+        templateUrl: "templates/options/keys.html",
+        controller: "keyTMController"
+      }
+    }
+  })
+
   .state('app.option.application', {
     url: "/application",
     cache: false,

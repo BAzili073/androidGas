@@ -1,6 +1,6 @@
 var NUMBER = "+79021201364";
 
-var SMS_LIMIT = 100;
+var SMS_LIMIT = 20;
 
 var TIME_WAIT_OPERATION = 200;
 
@@ -53,7 +53,7 @@ var SMS_REGEX = {
 
 var READ_INTERVAL = 10000;
 
-var DATA_VERSION = "0.8.9";
+var DATA_VERSION = "0.9.0";
 
 var DEFAULT_DATA = {
 
@@ -139,6 +139,7 @@ var DEFAULT_DATA = {
     inputs: [false, false, false, false, false], // true - alarm, false - ok
     guardState: 0,
     counterTM:0,
+    keyTMName:[0,"","","","","","","","","","","","","","",""],
     whoChangeGuard:"",
   },
 
@@ -170,6 +171,7 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
   $scope.lastSMS = '';
   $scope.lastObjId = '';
   $scope.counter = 1;
+  $scope.lastIdTMName;
 
 
   $scope.getDataVersion = function(){
@@ -451,8 +453,11 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
 
     $scope.changeGuard = function(body) {
       var data = SMS_REGEX.CHANGE_GUARD.exec(body);
-      if (data[1]) $scope.guardContent.whoChangeGuard = data[1]
-      else $scope.guardContent.whoChangeGuard = data[2]
+      if (data[1]) $scope.guardContent.whoChangeGuard = "(" + data[1] + ")"
+      else{
+        if ($scope.guardContent.keyTMName[data[2]]) $scope.guardContent.whoChangeGuard = " (" + $scope.guardContent.keyTMName[data[2]] + ")"
+        else $scope.guardContent.whoChangeGuard = " (TM = " + data[2] + ")"
+      }
       $scope.guardContent.stateGuard = data[3].indexOf("на охране") >= 0;
       $scope.guardContent.statusGuard = (data[3].indexOf("на охране") >= 0) ? 1:0;
       $scope.saveData('guardContent');
@@ -811,10 +816,11 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
       });
     };
     $scope.data1 = [
-      {body : " запуск снят с охраны т:-56;34;65 вх:+--+- вых:00000 220в "},
+      //{body : " запуск снят с охраны т:-56;34;65 вх:+--+- вых:00000 220в "},
       // {body : "вер:3.1 снят с охраны т:26 тм=2"},
       // {body : " запуск снят с охраны вх:+--+- вых:00000 220в "},
       // {body : " вх:----- вых:00000 220в "},
+      {body : "тм=1 на охране"},
       // {body : "79021201364 снят с охраны"},
       // {body : "тревога 3: взлом двери!"},
       // {body : "восстановление 220в"},
