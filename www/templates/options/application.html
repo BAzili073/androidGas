@@ -18,5 +18,9 @@
      Принято смс:
         <span class="badge stable">{{$parent.appVariables.counterSmsRec}} из {{smsLimitGet()}}</span>
     </div>
+    <div>
+      <button class="item button-block" ng-click="saveLocalStorage()">Сохранить настройки</button>
+      <button class="item button-block" ng-click="loadLocalStorage()">Загрузить настройки</button>
+    </div>
   </ion-content>
 </ion-view>

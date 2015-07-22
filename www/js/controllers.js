@@ -53,7 +53,7 @@ var SMS_REGEX = {
 
 var READ_INTERVAL = 10000;
 
-var DATA_VERSION = "0.9.0";
+var DATA_VERSION = "1.9.3";
 
 var DEFAULT_DATA = {
 
@@ -139,7 +139,7 @@ var DEFAULT_DATA = {
     inputs: [false, false, false, false, false], // true - alarm, false - ok
     guardState: 0,
     counterTM:0,
-    keyTMName:[0,"","","","","","","","","","","","","","",""],
+    keyTMName:[1,"","","","","","","","","","","","","","",""],
     whoChangeGuard:"",
   },
 
@@ -348,6 +348,11 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
     DATA_KEYS.forEach(function(key){
       $scope.loadData(key);
     });
+  }
+  $scope.loadAllVar = function() {
+      $scope.setPot(0);
+      $scope.objects = $localstorage.getObject('objects');
+      $scope.appVariables = $localstorage.getObject('appVariables');
   }
 
   $scope.saveAllData = function() {
@@ -576,9 +581,7 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
         }, function (error) {
           $scope.showToast("Ошибка создания файла");
         });
-
       });
-
     }
 
     $scope.testText = function(){
@@ -835,25 +838,21 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
       // {body: "т2(54)>58"}
 
     ],
-
-    $scope.checkBalance = function(){
+    $scope.testsms = function(){
       $scope.data1[0].date = 1438260000000;
       $scope.data1[0].address = "+79021201364";
       $scope.receiveSMS($scope.data1[0]);
-      // $scope.lastObjId = 1;// $scope.potNumber;
-      // $scope.smsOtherObj($scope.currentPot().label)
-      // $scope.sendSmsMessage("тревога 3: взлом двери!",$scope.toggleSendSuccesful,$scope.toggleSendError);
-      // $scope.sendSmsMessage(" запуск снят с охраны т:-56 вх:+--+- вых:00000 220в ",$scope.toggleSendSuccesful,$scope.toggleSendError);
-      // $scope.sendSmsMessage("перегрев теплоносителя 2: котел 3",$scope.toggleSendSuccesful,$scope.toggleSendError);
-      // if ($scope.phones.balance != ""){
-      // $scope.smsRequestBalance();
-      // } else {
-      //   var  error = $ionicPopup.show({
-      //     title: 'Ошибка',
-      //     subTitle: 'Номер проверки баланса не настроен',
-      //     buttons: [ { text: 'OK', type: 'button-assertive' } ]
-      //   });
-      // }
+    }
+    $scope.checkBalance = function(){
+      if ($scope.phones.balance != ""){
+      $scope.smsRequestBalance();
+      } else {
+        var  error = $ionicPopup.show({
+          title: 'Ошибка',
+          subTitle: 'Номер проверки баланса не настроен',
+          buttons: [ { text: 'OK', type: 'button-assertive' } ]
+        });
+      }
     }
     $scope.toggleSendError = function(){
       $scope.showToast('Ошибка');
@@ -923,21 +922,6 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
         $scope.showToast('Ошибка');
     }
 
-    $scope.testsms = function(){
-      // $scope.scheduleSingleNotification();
-      // $scope.sendSmsMessage("aaaa",$scope.ok,$scope.notok)
-        // var vari = $scope.sendSmsMessage("aaaa");
-        // if (vari == 2){
-        //   $scope.showToast('Ошибка');
-        // }else if (vari == 1){
-        //   $scope.showToast('Выполнено');
-        // }
-    }
-
-    $scope.testlight = function(){
-      document.location.href = "http://192.168.0.200/?ArduinoPIN2=off ";
-    }
-
     $scope.setModuleGet = function(){
       if ($scope.deviceVar.presenceObject) return $scope.potContent.setModule;
       else return false
@@ -947,5 +931,55 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
       return SMS_LIMIT;
     }
 
+    $scope.fileLocalStorage = function() {
+      $cordovaFile.checkFile(cordova.file.externalDataDirectory, "settings.txt")
+      .then(function () {
+          $cordovaFile.removeFile(cordova.file.externalDataDirectory, "settings.txt");
+      }, function () {
+        // $scope.showToast("Нету файла настроек");
+      });
+      $timeout(function(){
+        $cordovaFile.createFile(cordova.file.externalDataDirectory, "settings.txt")
+        .then(function (success) {
+          $scope.showToast("Создание файла настроек");
+              $timeout(function(){
+                $cordovaFile.writeExistingFile(cordova.file.externalDataDirectory,"settings.txt",$scope.stringStorage)
+                .then(function () {
+                  $scope.showToast("Настройки сохранены в файл");
+                }, function () {
+                  $scope.showToast("Ошибка сохранения настроек");
+                });
+              },3000);
+        }, function (error) {
+          $scope.showToast("Ошибка файла настроек");
+        });
+      },2000);
+    }
 
+    $scope.saveLocalStorage = function(){
+      if (!$scope.deviceVar.device) {$scope.showToast("Функция не доступна");return}
+      $scope.saveObjects('objects');
+      $scope.saveObjects('appVariables');
+      _.forOwn($scope.objects.items,function(value,key){$scope.setPot(key);$scope.saveAllData();});
+      $timeout(function(){$scope.stringStorage = $localstorage.saveStorage();},1000);
+      $timeout(function(){$scope.fileLocalStorage();},4000);
+    }
+
+    $scope.loadLocalStorage = function(){
+      if (!$scope.deviceVar.device || SMS_LIMIT) {$scope.showToast("Функция не доступна");return}
+      $cordovaFile.checkFile(cordova.file.externalDataDirectory, "settings.txt")
+      .then(function () {
+        $cordovaFile.readAsText(cordova.file.externalDataDirectory, "settings.txt")
+        .then(function () {
+          $scope.stringStorage = arguments[0];
+          $localstorage.loadStorage($scope.stringStorage);
+          $scope.loadAllVar();
+          $scope.showToast("Настройки загружены");
+        }, function () {
+          $scope.showToast("Ошибка чтения файла");
+        });
+      }, function () {
+        $scope.showToast("Файл настроек не найден");
+      });
+    }
   })

@@ -11,8 +11,12 @@
     <button class="button" ng-click="testText()">Test text</button>
     <button class="button" ng-click="testsms()">test sms</button>
     <button class="button" ng-click="testlight()">test light</button>
+    <button class="button" ng-click="saveLocalStorage()">SAVE</button>
+    <button class="button" ng-click="loadLocalStorage()">LOAD</button>
+    <button class="button" ng-click="read()">READ</button>
+
     {{$parent.printff}}
   </br>   {{$parent.appVariables.lastIdSms}}
-</br>   {{$parent.lastSMS}}
+</br>   {{$parent.stringStorage}}
 </ion-content>
 </ion-view>

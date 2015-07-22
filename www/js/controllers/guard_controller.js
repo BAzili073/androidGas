@@ -1,8 +1,7 @@
 angular.module('starter.controllers')
 
-.controller('guardController', function($scope, $state, $ionicPopup, $location) {
-if ($scope.deviceVar.presenceObject)  $scope.statToggle = {checked: $scope.guardContent.stateGuard}
-else  $scope.statToggle = {checked: false}
+.controller('guardController', function($scope, $state, $ionicPopup, $location, $timeout) {
+$scope.statToggle = {checked: $scope.guardContent.stateGuard}
 
   $scope.getErrorModule = function(){
     return $scope.potContent.errorModule;
@@ -38,8 +37,8 @@ else  $scope.statToggle = {checked: false}
                 text: '<b>Повторить</b>',
                 type: 'button-positive',
                 onTap: function(e) {
-                  $scope.sendSmsMessage(COMMANDS.SET_GUARD(!$scope.statToggle.checked),$scope.toggleGuardSuccesful,$scope.toggleSendError)
                   $scope.statToggle.checked = !$scope.statToggle.checked;
+                  $scope.sendSmsMessage(COMMANDS.SET_GUARD(!$scope.statToggle.checked),$scope.toggleGuardSuccesful,$scope.toggleSendError)
                 }
               }
             ]

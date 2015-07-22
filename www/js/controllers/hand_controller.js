@@ -29,7 +29,6 @@ angular.module('starter.controllers')
     }
 
       $scope.statToggleModuleChange = function(number){
-        number = number + 4;
         var pot_number = number + 4;
         var data = [$scope.statOutput[number].checked,number];
         $scope.sendSmsMessage(COMMANDS.CONTROL_POT($scope.statOutput[number].checked,number),$scope.statToggleModuleChangeSuccessful,$scope.toggleSendError,data);

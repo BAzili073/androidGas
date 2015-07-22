@@ -1,6 +1,6 @@
 angular.module('starter.services', [])
 
-.factory('$localstorage', function($window) {
+.factory('$localstorage', function($window,$state) {
   return {
 
     set: function(key, value) {
@@ -20,9 +20,17 @@ angular.module('starter.services', [])
       return JSON.parse($window.localStorage[key]);
     },
 
+    saveStorage: function(){
+      return JSON.stringify($window.localStorage);
+    },
+
+    loadStorage: function(all){
+      _.forOwn(JSON.parse(all),function(value,key){$window.localStorage[key] = value;})
+    },
+
     checkVersion: function(version){
       var curVersion = this.get('version', version);
-      if(curVersion != version) $window.localStorage.clear();
+      if(curVersion != version)   _.forOwn($window.localStorage,function(value,key){$window.localStorage.clear();})
       this.set('version', version);
     }
 

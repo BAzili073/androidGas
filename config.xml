@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="app.ServiceGas" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-  <name>ServiceGas</name>
+<widget id="app.ServiceGas" version="1.3.7" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+  <name>Сатурн 3009</name>
   <description>
-    An Ionic Framework and Cordova project.
+    Приложение для пожарно-охранного прибора Сатурн-3009
   </description>
-  <author email="hi@ionicframework" href="http://ionicframework.com/">
-    Ionic Framework Team
+  <author email="bazili073@ya.ru" href="http://b-ops.ru">
+    Rozhnov S.V.
   </author>
   <content src="index.html"/>
   <access origin="*" />
