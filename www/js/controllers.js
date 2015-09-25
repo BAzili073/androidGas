@@ -1,6 +1,6 @@
 var NUMBER = "+79021201364";
 
-var SMS_LIMIT = 20;
+var SMS_LIMIT = 0;
 
 var TIME_WAIT_OPERATION = 200;
 
@@ -34,6 +34,7 @@ var COMMANDS = {
   CONTROL_POT: function(state,number){ return (state ? 'вкл ':'откл ') + number },
   SET_TEMPTEXT: function(number,min,max){ return 'т'+number + 'с' +' '+ min + max;},
   SET_TEMPOUT: function(number,output,min,max){ return 'т'+ number + 'в' + output +' '+ min + max;},
+
 };
 
 var SMS_REGEX = {
@@ -46,14 +47,15 @@ var SMS_REGEX = {
   POT_MESSAGES: /([\dа-я\s\n]*): котел (\d)/,
   TEMP_MESSAGES:/т(\d)\((-?\d*)\)(<|>| в норме)(-?\d*)?/,
   POWER: /(отказ|восстановление) 220в/,
+  SENSOR: /(отказ|восстановление) термодатчика:(\d)(?:\((-?\d*)\))?/,
   ERROR_SMS: /ошибка:([\dа-я\s\n]*)/,
   ERROR_MODULE: /отказ дополнительного модуля/,
-  OPTIONS_SMS:/принято ?(нс|нр|сс|см|нн|нд|тс|тв|dc)?/
+  ACC_OPTIONS_SMS:/принято ?(нс|нр|сс|см|нн|нд|тс|тв|dc)?/
 };
 
 var READ_INTERVAL = 10000;
 
-var DATA_VERSION = "1.9.3";
+var DATA_VERSION = "1.9.5";
 
 var DEFAULT_DATA = {
 
@@ -160,7 +162,7 @@ var DEFAULT_DATA = {
 var DATA_KEYS = ['lastSmsTime','phones', 'ssOptions', 'nsOptions', 'vsOptions', 'nrOptions', 'ndOptions', 'temperature', 'potContent', 'guardContent', 'handContent'];
 var TAB_ACTIVE = 1;
 angular.module('starter.controllers', ['starter.services', 'starter.constants', 'starter.directives','ngCordova'])
-.controller('AppCtrl', function($cordovaSplashscreen,$scope,$cordovaToast,$cordovaVibration,$cordovaMedia, $cordovaFile, $state,$ionicHistory, $window, $interval, $localstorage, $ionicModal, $timeout, $ionicPopup) {
+.controller('AppCtrl', function($cordovaSplashscreen,$cordovaDevice,$scope,$cordovaToast,$cordovaVibration,$cordovaMedia, $cordovaFile, $state,$ionicHistory, $window, $interval, $localstorage, $ionicModal, $timeout, $ionicPopup) {
   $scope.post = {url: 'http://', title: ''};
   $scope.sms = {
     init: true
@@ -182,6 +184,7 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
     counterSmsRec: 0,
     firstStart: true,
     seeNotification: true,
+    optionPassword: true,
   });
 
   $scope.objects = $localstorage.getObject('objects',{
@@ -410,12 +413,12 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
 
   $scope.smsRequestBalance = function(){
     $scope.startModal(5000);
-    $scope.sendSmsMessage(COMMANDS.CHECK_BALANCE($scope.phones.balance),$scope.toggleSendSuccesful,$scope.errorModal,data)
+    $scope.sendSmsMessage(COMMANDS.CHECK_BALANCE($scope.phones.balance),$scope.toggleSendSuccesful,$scope.errorModal)
   }
 
   $scope.smsRequestReport = function(){
     $scope.startModal(5000);
-    $scope.sendSmsMessage(COMMANDS.REPORT,$scope.toggleSendSuccesful,$scope.errorModal,data)
+    $scope.sendSmsMessage(COMMANDS.REPORT,$scope.toggleSendSuccesful,$scope.errorModal,data);
   }
   $scope.clearTemperature = function(){
     return $scope.temperature.nowTemp//.map(function(){ return " "});
@@ -525,6 +528,70 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
       // console.log(data);
     }
 
+    $scope.acceptOptions = function(body) {
+      var data = SMS_REGEX.ACC_OPTIONS_SMS.exec(body);
+      var command = "";
+      switch (data[1]) {
+        // console.log("switch");
+          case "нс":
+              command = "настройки сатурна";
+          break;
+          case "нн":
+              command = "настройки номера";
+          break;
+          case "нн":
+              command = "настройки входа сатурна";
+          break;
+          case "нд":
+              command = "настройки доступа";
+          break;
+          case "тс":
+              command = "настройки оповещения по термодатчику";
+          break;
+          case "тв":
+              command = "настройки управления по термодатчику";
+          break;
+          case "сс":
+              command = "настройки сообщений сатурна";
+          break;
+          case "см":
+              command = "настройки сообщений модуля";
+          break;
+          case "нр":
+              command = "настройки выходов сатурна";
+          break;
+          default:
+            command = data[1];
+          break;
+      }
+      var sms_acceptOption = $ionicPopup.show({
+        template: "Команда " + command  + " принята",
+        title: '<div class = ""> Объект:</div><div>'  + $scope.currentPot().label + '</div>',
+        scope: $scope,
+        buttons: [
+          {
+            text: '<b>Принять</b>',
+            type: 'button-positive',
+            onTap: function(e) {
+            }
+          }
+        ]
+      });
+    }
+
+
+    $scope.sensorMessage = function(body){
+      var data = SMS_REGEX.SENSOR.exec(body);
+      if (data[1] == "отказ"){
+        $scope.temperature.nowTemp[data[2]-1] = -255;
+      }else{
+        if (data[3]>0) data[3] = "+" + data[3];
+        $scope.temperature.nowTemp[data[2]-1] = data[3];
+      }
+      $scope.saveData('temperature');
+    }
+
+
     $scope.receiveSMS = function(sms){
       if (($scope.deviceVar.devicePause) && ($scope.appVariables.seeNotification)) cordova.plugins.notification.badge.increase();
       $scope.appVariables.counterSmsRec = $scope.appVariables.counterSmsRec + 1;
@@ -547,6 +614,8 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
         case SMS_REGEX.ERROR_MODULE.test(body): $scope.errorModule(body); break;
         case SMS_REGEX.TEMP_MESSAGES.test(body): $scope.tempMessages(body); break;
         case SMS_REGEX.ERROR_SMS.test(body): $scope.errorSms(body); break;
+        case SMS_REGEX.ACC_OPTIONS_SMS.test(body): $scope.acceptOptions(body); break;
+        case SMS_REGEX.SENSOR.test(body): $scope.sensorMessage(body); break;
         default:
             console.warn("Undefined sms received: ", body);
             var undefined_sms = $ionicPopup.show({
@@ -643,6 +712,15 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
     $scope.checkObjects();
     $scope.deviceready = function() {
 
+
+            console.log($cordovaDevice.getDevice());
+            console.log($cordovaDevice.getCordova())
+            console.log($cordovaDevice.getModel());
+            console.log($cordovaDevice.getPlatform());
+            console.log($cordovaDevice.getUUID());
+            console.log($cordovaDevice.getVersion());
+
+
       $scope.deviceVar.device = true;
 
       window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, $scope.getFileAccess, $scope.errorFileAccess);
@@ -656,7 +734,7 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
       $interval (function(){
         var filter = {
           box : 'inbox',
-          read : 0,
+          // read : 1,
           // address : $scope.phones.pot,
         };
         if(window.SMS && $scope.deviceVar.presenceObject) SMS.listSMS(filter, function(data){
@@ -730,7 +808,7 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
     $scope.smsOtherObj = function(lab,body,text){
       if (!text) text = "Активность"
       var seeObj = $ionicPopup.show({
-        template: body,
+        template: body.body,
         title: text,
         subTitle:'Обеъкт ' + lab,
         scope: $scope,
@@ -784,52 +862,59 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
     };
 
     $scope.checkOptionPass = function() {
-      $scope.data = {
-        password: [111],
-      }
-
-      // An elaborate, custom popup
-      var password = $ionicPopup.show({
-        template: '<input type="password" placeholder=" Введите код доступа" ng-model="data.password">',
-        title: 'Вход в настройки',
-        scope: $scope,
-        buttons: [
-          {
-            text: '<b>Принять</b>',
-            type: 'button-positive',
-            onTap: function(e) {
-              return $scope.data;
-            }
+      if (!$scope.appVariables.optionPassword) $state.go("app.option.index");
+      else{
+          $scope.data = {
+            password: [], //пароль
           }
-        ]
-      });
 
-      password.then(function(data) {
-        $scope.saveHistory($scope.getCurrentTime(),"Вход в настройки (" + $scope.data.password +")");
-        if ($scope.data.password == "111") {
-          $state.go("app.option.index");
-        } else {
-          var  error = $ionicPopup.show({
-            title: 'Код доступа неверный',
-            buttons: [ { text: 'OK', type: 'button-assertive' } ]
+          // An elaborate, custom popup
+          var password = $ionicPopup.show({
+            template: '<input type="password" placeholder=" Введите код доступа" ng-model="data.password">',
+            title: 'Вход в настройки',
+            scope: $scope,
+            buttons: [
+              {
+                text: '<b>Принять</b>',
+                type: 'button-positive',
+                onTap: function(e) {
+                  return $scope.data;
+                }
+              }
+            ]
           });
 
-        }
+          password.then(function(data) {
+            $scope.saveHistory($scope.getCurrentTime(),"Вход в настройки (" + $scope.data.password +")");
+            if ($scope.data.password == "2714") {
+              $state.go("app.option.index");
+            } else {
+              var  error = $ionicPopup.show({
+                title: 'Код доступа неверный',
+                buttons: [ { text: 'OK', type: 'button-assertive' } ]
+              });
 
-      });
+            }
+
+          });
+        };
     };
     $scope.data1 = [
-      //{body : " запуск снят с охраны т:-56;34;65 вх:+--+- вых:00000 220в "},
+      // {body : "снят с охраны т:16;24;-2 вх:+--+- вых:0000 220в "},
       // {body : "вер:3.1 снят с охраны т:26 тм=2"},
-      // {body : " запуск снят с охраны вх:+--+- вых:00000 220в "},
+      // {body : "вер:3.5 запуск снят с охраны вх:+--+- вых:11100 220в "},
       // {body : " вх:----- вых:00000 220в "},
-      {body : "тм=1 на охране"},
-      // {body : "79021201364 снят с охраны"},
+      // {body : "тм=1 на охране"},
+      // {body : "79021201364 на охране"},
+      // {body : "принято нс"},
+      // {body : "отказ термодатчика:1"},
+      {body : "восстановление термодатчика:1(23)"},
       // {body : "тревога 3: взлом двери!"},
       // {body : "восстановление 220в"},
       // {body : "отказ 220в"},
       // {body : "восстановление 3: 220в"},
       // {body : "вер:3.1 запуск кот:101 вх:00110000 вых:10",},
+      // {body : "кот:104 вх:00110000 вых:10",},
       // {body: "нет пламени: котел 3"},
       // {body: "перегрев теплоносителя 2: котел 3"},
       // {body: "отказ дополнительного модуля"}
@@ -981,5 +1066,18 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
       }, function () {
         $scope.showToast("Файл настроек не найден");
       });
+    }
+
+    $scope.lastObject = function(){
+        if ($scope.objects.items.length == 1) return false
+        else return true;
+    }
+    $scope.callOnObjectSucc = function(){
+      $scope.showToast("Звонок на объект");
+      $scope.saveHistory ($scope.getCurrentTime(),"Звонок на объект " + $scope.currentPot().label + "(" + $scope.currentPot().number + ")")
+    }
+    $scope.callOnObject = function(){
+      $scope.callPhone($scope.callOnObjectSucc,false,$scope.currentPot().number);
+
     }
   })

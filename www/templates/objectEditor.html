@@ -25,7 +25,7 @@
       <a class="button" ng-click="changeObject()" > Изменить объект</a>
     </div>
     <div class="button-bar">
-      <a class="button" ng-click="deleteObject()" > Удалить объект</a>
+      <a ng-show = "lastObject()" class="button" ng-click="deleteObject()" > Удалить объект</a>
     </div>
     <div class="button-bar">
       <a class="button" ng-click="regInObject()" > Регистрация в объекте</a>

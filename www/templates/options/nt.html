@@ -14,9 +14,13 @@
           </div>
           <select ng-change="resetForm2()" ng-model="$parent.selected" ng-options="term.label for term in termoOptions track by term.id"></select>
         </label>
-        <label class="item item-input">
-          <input type="text" ng-model="$parent.comments" placeholder="Ваш комментарий">
-        </label>
+        <div class="item">
+            Комментарий: {{$parent.comments}}
+        </div>
+        <!-- <label class="item item-input">
+
+           <input type="text" ng-model="$parent.comments" placeholder="Ваш комментарий">
+        </label> -->
       </div>
     </form>
       <div class="item">

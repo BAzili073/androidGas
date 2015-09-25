@@ -659,16 +659,22 @@ angular.module('starter.controllers')
 
   $scope.statToggle = {
     settingMode: $scope.deviceVar.settingMode,
-    notification: $scope.appVariables.seeNotification
+    notification: $scope.appVariables.seeNotification,
+    option_Password: $scope.appVariables.optionPassword
   }
 
   $scope.statToggleChange = function(){
     $scope.deviceVar.settingMode = $scope.statToggle.settingMode;
     $scope.appVariables.seeNotification = $scope.statToggle.notification;
+    $scope.appVariables.optionPassword = $scope.statToggle.optionPassword;
   }
 
   $scope.notifToggleChange = function(){
     $scope.appVariables.seeNotification = $scope.statToggle.notification;
+    $scope.saveObjects('appVariables');
+  }
+  $scope.passOptionToggleChange = function(){
+    $scope.appVariables.optionPassword = $scope.statToggle.option_Password;
     $scope.saveObjects('appVariables');
   }
 })

@@ -25,7 +25,7 @@ angular.module('starter.controllers')
       if ($scope.potContent.potState[num] > 1){
           var playAlarm = $ionicPopup.show({
             template: 'Изменить состояние?',
-            title: 'Объект не получил ответ',
+            title: 'Объект не ответил',
             scope: $scope,
             buttons: [
               {
@@ -38,8 +38,8 @@ angular.module('starter.controllers')
                 text: '<b>Повторить</b>',
                 type: 'button-positive',
                 onTap: function(e) {
-                  $scope.sendSmsMessage(COMMANDS.CONTROL_POT(!$scope.statToggle.checked[num],id),$scope.togglePotSuccesful,$scope.toggleSendError,data)
-                  $scope.statToggle.checked[num] = !$scope.statToggle.checked[num]
+                  $scope.statToggle.checked[num] = !$scope.statToggle.checked[num];
+                  $scope.sendSmsMessage(COMMANDS.CONTROL_POT($scope.statToggle.checked[num],id),$scope.togglePotSuccesful,$scope.toggleSendError,data)
                 }
               }
             ]

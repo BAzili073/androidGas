@@ -6,6 +6,9 @@
  <ion-toggle ion-toggle-text  ng-model="statToggle.notification" ng-change="notifToggleChange()">
      Уведомления
  </ion-toggle>
+ <ion-toggle ion-toggle-text  ng-model="statToggle.option_Password" ng-change="passOptionToggleChange()">
+     Пароль настроек
+ </ion-toggle>
     <div class="item">
       Файл истории:
         <span class="badge light {{getHistoryAccessColor()}}-bg">{{getHistoryAccessText()}}</span>

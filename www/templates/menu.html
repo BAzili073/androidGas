@@ -14,7 +14,9 @@
 
   <ion-side-menu side="left">
     <ion-header-bar class="bar-stable">
-      <h1 class="title">{{currentPot().label}}</h1>
+      <h1 class="title">{{currentPot().label}}
+      </h1>
+
     </ion-header-bar>
 
     <ion-footer-bar>
@@ -41,9 +43,9 @@
         <ion-item nav-clear menu-close ng-click="testsms()">
           Смс эмулате
         </ion-item>
-        <ion-item nav-clear menu-close ui-sref="app.testSms">
+        <!-- <ion-item nav-clear menu-close ui-sref="app.testSms">
           СМС
-        </ion-item>
+        </ion-item> -->
         <ion-item ng-show="$parent.deviceVar.playLoopAlarm" nav-clear menu-close ng-click="stopPlayLoopAlarm()">
           Сброс тревоги
         </ion-item>

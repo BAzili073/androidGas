@@ -30,8 +30,16 @@ angular.module('starter.controllers')
 
       $scope.statToggleModuleChange = function(number){
         var pot_number = number + 4;
-        var data = [$scope.statOutput[number].checked,number];
+        var data = [$scope.statOutput[pot_number].checked,number];
         $scope.sendSmsMessage(COMMANDS.CONTROL_POT($scope.statOutput[number].checked,number),$scope.statToggleModuleChangeSuccessful,$scope.toggleSendError,data);
+      }
 
+      $scope.getTextGuardOutput = function(number){
+        if ($scope.nrOptions.guardOutput[number]) return $scope.nrOptions.guardOutput[number]
+        else return "Выход " + number;
+      }
+      $scope.getTextModuleOutput = function(number){
+        if ($scope.nrOptions.moduleOutput[number]) return $scope.nrOptions.moduleOutput[number]
+        else return "Доп.выход " + number;
       }
   })

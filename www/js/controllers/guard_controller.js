@@ -24,7 +24,7 @@ $scope.statToggle = {checked: $scope.guardContent.stateGuard}
       if ($scope.guardContent.statusGuard == 2){
           var playAlarm = $ionicPopup.show({
             template: 'Изменить состояние?',
-            title: 'Объект не получил ответ',
+            title: 'Объект не ответил',
             scope: $scope,
             buttons: [
               {
@@ -38,7 +38,7 @@ $scope.statToggle = {checked: $scope.guardContent.stateGuard}
                 type: 'button-positive',
                 onTap: function(e) {
                   $scope.statToggle.checked = !$scope.statToggle.checked;
-                  $scope.sendSmsMessage(COMMANDS.SET_GUARD(!$scope.statToggle.checked),$scope.toggleGuardSuccesful,$scope.toggleSendError)
+                  $scope.sendSmsMessage(COMMANDS.SET_GUARD($scope.statToggle.checked),$scope.toggleGuardSuccesful,$scope.toggleSendError)
                 }
               }
             ]
@@ -194,6 +194,7 @@ $scope.statToggle = {checked: $scope.guardContent.stateGuard}
     }
 
     $scope.getTempColor = function(id){
+      if ($scope.getNowTemp(id) == -255) return "dark";
       if (($scope.getNowTemp(id)>$scope.temperature.maxOut[id-1]) || ($scope.getNowTemp(id)<$scope.temperature.minOut[id-1])){
         return "assertive";
       }else{

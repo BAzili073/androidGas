@@ -1,4 +1,4 @@
-all: release upload say
+Iall: release upload say
 
 clean:
 	rm -f ServiceGas.apk
@@ -18,7 +18,7 @@ upload:
 	cp ServiceGas.apk ~/Dropbox/bro/
 
 say:
-	say "Job is done."
+	say "Job is done"
 
 all-debug: build-debug upload-debug say
 build-debug:

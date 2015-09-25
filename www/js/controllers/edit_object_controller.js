@@ -123,7 +123,7 @@ angular.module('starter.controllers')
                       $scope.saveAllData();
                       $scope.setPot($scope.objects.items.length-1);
                       $scope.showToast('Объект "' + $scope.data.label + '" добавлен');
-                      $scope.saveHistory ($scope.getCurrentTime(),"Объект " + $scope.data.label + "(" + $scope.data.number + ")"+ " создан")
+                      $scope.saveHistory ($scope.getCurrentTime(),"Объект " + $scope.data.label + "(" + $scope.data.number + ")"+ " создан");
                   }
                   $scope.deviceVar.presenceObject = true;
                   $scope.potContent.setModule = $scope.data.setModule;
@@ -141,7 +141,7 @@ angular.module('starter.controllers')
         });
       }
       $scope.regInObjectSucc = function(){
-        $scope.showToast("Регистрация в объекте");
+        $scope.showToast("Звонок на объект");
       }
       $scope.regInObject = function(){
         $scope.callPhone($scope.regInObjectSucc,false,$scope.objects.items[$scope.selected.id].number);
