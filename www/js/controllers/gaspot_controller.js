@@ -24,21 +24,22 @@ angular.module('starter.controllers')
       var data = num;
       if ($scope.potContent.potState[num] > 1){
           var playAlarm = $ionicPopup.show({
-            template: 'Изменить состояние?',
-            title: 'Объект не ответил',
+            template: 'Выберите необходимую команду',
+            title: 'Объект не ответил, состояние не определено',
             scope: $scope,
             buttons: [
               {
-                text: '<b>Изменить</b>',
+                text: '<b>вкл</b>',
                 type: 'button-positive',
                 onTap: function(e) {
+                    $scope.statToggle.checked[num] = true;
                   $scope.sendSmsMessage(COMMANDS.CONTROL_POT($scope.statToggle.checked[num],id),$scope.togglePotSuccesful,$scope.toggleSendError,data)
                 }
               },{
-                text: '<b>Повторить</b>',
+                text: '<b>откл</b>',
                 type: 'button-positive',
                 onTap: function(e) {
-                  $scope.statToggle.checked[num] = !$scope.statToggle.checked[num];
+                  $scope.statToggle.checked[num] = false;
                   $scope.sendSmsMessage(COMMANDS.CONTROL_POT($scope.statToggle.checked[num],id),$scope.togglePotSuccesful,$scope.toggleSendError,data)
                 }
               }

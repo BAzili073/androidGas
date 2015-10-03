@@ -23,21 +23,22 @@ $scope.statToggle = {checked: $scope.guardContent.stateGuard}
     //  $scope.startModal(1000);
       if ($scope.guardContent.statusGuard == 2){
           var playAlarm = $ionicPopup.show({
-            template: 'Изменить состояние?',
+            template: 'Веберите необходимый режим охраны',
             title: 'Объект не ответил',
             scope: $scope,
             buttons: [
               {
-                text: '<b>Изменить</b>',
+                text: '<b>на охране</b>',
                 type: 'button-positive',
                 onTap: function(e) {
+                  $scope.statToggle.checked = true;
                   $scope.sendSmsMessage(COMMANDS.SET_GUARD($scope.statToggle.checked),$scope.toggleGuardSuccesful,$scope.toggleSendError)
                 }
               },{
-                text: '<b>Повторить</b>',
+                text: '<b>снят с охраны</b>',
                 type: 'button-positive',
                 onTap: function(e) {
-                  $scope.statToggle.checked = !$scope.statToggle.checked;
+                  $scope.statToggle.checked = false;
                   $scope.sendSmsMessage(COMMANDS.SET_GUARD($scope.statToggle.checked),$scope.toggleGuardSuccesful,$scope.toggleSendError)
                 }
               }

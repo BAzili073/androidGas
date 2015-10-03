@@ -184,7 +184,7 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
     counterSmsRec: 0,
     firstStart: true,
     seeNotification: true,
-    optionPassword: true,
+    optionPassword: false,
   });
 
   $scope.objects = $localstorage.getObject('objects',{
@@ -388,6 +388,7 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
       case 3: $scope.phones.ext3 = data[1];break;
       case 4: $scope.phones.ext4 = data[1];break;
     }
+    $scope.saveData('phones');
     $scope.completeModal();
   }
 
@@ -1042,7 +1043,11 @@ angular.module('starter.controllers', ['starter.services', 'starter.constants', 
     }
 
     $scope.saveLocalStorage = function(){
-      if (!$scope.deviceVar.device) {$scope.showToast("Функция не доступна");return}
+      if (!$scope.deviceVar.device) {
+        $scope.showToast("Функция не доступна");
+        console.log(JSON.stringify($window.localStorage));
+        return;
+      }
       $scope.saveObjects('objects');
       $scope.saveObjects('appVariables');
       _.forOwn($scope.objects.items,function(value,key){$scope.setPot(key);$scope.saveAllData();});
